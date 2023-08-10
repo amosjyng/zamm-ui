@@ -3,8 +3,11 @@
 
 use futures::executor;
 
+use directories::ProjectDirs;
 use oxigraph::store::StorageError;
 use oxigraph::store::Store;
+
+use std::env;
 
 use std::sync::Mutex;
 use tauri::api::process::{Command, CommandEvent};
@@ -38,7 +41,15 @@ fn greet(name: &str) -> String {
 }
 
 fn main() -> Result<(), StorageError> {
-    let store = Store::open(DB_NAME)?;
+    let db_path = if let Some(zamm_dirs) = ProjectDirs::from("dev", "zamm", "ZAMM") {
+        zamm_dirs.data_dir().join(DB_NAME)
+    } else {
+        eprintln!("Cannot find user home directory, defaulting to current dir.");
+        env::current_dir()?.as_path().join(DB_NAME)
+    };
+    let store = Store::open(db_path.as_path())?;
+    let db_path_display = db_path.display();
+    println!("Graph database opened at {db_path_display}");
 
     tauri::Builder::default()
         .manage(GraphDB(Mutex::new(store)))
