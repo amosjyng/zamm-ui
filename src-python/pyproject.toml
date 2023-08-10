@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "zamm"
+version = "0.0.0"
+description = ""
+authors = ["Amos Jun-yeung Ng <me@amos.ng>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+black = "^23.7.0"
+ruff = "^0.0.282"
+mypy = "^1.4.1"
+pre-commit = "^3.3.3"
+pyinstaller = "^5.13.0"
+
+[tool.ruff]
+select = ["E", "F", "I", "D"]
+ignore = ["D203", "D212"]
+target-version = "py311"
+
+[tool.mypy]
+ignore_missing_imports = "True"
+disallow_untyped_defs = "True"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
