@@ -1,0 +1,8 @@
+plugins:
+  - wdio
+  - mocha
+extends:
+  - plugin:wdio/recommended
+  - plugin:mocha/recommended
+rules:
+  "@typescript-eslint/no-var-requires": off

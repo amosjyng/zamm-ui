@@ -18,5 +18,5 @@
     <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
     <button type="submit">Greet</button>
   </form>
-  <p>{greetMsg}</p>
+  <p id="greet-message">{greetMsg}</p>
 </div>

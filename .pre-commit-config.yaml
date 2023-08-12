@@ -55,6 +55,7 @@ repos:
         entry: yarn svelte-check --fail-on-warnings
         language: system
         types: [svelte]
+        exclude: ^webdriver/
       - id: cargo-fmt
         name: cargo fmt
         entry: cargo fmt --manifest-path src-tauri/Cargo.toml --
