@@ -1,8 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use futures::executor;
-
 use directories::ProjectDirs;
 use oxigraph::store::StorageError;
 use oxigraph::store::Store;
@@ -10,7 +8,6 @@ use oxigraph::store::Store;
 use std::env;
 
 use std::sync::Mutex;
-use tauri::api::process::{Command, CommandEvent};
 
 const DB_NAME: &str = "zamm.db";
 
@@ -19,25 +16,7 @@ struct GraphDB(Mutex<Store>);
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
-    // `new_sidecar()` expects just the filename, NOT the whole path like in JavaScript
-    let (mut rx, mut _child) = Command::new_sidecar("zamm-python")
-        .expect("failed to create `zamm-python` binary command")
-        .args(vec![name])
-        .spawn()
-        .expect("Failed to spawn sidecar");
-
-    // https://stackoverflow.com/a/52521592
-    let result = executor::block_on(tauri::async_runtime::spawn(async move {
-        let mut last_line = "No output".to_string();
-        // read events such as stdout
-        while let Some(event) = rx.recv().await {
-            if let CommandEvent::Stdout(line) = event {
-                last_line = format!("{} via Rust!", line);
-            }
-        }
-        last_line
-    }));
-    result.unwrap_or("Failed to get output".to_string())
+    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 fn main() -> Result<(), StorageError> {
@@ -58,4 +37,15 @@ fn main() -> Result<(), StorageError> {
         .expect("error while running tauri application");
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::greet;
+
+    #[test]
+    fn test_greet_name() {
+        let result = greet("Test");
+        assert_eq!(result, "Hello, Test! You've been greeted from Rust!");
+    }
 }
