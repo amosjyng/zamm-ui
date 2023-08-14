@@ -1,7 +1,8 @@
 .PHONY: format lint test tests clean release
 
-build:
+target/release/zamm: ./Cargo.toml $(shell find . -type f \( -name "*.rs" \) -not -path "./target/*")
 	cargo build --release
+	touch target/release/zamm
 
 all: format lint test build
 
