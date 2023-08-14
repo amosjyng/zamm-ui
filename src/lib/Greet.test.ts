@@ -31,7 +31,6 @@ test("invoke simple", async () => {
     }
   });
 
-  // @ts-ignore
   const spy = vi.spyOn(window, "__TAURI_IPC__");
   expect(spy).not.toHaveBeenCalled();
 
