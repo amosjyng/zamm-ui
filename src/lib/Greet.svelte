@@ -1,15 +1,11 @@
 <script lang="ts">
-  import { Command } from "@tauri-apps/api/shell";
+  import { invoke } from "@tauri-apps/api/tauri";
 
-  let name = ``;
-  let greetMsg = ``;
+  let name = "";
+  let greetMsg = "";
 
   async function greet() {
-    // alternatively, use `window.__TAURI__.shell.Command`
-    // `binaries/my-sidecar` is the EXACT value specified on `tauri.conf.json > tauri > bundle > externalBin`
-    const command = Command.sidecar(`binaries/zamm-python`, [name]);
-    const result = await command.execute();
-    greetMsg = result.stdout + ` via JavaScript!`;
+    greetMsg = await invoke("greet", { name });
   }
 </script>
 
@@ -18,5 +14,5 @@
     <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
     <button type="submit">Greet</button>
   </form>
-  <p id="greet-message">{greetMsg}</p>
+  <p id="greet-message" role="paragraph">{greetMsg}</p>
 </div>

@@ -3,6 +3,7 @@
     "svelte.svelte-vscode",
     "tauri-apps.tauri-vscode",
     "rust-lang.rust-analyzer",
-    "ms-python.python"
+    "ms-python.python",
+    "ZixuanChen.vitest-explorer"
   ]
 }
