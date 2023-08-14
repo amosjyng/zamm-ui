@@ -1,4 +1,15 @@
 describe("Welcome screen", function () {
+  afterEach(async function () {
+    // Check if the test failed
+    const screenshotPath = `./screenshots/${this.currentTest.title.replace(
+      /\s+/g,
+      "_",
+    )}.png`;
+    // Capture a screenshot and save it
+    await browser.saveScreenshot(screenshotPath);
+    console.log(`Screenshot saved to ${screenshotPath}`);
+  });
+
   const click = async (selector) => {
     // workaround for https://github.com/tauri-apps/tauri/issues/6541
     const element = await $(selector);

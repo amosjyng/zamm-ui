@@ -1,0 +1,43 @@
+name: svelte
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  POETRY_VERSION: "1.5.1"
+  PYTHON_VERSION: "3.11.4"
+  NODEJS_VERSION: "20.5.1"
+  RUST_VERSION: "1.71.1"
+  PRE_COMMIT_VERSION: "3.3.3"
+
+jobs:
+  svelte:
+    name: Run Svelte tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Yarn cache
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: |
+            **/node_modules
+            **/.eslintcache
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+      - name: Install Node dependencies
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+      - name: Run Svelte Tests
+        run: |
+          yarn test

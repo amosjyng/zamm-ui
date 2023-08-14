@@ -6,7 +6,7 @@ authors = ["Amos Jun-yeung Ng <me@amos.ng>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "~3.11"
+python = "3.11.4"
 
 
 [tool.poetry.group.dev.dependencies]
