@@ -4,18 +4,29 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
     "tauri": "tauri",
-    "e2e-test": "cd webdriver && yarn test"
+    "test": "vitest run",
+    "run-watch": "vitest",
+    "e2e-test": "yarn workspace webdriver test"
   },
   "workspaces": [
-    "src-svelte",
     "webdriver"
   ],
   "dependencies": {
     "@tauri-apps/api": "^1.4.0"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "@tauri-apps/cli": "^1.4.0",
+    "@testing-library/dom": "^9.3.1",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/svelte": "^4.0.3",
+    "@testing-library/user-event": "^14.4.3",
+    "@tsconfig/svelte": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^6.3.0",
     "eslint": "^8.0.1",
@@ -24,9 +35,17 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
     "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-svelte": "^2.32.4",
+    "jsdom": "^22.1.0",
     "prettier": "^3.0.1",
     "prettier-plugin-svelte": "^3.0.3",
+    "svelte": "^4.0.5",
+    "svelte-check": "^3.4.6",
+    "svelte-eslint-parser": "^0.32.2",
+    "svelte-preprocess": "^5.0.0",
     "tslib": "^2.6.0",
-    "typescript": "*"
+    "typescript": "*",
+    "vite": "^4.4.4",
+    "vitest": "^0.34.1"
   }
 }

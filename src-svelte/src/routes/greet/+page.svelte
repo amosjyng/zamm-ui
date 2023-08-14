@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { Command } from "@tauri-apps/api/shell";
+  import { invoke } from "@tauri-apps/api/tauri";
 
   let name = "";
   let greetMsg = "";
 
   async function greet() {
-    const command = Command.sidecar("binaries/zamm-python", [name]);
-    const result = await command.execute();
-    greetMsg = result.stdout + " via JavaScript!";
+    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    greetMsg = await invoke("greet", { name });
   }
 </script>
 

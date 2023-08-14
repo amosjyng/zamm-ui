@@ -1,19 +1,21 @@
 describe("Welcome screen", function () {
-  const click = async (selector) => {
-    // workaround for https://github.com/tauri-apps/tauri/issues/6541
-    const element = await $(selector);
-    await element.waitForClickable();
-    await browser.execute("arguments[0].click();", element);
-  };
+  afterEach(async function () {
+    // Check if the test failed
+    const screenshotPath = `./screenshots/${this.currentTest.title.replace(
+      /\s+/g,
+      "_",
+    )}.png`;
+    // Capture a screenshot and save it
+    await browser.saveScreenshot(screenshotPath);
+    console.log(`Screenshot saved to ${screenshotPath}`);
+  });
 
   it("should show greet button", async function () {
-    const text = await $("a=Greet").getText();
-    expect(text).toMatch(/^GREET$/);
+    const text = await $("button").getText();
+    expect(text).toMatch(/^Greet$/);
   });
 
   it("should greet user when button pressed", async function () {
-    await click("a=Greet");
-
     const original = await $("p#greet-message").getText();
     expect(original).toMatch(/^$/);
 
@@ -29,10 +31,12 @@ describe("Welcome screen", function () {
     const inputText = await $("#greet-input").getValue();
     expect(inputText).toMatch(/^me$/);
 
-    await click("button=Greet");
+    await browser.execute(() => {
+      document.getElementsByTagName("button")[0].click();
+    });
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const text = await $("p#greet-message").getText();
-    expect(text).toMatch(/^Hello, me! You have been greeted/);
+    expect(text).toMatch(/^Hello, me!$/);
   });
 });

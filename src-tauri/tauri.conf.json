@@ -12,25 +12,12 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true,
-        "sidecar": true,
-        "scope": [
-          {
-            "name": "binaries/zamm-python",
-            "sidecar": true,
-            "args": true
-          }
-        ]
-      }
+      "all": false
     },
     "bundle": {
       "active": true,
       "targets": "all",
       "identifier": "dev.zamm",
-      "externalBin": ["binaries/zamm-python"],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",

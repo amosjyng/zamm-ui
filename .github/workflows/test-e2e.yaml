@@ -1,0 +1,86 @@
+name: e2e
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  POETRY_VERSION: "1.5.1"
+  PYTHON_VERSION: "3.11.4"
+  NODEJS_VERSION: "20.5.1"
+  RUST_VERSION: "1.71.1"
+  PRE_COMMIT_VERSION: "3.3.3"
+
+jobs:
+  e2e:
+    name: Run end-to-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Tauri dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev webkit2gtk-driver xvfb
+      - name: Set up Yarn cache
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: |
+            **/node_modules
+            **/.eslintcache
+
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Set up cargo cache
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/
+            ~/.cargo/git/
+            src-tauri/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+      - name: Install Node dependencies
+        run: yarn install && yarn build
+      - name: Install webdriver dependencies
+        run: yarn install
+        working-directory: webdriver/
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          override: true
+      - name: Cargo build
+        run: cd src-tauri && cargo build --release
+      - name: Save cargo cache
+        uses: actions/cache/save@v3
+        if: always()
+        continue-on-error: false
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/
+            ~/.cargo/git/
+            src-tauri/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install tauri-driver
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: tauri-driver
+      - name: Run headless WebdriverIO tests
+        run: xvfb-run yarn e2e-test
+      - name: Upload test screenshots as artifacts
+        if: always() # run even if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-screenshots
+          path: webdriver/screenshots/*.png
