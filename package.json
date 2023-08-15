@@ -12,6 +12,9 @@
     "test": "vitest",
     "e2e-test": "cd webdriver && yarn test"
   },
+  "workspaces": [
+    "webdriver"
+  ],
   "dependencies": {
     "@tauri-apps/api": "^1.4.0"
   },
