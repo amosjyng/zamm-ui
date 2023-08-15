@@ -1,5 +1,11 @@
 .PHONY: rust-format rust-lint
 
+build-dev: python-sidecar
+	cargo tauri build
+
+python-sidecar:
+	cd src-python && poetry run make sidecar
+
 all: rust-format rust-lint
 
 rust-format:

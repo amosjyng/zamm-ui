@@ -4,8 +4,8 @@ import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import Greet from "./Greet.svelte";
-import { type SidecarArgs } from "../types/tauri";
+import Greet from "./+page.svelte";
+import type { SidecarArgs } from "$lib/tauri";
 
 test("invoke simple", async () => {
   mockIPC((_, args) => {
