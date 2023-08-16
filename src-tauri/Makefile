@@ -1,6 +1,9 @@
 .PHONY: format lint test tests clean release
 
-all: format lint test
+build:
+	cargo build --release
+
+all: format lint test build
 
 format:
 	cargo fmt

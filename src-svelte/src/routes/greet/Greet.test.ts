@@ -4,8 +4,8 @@ import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import Greet from "./Greet.svelte";
-import { type SidecarArgs } from "../types/tauri";
+import Greet from "./+page.svelte";
+import type { SidecarArgs } from "$lib/tauri";
 
 test("invoke simple", async () => {
   mockIPC((_, args) => {
@@ -17,7 +17,9 @@ test("invoke simple", async () => {
       // 'Stdout' event can be called multiple times
       eventEmitter({
         event: "Stdout",
-        payload: `Hello, ${sidecarArgs.message.args[0]}! You've been greeted from Python`,
+        payload:
+          `Hello, ${sidecarArgs.message.args[0]}! ` +
+          `You've been greeted from Python`,
       });
 
       // 'Terminated' event must be called at the end to resolve the promise

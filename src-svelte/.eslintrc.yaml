@@ -1,0 +1,11 @@
+# https://github.com/janosh/awesome-sveltekit/blob/main/site/.eslintrc.yml
+extends:
+  - plugin:svelte/recommended
+overrides:
+  - files: ["*.svelte"]
+    parser: svelte-eslint-parser
+    parserOptions:
+      parser: "@typescript-eslint/parser"
+rules:
+  no-inner-declarations: off
+ignorePatterns: [build/, dist/]
