@@ -23,16 +23,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
       - name: Set up cargo cache
-        uses: actions/cache@v3
+        uses: Swatinem/rust-cache@v2
         continue-on-error: false
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/
-            ~/.cargo/git/
-            src-tauri/target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          workspaces: "src-tauri -> target"
       - name: Install poetry
         run: |
           pipx install poetry==$POETRY_VERSION
@@ -47,6 +41,13 @@ jobs:
       - name: Setup Python sidecar
         run: |
           cd src-python && poetry run make
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+      - name: Build Svelte
+        run: make
+        working-directory: src-svelte
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:

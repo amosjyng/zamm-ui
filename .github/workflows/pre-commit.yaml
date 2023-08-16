@@ -29,30 +29,21 @@ jobs:
           path: |
             **/node_modules
             **/.eslintcache
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
 
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Set up cargo cache
-        uses: actions/cache@v3
+        uses: Swatinem/rust-cache@v2
         continue-on-error: false
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/
-            ~/.cargo/git/
-            src-tauri/target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          workspaces: "src-tauri -> target"
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODEJS_VERSION }}
       - name: Install Node dependencies
-        run: |
-          yarn install
-          yarn svelte-kit sync
+        run: make
         working-directory: src-svelte
       - name: Install Webdriver dependencies
         run: yarn install
@@ -83,5 +74,5 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pre-commit/
-          key: pre-commit-4|${{ env.pythonLocation }}
+          key: pre-commit-4|${{ env.PYTHON_VERSION }}
       - run: pre-commit run --show-diff-on-failure --color=always --all-files

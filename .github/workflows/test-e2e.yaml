@@ -29,7 +29,6 @@ jobs:
           path: |
             **/node_modules
             **/.eslintcache
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
 
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
@@ -50,14 +49,11 @@ jobs:
         with:
           node-version: ${{ env.NODEJS_VERSION }}
       - name: Install Node dependencies
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: make
+        working-directory: src-svelte
       - name: Install webdriver dependencies
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-          working-directory: "webdriver"
+        run: yarn install
+        working-directory: "webdriver"
       - name: Install poetry
         run: |
           pipx install poetry==$POETRY_VERSION
