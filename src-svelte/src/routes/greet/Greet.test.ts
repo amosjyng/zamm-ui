@@ -17,7 +17,9 @@ test("invoke simple", async () => {
       // 'Stdout' event can be called multiple times
       eventEmitter({
         event: "Stdout",
-        payload: `Hello, ${sidecarArgs.message.args[0]}! You've been greeted from Python`,
+        payload:
+          `Hello, ${sidecarArgs.message.args[0]}! ` +
+          `You've been greeted from Python`,
       });
 
       // 'Terminated' event must be called at the end to resolve the promise

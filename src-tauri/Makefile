@@ -1,5 +1,8 @@
 .PHONY: format lint test tests clean release
 
+build:
+	cargo build --release
+
 all: format lint test build
 
 format:
@@ -7,9 +10,6 @@ format:
 
 lint:
 	cargo clippy -- -Dwarnings
-
-build:
-	cargo build --release
 
 test: tests
 tests:

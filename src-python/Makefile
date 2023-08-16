@@ -1,7 +1,8 @@
-.PHONY: format lint test tests clean release
+.PHONY: format lint test tests clean release build
 
-sidecar:
-	pyinstaller -F zamm/main.py --distpath ../src-tauri/binaries/ --name zamm-python-x86_64-unknown-linux-gnu
+dist/main: $(shell find zamm -type f \( -name "*.py" \))
+	poetry run pyinstaller -F zamm/main.py
+	cp dist/main ../src-tauri/binaries/zamm-python-x86_64-unknown-linux-gnu
 
 all: format lint test
 

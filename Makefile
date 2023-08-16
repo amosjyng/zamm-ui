@@ -1,9 +1,9 @@
 .PHONY: rust-format rust-lint
 
-build: python-build svelte-build rust-build
+build: python svelte rust
 	cargo tauri build
 
-python-build:
+python:
 	cd src-python && poetry run make
 
 rust-format:
@@ -12,17 +12,14 @@ rust-format:
 rust-lint:
 	cd src-tauri && make lint
 
-rust-build:
-	cd src-tauri && make build
-
-svelte: svelte-format svelte-lint
+rust:
+	cd src-tauri && make
 
 svelte-format:
-	yarn prettier --write --plugin prettier-plugin-svelte src/
+	cd src-svelte && make format
 
 svelte-lint:
-	yarn svelte-check --fail-on-warnings
-	yarn eslint --fix src/
+	cd src-svelte && make lint
 
-svelte-build:
-	yarn && yarn build
+svelte:
+	cd src-svelte && make
