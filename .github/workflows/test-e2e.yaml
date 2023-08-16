@@ -50,6 +50,7 @@ jobs:
           node-version: ${{ env.NODEJS_VERSION }}
       - name: Install Node dependencies
         run: yarn install && yarn build
+        working-directory: src-svelte/
       - name: Install webdriver dependencies
         run: yarn install
         working-directory: webdriver/
