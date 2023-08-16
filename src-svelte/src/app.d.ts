@@ -7,12 +7,6 @@ declare global {
     // interface PageData {}
     // interface Platform {}
   }
-
-  interface Window {
-    __TAURI_IPC__?: () => void;
-    // @ts-ignore
-    [key: string]: any;
-  }
 }
 
 export {};

@@ -14,7 +14,8 @@
     "e2e-test": "yarn workspace webdriver test"
   },
   "workspaces": [
-    "webdriver"
+    "webdriver",
+    "src-svelte"
   ],
   "dependencies": {
     "@tauri-apps/api": "^1.4.0"
