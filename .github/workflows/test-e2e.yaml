@@ -57,7 +57,7 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
-          dir: "webdriver"
+          working-directory: "webdriver"
       - name: Install poetry
         run: |
           pipx install poetry==$POETRY_VERSION

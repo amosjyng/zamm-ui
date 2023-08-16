@@ -50,14 +50,13 @@ jobs:
         with:
           node-version: ${{ env.NODEJS_VERSION }}
       - name: Install Node dependencies
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-      - name: Install webdriver dependencies
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-          dir: "webdriver"
+        run: |
+          yarn install
+          yarn svelte-kit sync
+        working-directory: src-svelte
+      - name: Install Webdriver dependencies
+        run: yarn install
+        working-directory: webdriver
       - name: Install poetry
         run: |
           pipx install poetry==$POETRY_VERSION

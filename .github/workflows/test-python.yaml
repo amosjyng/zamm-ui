@@ -27,8 +27,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: poetry
       - name: Install dependencies
-        run: |
-          cd src-python && poetry install
+        run: poetry install
+        working-directory: src-python
       - name: Run Python Tests
-        run: |
-          cd src-python && poetry run make test
+        run: poetry run make test
+        working-directory: src-python
