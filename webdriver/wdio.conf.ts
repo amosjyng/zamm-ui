@@ -12,7 +12,7 @@ exports.config = {
     {
       maxInstances: 1,
       "tauri:options": {
-        application: "../src-tauri/target/release/hello_tauri",
+        application: "../src-tauri/target/release/zamm",
       },
     },
   ],
@@ -23,10 +23,12 @@ exports.config = {
     timeout: 60000,
   },
 
-  // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
+  // ensure the rust project is built since we expect this binary to exist for the
+  // webdriver sessions
   onPrepare: () => spawnSync("cargo", ["build", "--release"]),
 
-  // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
+  // ensure we are running `tauri-driver` before the session starts so that we can
+  // proxy the webdriver requests
   beforeSession: () =>
     (tauriDriver = spawn(
       path.resolve(os.homedir(), ".cargo", "bin", "tauri-driver"),
