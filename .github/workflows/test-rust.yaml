@@ -46,7 +46,7 @@ jobs:
           cd src-python && poetry install
       - name: Setup Python sidecar
         run: |
-          cd src-python && poetry run make sidecar
+          cd src-python && poetry run make
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:

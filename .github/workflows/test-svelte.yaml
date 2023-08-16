@@ -40,4 +40,4 @@ jobs:
           cmd: install
       - name: Run Svelte Tests
         run: |
-          yarn test
+          yarn workspace gui test
