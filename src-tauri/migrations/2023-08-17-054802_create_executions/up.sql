@@ -1,0 +1,6 @@
+CREATE TABLE executions (
+  id VARCHAR PRIMARY KEY NOT NULL,
+  raw_io TEXT NOT NULL,
+  command TEXT NOT NULL,
+  output TEXT NOT NULL
+)

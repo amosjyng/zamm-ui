@@ -63,7 +63,7 @@ repos:
         types: [rust]
       - id: cargo-clippy
         name: cargo clippy
-        entry: cargo clippy --manifest-path src-tauri/Cargo.toml --fix --allow-dirty --allow-staged -- -Dwarnings
+        entry: src-tauri/clippy.sh
         language: system
         types: [rust]
         pass_filenames: false
