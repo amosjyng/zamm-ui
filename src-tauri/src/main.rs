@@ -4,9 +4,11 @@
 use anyhow::Result;
 use diesel::sqlite::SqliteConnection;
 use futures::executor;
+#[cfg(debug_assertions)]
 use specta::collect_types;
 use specta::specta;
 use tauri::api::process::{Command, CommandEvent};
+#[cfg(debug_assertions)]
 use tauri_specta::ts;
 use tauri_utils::platform;
 
@@ -16,6 +18,7 @@ use std::sync::Mutex;
 mod models;
 mod schema;
 mod setup;
+use mockall::automock;
 
 struct ZammDatabase(Mutex<Option<SqliteConnection>>);
 
@@ -41,21 +44,16 @@ enum Error {
     },
 }
 
+#[automock]
 trait SidecarExecutor {
-    fn execute<I, S>(command: &str, args: I) -> Result<String>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>;
+    #[allow(clippy::needless_lifetimes)]
+    fn execute<'a>(&self, command: &str, args: &[&'a str]) -> Result<String>;
 }
 
 struct SidecarExecutorImpl;
 
 impl SidecarExecutor for SidecarExecutorImpl {
-    fn execute<I, S>(command: &str, args: I) -> Result<String>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
+    fn execute(&self, command: &str, args: &[&str]) -> Result<String> {
         let expected_binary_path = relative_command_path(command.into())?;
         let (mut rx, mut _child) =
             match Command::new_sidecar(command)?.args(args).spawn() {
@@ -86,11 +84,15 @@ impl SidecarExecutor for SidecarExecutorImpl {
     }
 }
 
+fn greet_helper<T: SidecarExecutor>(t: &T, name: &str) -> String {
+    let result = t.execute("zamm-python", &[name]).unwrap();
+    format!("{result} via Rust")
+}
+
 #[tauri::command]
 #[specta]
 fn greet(name: &str) -> String {
-    let result = SidecarExecutorImpl::execute("zamm-python", vec![name]).unwrap();
-    format!("{result} via Rust")
+    greet_helper(&SidecarExecutorImpl {}, name)
 }
 
 fn main() {
@@ -108,11 +110,22 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use super::greet;
+    use super::{greet_helper, MockSidecarExecutor};
 
     #[test]
     fn test_greet_name() {
-        let result = greet("Test");
+        let mut mock = MockSidecarExecutor::new();
+        mock.expect_execute()
+            .withf(|cmd, args| {
+                assert_eq!(cmd, "zamm-python");
+                assert_eq!(args, &vec!["Test"]);
+                true
+            })
+            .returning(|_, _| {
+                Ok("Hello, Test! You have been greeted from Python".to_string())
+            });
+
+        let result = greet_helper(&mock, "Test");
         assert_eq!(
             result,
             "Hello, Test! You have been greeted from Python via Rust"
