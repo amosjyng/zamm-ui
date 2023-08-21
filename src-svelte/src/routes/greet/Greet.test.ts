@@ -1,40 +1,20 @@
 import { expect, test, vi } from "vitest";
-import { mockIPC } from "@tauri-apps/api/mocks";
 import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Greet from "./+page.svelte";
-import type { SidecarArgs } from "$lib/tauri";
+
+const tauriInvokeMock = vi.fn();
+
+vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
 
 test("invoke simple", async () => {
-  mockIPC((_, args) => {
-    const sidecarArgs = args as unknown as SidecarArgs;
-    if (sidecarArgs.message.cmd === "execute") {
-      const eventCallbackId = `_${sidecarArgs.message.onEventFn}`;
-      const eventEmitter = window[eventCallbackId];
-
-      // 'Stdout' event can be called multiple times
-      eventEmitter({
-        event: "Stdout",
-        payload:
-          `Hello, ${sidecarArgs.message.args[0]}! ` +
-          `You've been greeted from Python`,
-      });
-
-      // 'Terminated' event must be called at the end to resolve the promise
-      eventEmitter({
-        event: "Terminated",
-        payload: {
-          code: 0,
-          signal: "kill",
-        },
-      });
-    }
-  });
-
-  const spy = vi.spyOn(window, "__TAURI_IPC__");
+  const spy = vi.spyOn(window, "__TAURI_INVOKE__");
   expect(spy).not.toHaveBeenCalled();
+  tauriInvokeMock.mockReturnValueOnce(
+    Promise.resolve("Hello, Vitest! You've been greeted from Python"),
+  );
 
   render(Greet, {});
   const greet_input = screen.getByRole("textbox");
@@ -42,10 +22,10 @@ test("invoke simple", async () => {
   const greet_button = screen.getByRole("button");
   await act(() => userEvent.click(greet_button));
 
-  expect(spy).toHaveBeenCalled();
+  expect(spy).toHaveBeenLastCalledWith("greet", { name: "Vitest" });
 
   const message = screen.getByRole("paragraph");
   expect(message).toHaveTextContent(
-    /^Hello, Vitest! You've been greeted from Python via JavaScript!$/,
+    /^Hello, Vitest! You've been greeted from Python via TypeScript!$/,
   );
 });
