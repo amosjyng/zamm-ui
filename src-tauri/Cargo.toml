@@ -19,6 +19,13 @@ diesel = { version = "2.1.0", features = ["sqlite", "uuid"] }
 directories = "5.0.1"
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
 uuid = { version = "1.4.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
+specta = "1.0.5"
+tauri-specta = { version = "1.0.2", features = ["javascript", "typescript"] }
+futures = "0.3.28"
+tauri-utils = "1.4.0"
+thiserror = "1.0.47"
+anyhow = "1.0.75"
+mockall = "0.11.4"
 
 [features]
 # this is necessary to prevent the Tauri CLI from complaining about the lack of a
