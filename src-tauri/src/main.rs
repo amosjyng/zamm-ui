@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use anyhow::Result;
 use diesel::sqlite::SqliteConnection;
 use futures::executor;
 use specta::collect_types;
@@ -31,34 +32,65 @@ fn relative_command_path(command: String) -> tauri::Result<String> {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
+enum Error {
+    #[error("Failed to spawn sidecar at {expected_path}: {tauri_error}")]
+    SidecarSpawnError {
+        expected_path: String,
+        tauri_error: tauri::api::Error,
+    },
+}
+
+trait SidecarExecutor {
+    fn execute<I, S>(command: &str, args: I) -> Result<String>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>;
+}
+
+struct SidecarExecutorImpl;
+
+impl SidecarExecutor for SidecarExecutorImpl {
+    fn execute<I, S>(command: &str, args: I) -> Result<String>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let expected_binary_path = relative_command_path(command.into())?;
+        let (mut rx, mut _child) =
+            match Command::new_sidecar(command)?.args(args).spawn() {
+                Ok((rx, child)) => (rx, child),
+                Err(err) => {
+                    return Err(Error::SidecarSpawnError {
+                        expected_path: expected_binary_path,
+                        tauri_error: err,
+                    }
+                    .into())
+                }
+            };
+
+        // https://stackoverflow.com/a/52521592
+        let stdout = executor::block_on(tauri::async_runtime::spawn(async move {
+            let mut output = String::new();
+            while let Some(event) = rx.recv().await {
+                if let CommandEvent::Stdout(line) = event {
+                    output.push_str(&line);
+                } else if let CommandEvent::Error(line) = event {
+                    output.push_str(&line);
+                }
+            }
+            output
+        }))?;
+
+        Ok(stdout)
+    }
+}
+
 #[tauri::command]
 #[specta]
 fn greet(name: &str) -> String {
-    let expected_binary_path = relative_command_path("zamm-python".to_string())
-        .expect("Failed to get expected binary path");
-    let (mut rx, mut _child) = Command::new_sidecar("zamm-python")
-        .expect("failed to create `zamm-python` binary command")
-        .args(vec![name])
-        .spawn()
-        .unwrap_or_else(|err| {
-            panic!(
-                "Failed to spawn sidecar at {}: {}",
-                expected_binary_path, err
-            )
-        });
-
-    // https://stackoverflow.com/a/52521592
-    let result = executor::block_on(tauri::async_runtime::spawn(async move {
-        let mut last_line = "No output".to_string();
-        // read events such as stdout
-        while let Some(event) = rx.recv().await {
-            if let CommandEvent::Stdout(line) = event {
-                last_line = format!("{} via Rust", line);
-            }
-        }
-        last_line
-    }));
-    result.unwrap_or("Failed to get output".to_string())
+    let result = SidecarExecutorImpl::execute("zamm-python", vec![name]).unwrap();
+    format!("{result} via Rust")
 }
 
 fn main() {
