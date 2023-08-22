@@ -20,6 +20,7 @@ pyinstaller = "^5.13.0"
 [tool.ruff]
 select = ["E", "F", "I", "D"]
 ignore = ["D203", "D212"]
+exclude = ["src-python/zamm/api.py"]
 target-version = "py311"
 
 [tool.mypy]

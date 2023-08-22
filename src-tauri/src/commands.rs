@@ -2,6 +2,8 @@ use anyhow::Result;
 
 use futures::executor;
 
+use crate::python_api::{GreetArgs, GreetResponse};
+use serde::{Deserialize, Serialize};
 use specta::specta;
 use tauri::api::process::{Command, CommandEvent};
 
@@ -71,9 +73,27 @@ impl SidecarExecutor for SidecarExecutorImpl {
     }
 }
 
+fn process<T: Serialize, U: for<'de> Deserialize<'de>>(
+    s: &impl SidecarExecutor,
+    command: &str,
+    input: &T,
+) -> Result<U> {
+    let input_json = serde_json::to_string(input)?;
+    let result_json = s.execute(command, &[&input_json])?;
+    let response: U = serde_json::from_str(&result_json)?;
+
+    Ok(response)
+}
+
 fn greet_helper<T: SidecarExecutor>(t: &T, name: &str) -> String {
-    let result = t.execute("zamm-python", &[name]).unwrap();
-    format!("{result} via Rust")
+    let result = process::<GreetArgs, GreetResponse>(
+        t,
+        "zamm-python",
+        &GreetArgs { name: name.into() },
+    )
+    .unwrap();
+    let greeting = result.greeting;
+    format!("{greeting} via Rust")
 }
 
 #[tauri::command]
@@ -92,11 +112,14 @@ mod tests {
         mock.expect_execute()
             .withf(|cmd, args| {
                 assert_eq!(cmd, "zamm-python");
-                assert_eq!(args, &vec!["Test"]);
+                assert_eq!(args, &vec!["{\"name\":\"Test\"}"]);
                 true
             })
             .returning(|_, _| {
-                Ok("Hello, Test! You have been greeted from Python".to_string())
+                Ok(
+                    "{\"greeting\":\"Hello, Test! You have been greeted from Python\"}"
+                        .to_string(),
+                )
             });
 
         let result = greet_helper(&mock, "Test");
