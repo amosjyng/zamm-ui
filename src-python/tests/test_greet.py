@@ -67,4 +67,4 @@ def test_regular_greet() -> None:
 
 def test_empty_greet() -> None:
     """Make sure an empty greeting works."""
-    compare_greet_io("sample-calls/alt/empty_greet")
+    compare_greet_io("sample-calls/alt/greet_empty")

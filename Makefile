@@ -5,7 +5,7 @@ build: python svelte rust
 
 quicktype:
 	yarn quicktype src-python/sample-calls/canonical -o src-python/zamm/api.py
-	yarn quicktype src-python/sample-calls/canonical -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone
+	yarn quicktype src-python/sample-calls/canonical -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone --derive-partial-eq
 
 python:
 	cd src-python && poetry run make
