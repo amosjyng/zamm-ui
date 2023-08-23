@@ -33,3 +33,6 @@ serde_json = "1.0.105"
 # this is necessary to prevent the Tauri CLI from complaining about the lack of a
 # custom-protocol feature during compilation
 custom-protocol = []
+
+[dev-dependencies]
+serde_yaml = "0.9.25"

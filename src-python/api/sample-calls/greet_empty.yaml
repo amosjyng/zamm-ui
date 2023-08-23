@@ -1,0 +1,10 @@
+request:
+  - greet
+  - >
+    {
+      "name": ""
+    }
+response: >
+  {
+    "greeting": "Hello, ! You have been greeted from Python"
+  }

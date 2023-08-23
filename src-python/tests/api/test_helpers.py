@@ -3,18 +3,14 @@
 import json
 from pathlib import Path
 
-from zamm.api.methods import ApiMethod
+import yaml
+from zamm.execution import handle_commandline_args
+
+from tests.api.sample_call import SampleCall
 
 
-def read_json(filename: str) -> dict:
-    """Read JSON dict from a file."""
-    return json.loads(Path(filename).read_text())
-
-
-def compare_io(file_prefix: str, api_method: ApiMethod) -> None:
+def compare_io(filename: str) -> None:
     """Compare input and output for generic commands."""
-    args_file = f"{file_prefix}_args.json"
-    response_file = f"{file_prefix}_response.json"
-    args = api_method.args_type.from_dict(read_json(args_file))
-    response = api_method.invoke(args)
-    assert response.to_dict() == read_json(response_file)
+    sample_call = SampleCall.from_dict(yaml.safe_load(Path(filename).read_text()))
+    response = handle_commandline_args(*sample_call.request)
+    assert json.loads(response) == json.loads(sample_call.response)
