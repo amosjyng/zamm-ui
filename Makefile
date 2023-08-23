@@ -4,8 +4,8 @@ build: python svelte rust
 	cargo tauri build
 
 quicktype:
-	yarn quicktype src-python/sample-calls/canonical -o src-python/zamm/api/models.py
-	yarn quicktype src-python/sample-calls/canonical -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone --derive-partial-eq
+	yarn quicktype src-python/api/schemas/* -s schema -o src-python/zamm/api/models.py
+	yarn quicktype src-python/api/schemas/* -s schema -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone --derive-partial-eq
 
 python:
 	cd src-python && poetry run make

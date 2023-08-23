@@ -141,7 +141,7 @@ mod tests {
     #[test]
     fn test_greet_name() {
         check_greet_sample(
-            "../src-python/sample-calls/canonical/greet",
+            "../src-python/api/sample-calls/greet",
             "Test",
             "Hello, Test! You have been greeted from Python via Rust",
         );
@@ -150,7 +150,7 @@ mod tests {
     #[test]
     fn test_greet_empty_name() {
         check_greet_sample(
-            "../src-python/sample-calls/alt/greet_empty",
+            "../src-python/api/sample-calls/greet_empty",
             "",
             "Hello, ! You have been greeted from Python via Rust",
         );

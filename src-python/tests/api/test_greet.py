@@ -12,9 +12,9 @@ def compare_greet_io(file_prefix: str) -> None:
 
 def test_regular_greet() -> None:
     """Make sure a regular greeting works."""
-    compare_greet_io("sample-calls/canonical/greet")
+    compare_greet_io("api/sample-calls/greet")
 
 
 def test_empty_greet() -> None:
     """Make sure an empty greeting works."""
-    compare_greet_io("sample-calls/alt/greet_empty")
+    compare_greet_io("api/sample-calls/greet_empty")
