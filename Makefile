@@ -4,7 +4,7 @@ build: python svelte rust
 	cargo tauri build
 
 quicktype:
-	yarn quicktype src-python/sample-calls/canonical -o src-python/zamm/api.py
+	yarn quicktype src-python/sample-calls/canonical -o src-python/zamm/api/models.py
 	yarn quicktype src-python/sample-calls/canonical -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone --derive-partial-eq
 
 python:
