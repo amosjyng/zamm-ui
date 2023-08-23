@@ -26,6 +26,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "prettier": "^3.0.1",
     "prettier-plugin-svelte": "^3.0.3",
+    "quicktype": "^23.0.71",
     "tslib": "^2.6.0",
     "typescript": "*"
   }

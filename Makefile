@@ -1,7 +1,13 @@
-.PHONY: rust-format rust-lint
+.PHONY: rust-format rust-lint quicktype
 
 build: python svelte rust
 	cargo tauri build
+
+quicktype:
+	yarn quicktype src-python/api/schemas/* -s schema -o src-python/zamm/api/models.py
+	yarn quicktype src-python/api/schemas/* -s schema -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone --derive-partial-eq
+	yarn quicktype src-python/api/sample-calls/schema.json -s schema -o src-python/tests/api/sample_call.py
+	yarn quicktype src-python/api/sample-calls/schema.json -s schema -o src-tauri/src/sample_call.rs --visibility public --derive-debug
 
 python:
 	cd src-python && poetry run make

@@ -22,6 +22,8 @@ repos:
     hooks:
       - id: mypy
         args: [--disallow-untyped-defs, --ignore-missing-imports]
+        additional_dependencies:
+          - types-PyYAML
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.46.0
     hooks:

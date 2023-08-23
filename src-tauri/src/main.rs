@@ -14,6 +14,9 @@ use std::env;
 use std::sync::Mutex;
 mod commands;
 mod models;
+mod python_api;
+#[cfg(test)]
+mod sample_call;
 mod schema;
 mod setup;
 use commands::greet;

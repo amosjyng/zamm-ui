@@ -21,7 +21,7 @@ lint:
 
 test: tests
 tests:
-	pytest -v
+	poetry run pytest -v
 
 clean:
 # https://stackoverflow.com/a/41386937/257583

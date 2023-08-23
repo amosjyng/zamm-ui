@@ -2,10 +2,10 @@
 
 import sys
 
+from zamm.execution import handle_commandline_args
 
-def greet(name: str) -> None:
-    """Say hello-world."""
-    print(f"Hello, {name}! You have been greeted from Python")
-
-
-greet(sys.argv[1] if len(sys.argv) > 1 else "World")
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python -m zamm.main <command> <json-args>")
+        sys.exit(1)
+    print(handle_commandline_args(*sys.argv[1:]))

@@ -2,6 +2,8 @@ use anyhow::Result;
 
 use futures::executor;
 
+use crate::python_api::{GreetArgs, GreetResponse};
+use serde::{Deserialize, Serialize};
 use specta::specta;
 use tauri::api::process::{Command, CommandEvent};
 
@@ -71,9 +73,29 @@ impl SidecarExecutor for SidecarExecutorImpl {
     }
 }
 
+fn process<T: Serialize, U: for<'de> Deserialize<'de>>(
+    s: &impl SidecarExecutor,
+    binary: &str,
+    command: &str,
+    input: &T,
+) -> Result<U> {
+    let input_json = serde_json::to_string(input)?;
+    let result_json = s.execute(binary, &[command, &input_json])?;
+    let response: U = serde_json::from_str(&result_json)?;
+
+    Ok(response)
+}
+
 fn greet_helper<T: SidecarExecutor>(t: &T, name: &str) -> String {
-    let result = t.execute("zamm-python", &[name]).unwrap();
-    format!("{result} via Rust")
+    let result = process::<GreetArgs, GreetResponse>(
+        t,
+        "zamm-python",
+        "greet",
+        &GreetArgs { name: name.into() },
+    )
+    .unwrap();
+    let greeting = result.greeting;
+    format!("{greeting} via Rust")
 }
 
 #[tauri::command]
@@ -84,25 +106,60 @@ pub fn greet(name: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{greet_helper, MockSidecarExecutor};
+    use super::*;
+    use crate::sample_call::SampleCall;
+
+    use std::fs;
+
+    fn parse_greet(args_str: &str) -> GreetArgs {
+        serde_json::from_str(args_str).unwrap()
+    }
+
+    fn read_sample(filename: &str) -> SampleCall {
+        let sample_str = fs::read_to_string(filename)
+            .unwrap_or_else(|_| panic!("No file found at {filename}"));
+        serde_yaml::from_str(&sample_str).unwrap()
+    }
+
+    fn check_greet_sample(file_prefix: &str, rust_input: &str, rust_result: &str) {
+        let greet_sample = read_sample(file_prefix);
+
+        let mut mock = MockSidecarExecutor::new();
+        mock.expect_execute()
+            .withf(move |cmd, actual_cmd_args| {
+                assert_eq!(cmd, "zamm-python");
+
+                let expected_cmd_args = &greet_sample.request;
+                assert_eq!(actual_cmd_args.len(), expected_cmd_args.len());
+                assert_eq!(actual_cmd_args[0], expected_cmd_args[0]);
+
+                let actual_greet_args = parse_greet(actual_cmd_args[1]);
+                let expected_greet_args = parse_greet(&expected_cmd_args[1]);
+                assert_eq!(actual_greet_args, expected_greet_args);
+
+                true
+            })
+            .return_once(move |_, _| Ok(greet_sample.response));
+
+        let result = greet_helper(&mock, rust_input);
+        assert_eq!(result, rust_result);
+    }
 
     #[test]
     fn test_greet_name() {
-        let mut mock = MockSidecarExecutor::new();
-        mock.expect_execute()
-            .withf(|cmd, args| {
-                assert_eq!(cmd, "zamm-python");
-                assert_eq!(args, &vec!["Test"]);
-                true
-            })
-            .returning(|_, _| {
-                Ok("Hello, Test! You have been greeted from Python".to_string())
-            });
+        check_greet_sample(
+            "../src-python/api/sample-calls/greet.yaml",
+            "Test",
+            "Hello, Test! You have been greeted from Python via Rust",
+        );
+    }
 
-        let result = greet_helper(&mock, "Test");
-        assert_eq!(
-            result,
-            "Hello, Test! You have been greeted from Python via Rust"
+    #[test]
+    fn test_greet_empty_name() {
+        check_greet_sample(
+            "../src-python/api/sample-calls/greet_empty.yaml",
+            "",
+            "Hello, ! You have been greeted from Python via Rust",
         );
     }
 }
