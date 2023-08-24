@@ -71,6 +71,10 @@ pub enum Error {
         #[from]
         source: SidecarResponseError,
     },
+    #[error("Sidecar command error event: {line}")]
+    SidecarCommandErr { line: String },
+    #[error("Unexpected sidecar command event")]
+    SidecarUnexpectedCommandEvent,
     #[error(transparent)]
     Serde {
         #[from]
@@ -121,20 +125,27 @@ impl SidecarExecutor for SidecarExecutorImpl {
                 }
             };
 
-        // https://stackoverflow.com/a/52521592
-        let stdout = executor::block_on(tauri::async_runtime::spawn(async move {
+        executor::block_on(tauri::async_runtime::spawn(async move {
             let mut output = String::new();
             while let Some(event) = rx.recv().await {
-                if let CommandEvent::Stdout(line) = event {
-                    output.push_str(&line);
-                } else if let CommandEvent::Error(line) = event {
-                    output.push_str(&line);
+                match event {
+                    CommandEvent::Stdout(line) => {
+                        output.push_str(&line);
+                        output.push('\n');
+                    }
+                    CommandEvent::Stderr(line) => {
+                        output.push_str(&line);
+                        output.push('\n');
+                    }
+                    CommandEvent::Error(line) => {
+                        return Err(Error::SidecarCommandErr { line })
+                    }
+                    CommandEvent::Terminated(_) => break,
+                    _ => return Err(Error::SidecarUnexpectedCommandEvent),
                 }
             }
-            output
-        }))?;
-
-        Ok(stdout)
+            Ok(output)
+        }))?
     }
 }
 
@@ -149,12 +160,13 @@ fn process<T: Serialize, U: for<'de> Deserialize<'de>>(
     let response: U = match serde_json::from_str(&result_json) {
         Ok(response) => response,
         Err(err) => {
+            let binary_path = relative_command_path(binary.into())?;
             return Err(SidecarResponseError {
-                request: vec![binary.into(), command.into(), input_json],
+                request: vec![binary_path, command.into(), input_json],
                 response: result_json,
                 source: err,
             }
-            .into())
+            .into());
         }
     };
 
