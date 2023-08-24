@@ -1,7 +1,6 @@
 {
   "build": {
     "beforeDevCommand": "yarn workspace gui dev",
-    "beforeBuildCommand": "yarn workspace gui build",
     "devPath": "http://localhost:1420",
     "distDir": "../src-svelte/build",
     "withGlobalTauri": false
