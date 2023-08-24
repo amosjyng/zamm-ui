@@ -1,10 +1,9 @@
-use anyhow::Result;
-
 use futures::executor;
 
 use crate::python_api::{GreetArgs, GreetResponse};
 use serde::{Deserialize, Serialize};
 use specta::specta;
+use std::fmt;
 use tauri::api::process::{Command, CommandEvent};
 
 use tauri_utils::platform;
@@ -24,35 +23,101 @@ fn relative_command_path(command: String) -> tauri::Result<String> {
     }
 }
 
+#[derive(Debug)]
+pub struct SidecarResponseError {
+    request: Vec<String>,
+    response: String,
+    source: serde_json::Error,
+}
+
+impl std::error::Error for SidecarResponseError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.source)
+    }
+}
+
+impl fmt::Display for SidecarResponseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut json_err_msg = String::new();
+
+        json_err_msg.push_str("Failed to parse sidecar JSON.\n");
+
+        json_err_msg.push_str("Request: ");
+        for arg in self.request.iter() {
+            json_err_msg.push_str(arg);
+            json_err_msg.push(' ');
+        }
+        json_err_msg.push('\n');
+
+        json_err_msg.push_str("Response: ");
+        json_err_msg.push_str(&self.response);
+        json_err_msg.push('\n');
+
+        json_err_msg.push_str("Error: ");
+        json_err_msg.push_str(&self.source.to_string());
+        write!(f, "{}", json_err_msg)
+    }
+}
+
 #[derive(thiserror::Error, Debug)]
-enum Error {
+pub enum Error {
     #[error("Failed to spawn sidecar at {expected_path}: {tauri_error}")]
-    SidecarSpawnError {
+    SidecarSpawn {
         expected_path: String,
         tauri_error: tauri::api::Error,
     },
+    #[error(transparent)]
+    SidecarResponse {
+        #[from]
+        source: SidecarResponseError,
+    },
+    #[error(transparent)]
+    Serde {
+        #[from]
+        source: serde_json::Error,
+    },
+    #[error(transparent)]
+    Tauri {
+        #[from]
+        source: tauri::Error,
+    },
+    #[error("Unknown failure: {source}")]
+    Other {
+        #[from]
+        source: anyhow::Error,
+    },
 }
+
+impl serde::Serialize for Error {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::ser::Serializer,
+    {
+        serializer.serialize_str(self.to_string().as_ref())
+    }
+}
+
+pub type ZammResult<T> = std::result::Result<T, Error>;
 
 #[automock]
 trait SidecarExecutor {
     #[allow(clippy::needless_lifetimes)]
-    fn execute<'a>(&self, command: &str, args: &[&'a str]) -> Result<String>;
+    fn execute<'a>(&self, command: &str, args: &[&'a str]) -> ZammResult<String>;
 }
 
 struct SidecarExecutorImpl;
 
 impl SidecarExecutor for SidecarExecutorImpl {
-    fn execute(&self, command: &str, args: &[&str]) -> Result<String> {
+    fn execute(&self, command: &str, args: &[&str]) -> ZammResult<String> {
         let expected_binary_path = relative_command_path(command.into())?;
         let (mut rx, mut _child) =
             match Command::new_sidecar(command)?.args(args).spawn() {
                 Ok((rx, child)) => (rx, child),
                 Err(err) => {
-                    return Err(Error::SidecarSpawnError {
+                    return Err(Error::SidecarSpawn {
                         expected_path: expected_binary_path,
                         tauri_error: err,
-                    }
-                    .into())
+                    })
                 }
             };
 
@@ -78,30 +143,45 @@ fn process<T: Serialize, U: for<'de> Deserialize<'de>>(
     binary: &str,
     command: &str,
     input: &T,
-) -> Result<U> {
+) -> ZammResult<U> {
     let input_json = serde_json::to_string(input)?;
     let result_json = s.execute(binary, &[command, &input_json])?;
-    let response: U = serde_json::from_str(&result_json)?;
+    let response: U = match serde_json::from_str(&result_json) {
+        Ok(response) => response,
+        Err(err) => {
+            return Err(SidecarResponseError {
+                request: vec![binary.into(), command.into(), input_json],
+                response: result_json,
+                source: err,
+            }
+            .into())
+        }
+    };
 
     Ok(response)
 }
 
-fn greet_helper<T: SidecarExecutor>(t: &T, name: &str) -> String {
+fn greet_helper<T: SidecarExecutor>(t: &T, name: &str) -> ZammResult<String> {
     let result = process::<GreetArgs, GreetResponse>(
         t,
         "zamm-python",
         "greet",
         &GreetArgs { name: name.into() },
-    )
-    .unwrap();
+    )?;
     let greeting = result.greeting;
-    format!("{greeting} via Rust")
+    Ok(format!("{greeting} via Rust"))
 }
 
 #[tauri::command]
 #[specta]
-pub fn greet(name: &str) -> String {
-    greet_helper(&SidecarExecutorImpl {}, name)
+pub fn greet(name: &str) -> ZammResult<String> {
+    match greet_helper(&SidecarExecutorImpl {}, name) {
+        Ok(greeting) => Ok(greeting),
+        Err(err) => {
+            eprintln!("Greet error: {}", err);
+            Err(err)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -141,7 +221,7 @@ mod tests {
             })
             .return_once(move |_, _| Ok(greet_sample.response));
 
-        let result = greet_helper(&mock, rust_input);
+        let result = greet_helper(&mock, rust_input).unwrap();
         assert_eq!(result, rust_result);
     }
 
