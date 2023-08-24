@@ -5,8 +5,12 @@
   let greetMsg = "";
 
   async function trigger_greet() {
-    const result = await greet(name);
-    greetMsg = result + " via TypeScript!";
+    try {
+      const result = await greet(name);
+      greetMsg = result + " via TypeScript!";
+    } catch (err) {
+      greetMsg = "Sorry, we can't greet you right now. " + err;
+    }
   }
 </script>
 
