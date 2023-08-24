@@ -13,8 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-# custom-protocol should always be enabled to enable end-to-end testing
-tauri = { version = "1.4", features = [ "shell-sidecar", "shell-open", "process-command-api", "custom-protocol" ] }
+tauri = { version = "1.4", features = [ "shell-sidecar", "shell-open", "process-command-api" ] }
 diesel = { version = "2.1.0", features = ["sqlite", "uuid"] }
 directories = "5.0.1"
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
@@ -30,9 +29,9 @@ serde = { version = "1.0.185", features = ["derive"] }
 serde_json = "1.0.105"
 
 [features]
-# this is necessary to prevent the Tauri CLI from complaining about the lack of a
-# custom-protocol feature during compilation
-custom-protocol = []
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
 serde_yaml = "0.9.25"
