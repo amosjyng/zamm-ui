@@ -3,7 +3,7 @@
 
 use diesel::sqlite::SqliteConnection;
 
-use setup::api_keys::{get_api_keys, ApiKeys};
+use setup::api_keys::{setup_api_keys, ApiKeys};
 #[cfg(debug_assertions)]
 use specta::collect_types;
 
@@ -20,21 +20,25 @@ mod python_api;
 mod sample_call;
 mod schema;
 mod setup;
-use commands::greet;
+use commands::{get_api_keys, greet};
 
-struct ZammDatabase(Mutex<Option<SqliteConnection>>);
-struct ZammApiKeys(Mutex<ApiKeys>);
+pub struct ZammDatabase(Mutex<Option<SqliteConnection>>);
+pub struct ZammApiKeys(Mutex<ApiKeys>);
 
 fn main() {
     #[cfg(debug_assertions)]
-    ts::export(collect_types![greet], "../src-svelte/src/lib/bindings.ts").unwrap();
+    ts::export(
+        collect_types![greet, get_api_keys],
+        "../src-svelte/src/lib/bindings.ts",
+    )
+    .unwrap();
 
     let possible_db = setup::get_db();
 
     tauri::Builder::default()
         .manage(ZammDatabase(Mutex::new(possible_db)))
-        .manage(ZammApiKeys(Mutex::new(get_api_keys())))
-        .invoke_handler(tauri::generate_handler![greet])
+        .manage(ZammApiKeys(Mutex::new(setup_api_keys())))
+        .invoke_handler(tauri::generate_handler![greet, get_api_keys])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
