@@ -3,6 +3,7 @@
 
 use diesel::sqlite::SqliteConnection;
 
+use setup::api_keys::{get_api_keys, ApiKeys};
 #[cfg(debug_assertions)]
 use specta::collect_types;
 
@@ -22,6 +23,7 @@ mod setup;
 use commands::greet;
 
 struct ZammDatabase(Mutex<Option<SqliteConnection>>);
+struct ZammApiKeys(Mutex<ApiKeys>);
 
 fn main() {
     #[cfg(debug_assertions)]
@@ -31,6 +33,7 @@ fn main() {
 
     tauri::Builder::default()
         .manage(ZammDatabase(Mutex::new(possible_db)))
+        .manage(ZammApiKeys(Mutex::new(get_api_keys())))
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

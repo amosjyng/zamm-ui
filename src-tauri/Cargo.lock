@@ -3109,6 +3109,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "temp-env"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9547444bfe52cbd79515c6c8087d8ae6ca8d64d2d31a27746320f5cb81d1a15c"
+dependencies = [
+ "parking_lot",
+]
+
+[[package]]
 name = "tempfile"
 version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3987,6 +3996,7 @@ dependencies = [
  "tauri-build",
  "tauri-specta",
  "tauri-utils",
+ "temp-env",
  "thiserror",
  "uuid",
 ]
