@@ -4,40 +4,58 @@
   let api_keys = getApiKeys();
 </script>
 
-<svelte:head>
-  <title>Home</title>
-  <meta name="description" content="Svelte demo app" />
-</svelte:head>
-
 <section>
-  <h1>ZAMM</h1>
-
-  <p>
-    Your OpenAI API key:
+  <table>
+    <tr>
+      <th class="header-text" colspan="2">API Keys</th>
+    </tr>
     {#await api_keys}
-      ...loading
+      <tr><td colspan="2">...loading</td></tr>
     {:then keys}
-      {#if keys.openai !== undefined && keys.openai !== null}
-        {keys.openai.value}
-      {:else}
-        not set
-      {/if}
+      <tr>
+        <td>OpenAI</td>
+        <td class="key">
+          {#if keys.openai !== undefined && keys.openai !== null}
+            {keys.openai.value}
+          {:else}
+            <span class="unset">not set</span>
+          {/if}
+        </td>
+      </tr>
     {:catch error}
-      <span style="color: red">{error.message}</span>
+      <tr><td colspan="2">{error.message}</td></tr>
     {/await}
-  </p>
+  </table>
 </section>
 
 <style>
   section {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     flex: 0.6;
   }
 
-  h1 {
-    width: 100%;
+  table {
+    width: 0.1%;
+    white-space: nowrap;
+  }
+
+  th {
+    color: var(--color-header);
+  }
+
+  th,
+  td {
+    padding: 0 0.5rem;
+    text-align: left;
+  }
+
+  .key {
+    font-weight: bold;
+    text-transform: lowercase;
+  }
+
+  .unset {
+    color: var(--color-faded);
   }
 </style>

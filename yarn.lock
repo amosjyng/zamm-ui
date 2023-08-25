@@ -206,10 +206,50 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.47.0.tgz#5478fdf443ff8158f9de171c704ae45308696c7d"
   integrity sha512-P6omY1zv5MItm93kLM8s2vr1HICJH8v0dvddDhysbIuZ+vcjOHg5Zbkf1mTkcmi2JA9oBG2anOkRnW8WJTS8Og==
 
+"@fontsource/alata@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/alata/-/alata-5.0.8.tgz#a4b81252ab605cd8d8b7597e5bfed0beb0a3f8a7"
+  integrity sha512-v2imbiy0XBUPU13BSsA3GaT7PPVAzeq5VlBF7aqtyS3w+gaSbNqLt00QkkF1JIbu+pkvyd/3bd1fwMGB64vpmA==
+
+"@fontsource/changa@^5.0.9":
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/@fontsource/changa/-/changa-5.0.9.tgz#26b69fbbc5c2afb4542694d3d47f898cd2b50923"
+  integrity sha512-pfqQ1T5o3R0E+7MoAcjUVmdRFjPeCDq+mAmssR+WBP9nVoIE9Uwj7hDQrudjFPP4CdbCsd81vXqEp5+42HtT/A==
+
 "@fontsource/fira-mono@^4.5.10":
   version "4.5.10"
   resolved "https://registry.yarnpkg.com/@fontsource/fira-mono/-/fira-mono-4.5.10.tgz#443be4b2b4fc6e685b88431fcfdaf8d5f5639bbf"
   integrity sha512-bxUnRP8xptGRo8YXeY073DSpfK74XpSb0ZyRNpHV9WvLnJ7TwPOjZll8hTMin7zLC6iOp59pDZ8EQDj1gzgAQQ==
+
+"@fontsource/kanit@^5.0.9":
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/@fontsource/kanit/-/kanit-5.0.9.tgz#f5fb7d811eef6177301ed88335e60c5e502eeb43"
+  integrity sha512-uluvIZP+lon02TcZnJKZoWh5uFdxbsJsbbYvKly06m6OzKlalb06uP7upJ1xB0SoMdAcm6Nof9ACiDdlvCWoDQ==
+
+"@fontsource/orbitron@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/orbitron/-/orbitron-5.0.8.tgz#2701dd009d842986b62b8f8ff0d9c75d8619a198"
+  integrity sha512-6CBPKqrvOZEOREv0PwivCFW2Nzj7l5UbxGmSYtaAdg2SQgMVDnphx9xvaJ4yq9+mY2ZqyA21cKooIYMkMg8n7g==
+
+"@fontsource/play@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/play/-/play-5.0.8.tgz#c77baf25c18da0281263c552873889f0f0d0031c"
+  integrity sha512-3ZYf9xL8hVyRd4VVJEQFFP7DnymSz3pkM+1D/ZR4oK3SAr0xTbU1+iqRICFjButX4mZMv/3//vWIB3MjzkVGLg==
+
+"@fontsource/russo-one@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/russo-one/-/russo-one-5.0.8.tgz#1557a85fa5a9410705573ab783e27f5d3718a342"
+  integrity sha512-AvJBiT8WkbgGEH1kt3MogPfOSuk3AzeiGf7W/+PfZr4+hbRDcXeuLQ2TgbdApoz158F4V9a0J9epbMtgnQx5og==
+
+"@fontsource/saira@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/saira/-/saira-5.0.8.tgz#b33de2b9fae3d02290858209d58efc09e4e282b8"
+  integrity sha512-rxqEkojp19CwD6KuhO+npCZ0vuRfmQSJNWwTd86KGY8+2DQTH4oFzODWRDXW7cTstzQfmwGJGDvxBeCBbeMNCg==
+
+"@fontsource/teko@^5.0.9":
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/@fontsource/teko/-/teko-5.0.9.tgz#a65ffb01ad23c8560302281556fd3c54032ad6ae"
+  integrity sha512-AbCnvsH2aI1bcqTGO399JuktTffq79ZJs3EvOf3bQ5zGtDYrpBWbNum5DArG+4mNLm+woehFuVJoLaCbCnsvYw==
 
 "@glideapps/ts-necessities@2.1.3", "@glideapps/ts-necessities@^2.1.3":
   version "2.1.3"

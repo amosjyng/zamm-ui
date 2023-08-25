@@ -14,7 +14,6 @@
   "devDependencies": {
     "@fontsource/fira-mono": "^4.5.10",
     "@neoconfetti/svelte": "^1.0.0",
-    "@types/cookie": "^0.5.1",
     "@sveltejs/adapter-static": "^1.0.0-next.50",
     "@sveltejs/kit": "^1.22.6",
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
@@ -23,6 +22,7 @@
     "@testing-library/svelte": "^4.0.3",
     "@testing-library/user-event": "^14.4.3",
     "@tsconfig/svelte": "^5.0.0",
+    "@types/cookie": "^0.5.1",
     "eslint-plugin-svelte": "^2.32.4",
     "jsdom": "^22.1.0",
     "svelte": "^4.0.5",
@@ -31,5 +31,15 @@
     "svelte-preprocess": "^5.0.0",
     "vite": "^4.4.4",
     "vitest": "^0.34.1"
+  },
+  "dependencies": {
+    "@fontsource/alata": "^5.0.8",
+    "@fontsource/changa": "^5.0.9",
+    "@fontsource/kanit": "^5.0.9",
+    "@fontsource/orbitron": "^5.0.8",
+    "@fontsource/play": "^5.0.8",
+    "@fontsource/russo-one": "^5.0.8",
+    "@fontsource/saira": "^5.0.8",
+    "@fontsource/teko": "^5.0.9"
   }
 }

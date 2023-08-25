@@ -4,7 +4,7 @@ use specta::specta;
 use std::clone::Clone;
 use tauri::State;
 
-#[tauri::command]
+#[tauri::command(async)]
 #[specta]
 pub fn get_api_keys(api_keys: State<ZammApiKeys>) -> ApiKeys {
     api_keys.0.lock().unwrap().clone()
