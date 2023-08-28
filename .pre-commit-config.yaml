@@ -54,9 +54,10 @@ repos:
     hooks:
       - id: typecheck-svelte
         name: svelte-check
-        entry: yarn svelte-check --fail-on-warnings
+        entry: yarn workspace gui svelte-check --fail-on-warnings
         language: system
-        types: [svelte]
+        types: [file]
+        files: \.(ts|svelte)$
         exclude: ^webdriver/
       - id: cargo-fmt
         name: cargo fmt
