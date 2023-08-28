@@ -5,6 +5,8 @@ import { render, screen } from "@testing-library/svelte";
 import ApiKeysDisplay from "./+page.svelte";
 import type { ApiKeys } from "$lib/bindings";
 import { within, waitFor } from "@testing-library/dom";
+import fs from "fs";
+import { Convert } from "$lib/sample-call";
 
 const tauriInvokeMock = vi.fn();
 
@@ -29,12 +31,15 @@ test("loading by default", async () => {
 test("no API key set", async () => {
   const spy = vi.spyOn(window, "__TAURI_INVOKE__");
   expect(spy).not.toHaveBeenCalled();
-  const mockApiKeys: ApiKeys = {
-    openai: null,
-  };
-  tauriInvokeMock.mockResolvedValueOnce(mockApiKeys);
+  const sample_call_json = fs.readFileSync(
+    "../src-tauri/api/sample-calls/get_api_keys-empty.json",
+    "utf-8",
+  );
+  const sample_call = Convert.toSampleCall(sample_call_json);
+  tauriInvokeMock.mockResolvedValueOnce(sample_call.response);
 
   render(ApiKeysDisplay, {});
+  expect(sample_call.request.length).toEqual(0);
   expect(spy).toHaveBeenLastCalledWith("get_api_keys");
 
   const openAiRow = screen.getByRole("row", { name: /OpenAI/ });

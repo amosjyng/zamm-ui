@@ -13,7 +13,7 @@ pub struct ApiKey {
     pub source: Source,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
+#[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub struct ApiKeys {
     pub openai: Option<ApiKey>,
 }

@@ -8,4 +8,7 @@ overrides:
       parser: "@typescript-eslint/parser"
 rules:
   no-inner-declarations: off
-ignorePatterns: [build/, dist/]
+ignorePatterns:
+  - build/
+  - dist/
+  - src/lib/sample-call.ts
