@@ -7,6 +7,7 @@ import type { ApiKeys } from "$lib/bindings";
 import { within, waitFor } from "@testing-library/dom";
 import fs from "fs";
 import { Convert } from "$lib/sample-call";
+import yaml from "js-yaml";
 
 const tauriInvokeMock = vi.fn();
 
@@ -15,7 +16,8 @@ vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
 async function checkSampleCall(filename: string, expected_display: RegExp) {
   const spy = vi.spyOn(window, "__TAURI_INVOKE__");
   expect(spy).not.toHaveBeenCalled();
-  const sample_call_json = fs.readFileSync(filename, "utf-8");
+  const sample_call_yaml = fs.readFileSync(filename, "utf-8");
+  const sample_call_json = JSON.stringify(yaml.load(sample_call_yaml));
   const sampleCall = Convert.toSampleCall(sample_call_json);
   const apiKeys: ApiKeys = JSON.parse(sampleCall.response);
   tauriInvokeMock.mockResolvedValueOnce(apiKeys);
@@ -49,14 +51,14 @@ test("loading by default", async () => {
 
 test("no API key set", async () => {
   await checkSampleCall(
-    "../src-tauri/api/sample-calls/get_api_keys-empty.json",
+    "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
     /^not set$/,
   );
 });
 
 test("some API key set", async () => {
   await checkSampleCall(
-    "../src-tauri/api/sample-calls/get_api_keys-openai.json",
+    "../src-tauri/api/sample-calls/get_api_keys-openai.yaml",
     /^0p3n41-4p1-k3y$/,
   );
 });

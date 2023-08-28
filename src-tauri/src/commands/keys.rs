@@ -30,7 +30,7 @@ mod tests {
     fn read_sample(filename: &str) -> SampleCall {
         let sample_str = fs::read_to_string(filename)
             .unwrap_or_else(|_| panic!("No file found at {filename}"));
-        serde_json::from_str(&sample_str).unwrap()
+        serde_yaml::from_str(&sample_str).unwrap()
     }
 
     fn check_get_api_keys_sample(file_prefix: &str, rust_input: &ZammApiKeys) {
@@ -48,7 +48,7 @@ mod tests {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
 
         check_get_api_keys_sample(
-            "./api/sample-calls/get_api_keys-empty.json",
+            "./api/sample-calls/get_api_keys-empty.yaml",
             &api_keys,
         );
     }
@@ -63,7 +63,7 @@ mod tests {
         }));
 
         check_get_api_keys_sample(
-            "./api/sample-calls/get_api_keys-openai.json",
+            "./api/sample-calls/get_api_keys-openai.yaml",
             &api_keys,
         );
     }
