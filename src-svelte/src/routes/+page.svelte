@@ -9,22 +9,22 @@
     <tr>
       <th class="header-text" colspan="2">API Keys</th>
     </tr>
-    {#await api_keys}
-      <tr><td colspan="2">...loading</td></tr>
-    {:then keys}
-      <tr>
-        <td>OpenAI</td>
-        <td class="key">
+    <tr>
+      <td>OpenAI</td>
+      <td class="key">
+        {#await api_keys}
+          ...loading
+        {:then keys}
           {#if keys.openai !== undefined && keys.openai !== null}
             {keys.openai.value}
           {:else}
             <span class="unset">not set</span>
           {/if}
-        </td>
-      </tr>
-    {:catch error}
-      <tr><td colspan="2">{error.message}</td></tr>
-    {/await}
+        {:catch error}
+          error: {error}
+        {/await}
+      </td>
+    </tr>
   </table>
 </section>
 
