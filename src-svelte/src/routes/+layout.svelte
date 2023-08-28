@@ -1,6 +1,14 @@
 <script>
   import Header from "./Header.svelte";
   import "./styles.css";
+  import "@fontsource/teko";
+  import "@fontsource/orbitron";
+  import "@fontsource/kanit";
+  import "@fontsource/play";
+  import "@fontsource/russo-one";
+  import "@fontsource/changa";
+  import "@fontsource/alata";
+  import "@fontsource/saira";
 </script>
 
 <div class="app">
@@ -9,12 +17,6 @@
   <main>
     <slot />
   </main>
-
-  <footer>
-    <p>
-      visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit
-    </p>
-  </footer>
 </div>
 
 <style>
@@ -33,23 +35,5 @@
     max-width: 64rem;
     margin: 0 auto;
     box-sizing: border-box;
-  }
-
-  footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
-  }
-
-  footer a {
-    font-weight: bold;
-  }
-
-  @media (min-width: 480px) {
-    footer {
-      padding: 12px 0;
-    }
   }
 </style>

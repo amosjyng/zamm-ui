@@ -18,7 +18,7 @@ exports.config = {
   framework: "mocha",
   mochaOpts: {
     ui: "bdd",
-    timeout: 60000,
+    timeout: 10000,
   },
 
   // ensure the rust project is built since we expect this binary to exist for the

@@ -35,3 +35,4 @@ custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
 serde_yaml = "0.9.25"
+temp-env = "0.3.4"

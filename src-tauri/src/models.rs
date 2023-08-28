@@ -58,7 +58,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::setup::MIGRATIONS;
+    use crate::setup::db::MIGRATIONS;
 
     use diesel_migrations::MigrationHarness;
 

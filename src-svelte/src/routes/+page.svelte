@@ -1,55 +1,61 @@
-<script>
-  import Counter from "./Counter.svelte";
-  import welcome from "$lib/images/svelte-welcome.webp";
-  import welcome_fallback from "$lib/images/svelte-welcome.png";
+<script lang="ts">
+  import { getApiKeys } from "$lib/bindings";
+
+  let api_keys = getApiKeys();
 </script>
 
-<svelte:head>
-  <title>Home</title>
-  <meta name="description" content="Svelte demo app" />
-</svelte:head>
-
 <section>
-  <h1>
-    <span class="welcome">
-      <picture>
-        <source srcset={welcome} type="image/webp" />
-        <img src={welcome_fallback} alt="Welcome" />
-      </picture>
-    </span>
-
-    to your new<br />SvelteKit app
-  </h1>
-
-  <Counter />
+  <table>
+    <tr>
+      <th class="header-text" colspan="2">API Keys</th>
+    </tr>
+    <tr>
+      <td>OpenAI</td>
+      <td class="key">
+        {#await api_keys}
+          ...loading
+        {:then keys}
+          {#if keys.openai !== undefined && keys.openai !== null}
+            {keys.openai.value}
+          {:else}
+            <span class="unset">not set</span>
+          {/if}
+        {:catch error}
+          error: {error}
+        {/await}
+      </td>
+    </tr>
+  </table>
 </section>
 
 <style>
   section {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     flex: 0.6;
   }
 
-  h1 {
-    width: 100%;
+  table {
+    width: 0.1%;
+    white-space: nowrap;
   }
 
-  .welcome {
-    display: block;
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding: 0 0 calc(100% * 495 / 2048) 0;
+  th {
+    color: var(--color-header);
   }
 
-  .welcome img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    display: block;
+  th,
+  td {
+    padding: 0 0.5rem;
+    text-align: left;
+  }
+
+  .key {
+    font-weight: bold;
+    text-transform: lowercase;
+  }
+
+  .unset {
+    color: var(--color-faded);
   }
 </style>
