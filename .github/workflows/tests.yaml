@@ -80,6 +80,7 @@ jobs:
             src-tauri/binaries/zamm-python-x86_64-unknown-linux-gnu
             src-tauri/target/release/zamm
             src-tauri/target/release/zamm-python
+          retention-days: 1
       - name: Upload final app
         uses: actions/upload-artifact@v3
         with:
@@ -87,6 +88,7 @@ jobs:
           path: |
             src-tauri/target/release/bundle/appimage/zamm_*.AppImage
             src-tauri/target/release/bundle/deb/zamm_*.deb
+          retention-days: 1
   pre-commit:
     name: Check pre-commit hooks
     runs-on: ubuntu-latest
