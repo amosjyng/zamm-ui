@@ -12,6 +12,25 @@ const tauriInvokeMock = vi.fn();
 
 vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
 
+async function checkSampleCall(filename: string, expected_display: RegExp) {
+  const spy = vi.spyOn(window, "__TAURI_INVOKE__");
+  expect(spy).not.toHaveBeenCalled();
+  const sample_call_json = fs.readFileSync(filename, "utf-8");
+  const sampleCall = Convert.toSampleCall(sample_call_json);
+  const apiKeys: ApiKeys = JSON.parse(sampleCall.response);
+  tauriInvokeMock.mockResolvedValueOnce(apiKeys);
+
+  render(ApiKeysDisplay, {});
+  expect(sampleCall.request.length).toEqual(0);
+  expect(spy).toHaveBeenLastCalledWith("get_api_keys");
+
+  const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
+  const openAiKeyCell = within(openAiRow).getAllByRole("cell")[1];
+  await waitFor(() =>
+    expect(openAiKeyCell).toHaveTextContent(expected_display),
+  );
+}
+
 test("loading by default", async () => {
   const spy = vi.spyOn(window, "__TAURI_INVOKE__");
   expect(spy).not.toHaveBeenCalled();
@@ -29,44 +48,16 @@ test("loading by default", async () => {
 });
 
 test("no API key set", async () => {
-  const spy = vi.spyOn(window, "__TAURI_INVOKE__");
-  expect(spy).not.toHaveBeenCalled();
-  const sample_call_json = fs.readFileSync(
+  await checkSampleCall(
     "../src-tauri/api/sample-calls/get_api_keys-empty.json",
-    "utf-8",
+    /^not set$/,
   );
-  const sampleCall = Convert.toSampleCall(sample_call_json);
-  const apiKeys: ApiKeys = JSON.parse(sampleCall.response);
-  tauriInvokeMock.mockResolvedValueOnce(apiKeys);
-
-  render(ApiKeysDisplay, {});
-  expect(sampleCall.request.length).toEqual(0);
-  expect(spy).toHaveBeenLastCalledWith("get_api_keys");
-
-  const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
-  const openAiKeyCell = within(openAiRow).getAllByRole("cell")[1];
-  await waitFor(() => expect(openAiKeyCell).toHaveTextContent(/^not set$/));
 });
 
 test("some API key set", async () => {
-  const spy = vi.spyOn(window, "__TAURI_INVOKE__");
-  expect(spy).not.toHaveBeenCalled();
-  const sample_call_json = fs.readFileSync(
+  await checkSampleCall(
     "../src-tauri/api/sample-calls/get_api_keys-openai.json",
-    "utf-8",
-  );
-  const sampleCall = Convert.toSampleCall(sample_call_json);
-  const apiKeys: ApiKeys = JSON.parse(sampleCall.response);
-  tauriInvokeMock.mockResolvedValueOnce(apiKeys);
-
-  render(ApiKeysDisplay, {});
-  expect(sampleCall.request.length).toEqual(0);
-  expect(spy).toHaveBeenLastCalledWith("get_api_keys");
-
-  const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
-  const openAiKeyCell = within(openAiRow).getAllByRole("cell")[1];
-  await waitFor(() =>
-    expect(openAiKeyCell).toHaveTextContent(/^0p3n41-4p1-k3y$/),
+    /^0p3n41-4p1-k3y$/,
   );
 });
 
