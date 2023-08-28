@@ -31,6 +31,7 @@ repos:
         types: [file]
         args: [--fix, --max-warnings=0]
         files: \.(js|ts|svelte)$
+        exclude: src-svelte/src/lib/sample-call.ts
         additional_dependencies:
           - eslint
           - svelte
