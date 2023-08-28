@@ -35,11 +35,12 @@ test("no API key set", async () => {
     "../src-tauri/api/sample-calls/get_api_keys-empty.json",
     "utf-8",
   );
-  const sample_call = Convert.toSampleCall(sample_call_json);
-  tauriInvokeMock.mockResolvedValueOnce(sample_call.response);
+  const sampleCall = Convert.toSampleCall(sample_call_json);
+  const apiKeys: ApiKeys = JSON.parse(sampleCall.response);
+  tauriInvokeMock.mockResolvedValueOnce(apiKeys);
 
   render(ApiKeysDisplay, {});
-  expect(sample_call.request.length).toEqual(0);
+  expect(sampleCall.request.length).toEqual(0);
   expect(spy).toHaveBeenLastCalledWith("get_api_keys");
 
   const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
@@ -50,15 +51,16 @@ test("no API key set", async () => {
 test("some API key set", async () => {
   const spy = vi.spyOn(window, "__TAURI_INVOKE__");
   expect(spy).not.toHaveBeenCalled();
-  const mockApiKeys: ApiKeys = {
-    openai: {
-      value: "0p3n41-4p1-k3y",
-      source: "Environment",
-    },
-  };
-  tauriInvokeMock.mockResolvedValueOnce(mockApiKeys);
+  const sample_call_json = fs.readFileSync(
+    "../src-tauri/api/sample-calls/get_api_keys-openai.json",
+    "utf-8",
+  );
+  const sampleCall = Convert.toSampleCall(sample_call_json);
+  const apiKeys: ApiKeys = JSON.parse(sampleCall.response);
+  tauriInvokeMock.mockResolvedValueOnce(apiKeys);
 
   render(ApiKeysDisplay, {});
+  expect(sampleCall.request.length).toEqual(0);
   expect(spy).toHaveBeenLastCalledWith("get_api_keys");
 
   const openAiRow = screen.getByRole("row", { name: /OpenAI/ });

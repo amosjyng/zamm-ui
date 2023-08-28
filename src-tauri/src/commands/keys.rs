@@ -18,6 +18,7 @@ pub fn get_api_keys(api_keys: State<ZammApiKeys>) -> ApiKeys {
 mod tests {
     use super::*;
     use crate::sample_call::SampleCall;
+    use crate::setup::api_keys::{ApiKey, Source};
     use std::sync::Mutex;
 
     use std::fs;
@@ -43,11 +44,26 @@ mod tests {
     }
 
     #[test]
-    fn test_greet_name() {
+    fn test_get_empty_keys() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
 
         check_get_api_keys_sample(
             "./api/sample-calls/get_api_keys-empty.json",
+            &api_keys,
+        );
+    }
+
+    #[test]
+    fn test_get_openai_key() {
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys {
+            openai: Some(ApiKey {
+                value: "0p3n41-4p1-k3y".to_string(),
+                source: Source::Environment,
+            }),
+        }));
+
+        check_get_api_keys_sample(
+            "./api/sample-calls/get_api_keys-openai.json",
             &api_keys,
         );
     }
