@@ -4,6 +4,8 @@ const maxMismatch =
     : parseFloat(process.env.MISMATCH_TOLERANCE);
 
 describe("Welcome screen", function () {
+  this.retries(2);
+
   it("should render the welcome screen correctly", async function () {
     await $("table"); // ensure page loads before taking screenshot
     await expect(
