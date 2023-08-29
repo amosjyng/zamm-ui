@@ -1,4 +1,5 @@
 const { spawn, spawnSync } = require("child_process");
+const { join } = require("path");
 
 // keep track of the `tauri-driver` child process
 let tauriDriver;
@@ -6,8 +7,11 @@ let tauriDriver;
 exports.config = {
   specs: ["./test/specs/**/*.js"],
   maxInstances: 1,
+  hostname: "localhost",
+  port: 4444,
   capabilities: [
     {
+      browserName: "wry",
       maxInstances: 1,
       "tauri:options": {
         application: "../src-tauri/target/release/zamm",
@@ -34,4 +38,20 @@ exports.config = {
 
   // clean up the `tauri-driver` process we spawned at the start of the session
   afterSession: () => tauriDriver.kill(),
+
+  services: [
+    [
+      "image-comparison",
+      {
+        baselineFolder: join(process.cwd(), "./screenshots/baseline/"),
+        formatImageName: "{tag}-{width}x{height}",
+        screenshotPath: join(process.cwd(), "./screenshots/testing/"),
+        savePerInstance: true,
+        autoSaveBaseline: true,
+        blockOutStatusBar: true,
+        blockOutToolBar: true,
+        isHybridApp: true,
+      },
+    ],
+  ],
 };

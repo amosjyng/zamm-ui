@@ -1,13 +1,22 @@
+const maxMismatch =
+  process.env.MISMATCH_TOLERANCE === undefined
+    ? 0
+    : parseFloat(process.env.MISMATCH_TOLERANCE);
+
 describe("Welcome screen", function () {
-  afterEach(async function () {
-    // Check if the test failed
-    const screenshotPath = `./screenshots/${this.currentTest.title.replace(
-      /\s+/g,
-      "_",
-    )}.png`;
-    // Capture a screenshot and save it
-    await browser.saveScreenshot(screenshotPath);
-    console.log(`Screenshot saved to ${screenshotPath}`);
+  this.retries(2);
+
+  it("should render the welcome screen correctly", async function () {
+    await $("table"); // ensure page loads before taking screenshot
+    await expect(
+      await browser.checkFullPageScreen("welcome-screen", {}),
+    ).toBeLessThanOrEqual(maxMismatch);
+  });
+
+  it("should render the API keys table correctly", async function () {
+    await expect(
+      await browser.checkElement(await $("table"), "api-keys", {}),
+    ).toBeLessThanOrEqual(maxMismatch);
   });
 
   it("should show unset OpenAI API key", async function () {

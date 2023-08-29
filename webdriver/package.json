@@ -7,11 +7,14 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
-    "@wdio/cli": "^7.32.3",
-    "@wdio/local-runner": "^7.32.3",
-    "@wdio/mocha-framework": "^7.30.2",
-    "@wdio/spec-reporter": "^7.31.1",
+    "@wdio/cli": "^8.15.9",
+    "@wdio/local-runner": "^8.15.9",
+    "@wdio/mocha-framework": "^8.15.9",
+    "@wdio/spec-reporter": "^8.15.7",
+    "canvas": "^2.11.2",
     "eslint-plugin-mocha": "^10.1.0",
-    "eslint-plugin-wdio": "^7.25.3"
+    "eslint-plugin-wdio": "^7.25.3",
+    "ts-node": "^10.9.1",
+    "wdio-image-comparison-service": "^5.0.3"
   }
 }

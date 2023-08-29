@@ -298,4 +298,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-screenshots
-          path: webdriver/screenshots/*.png
+          path: webdriver/screenshots/testing/**/*.png
