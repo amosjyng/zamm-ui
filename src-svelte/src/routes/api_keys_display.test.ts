@@ -2,7 +2,7 @@ import { expect, test, vi } from "vitest";
 import "@testing-library/jest-dom";
 
 import { render, screen } from "@testing-library/svelte";
-import ApiKeysDisplay from "./+page.svelte";
+import ApiKeysDisplay from "./api_keys_display.svelte";
 import type { ApiKeys } from "$lib/bindings";
 import { within, waitFor } from "@testing-library/dom";
 import fs from "fs";
