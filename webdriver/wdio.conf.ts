@@ -44,7 +44,7 @@ exports.config = {
       "image-comparison",
       {
         baselineFolder: join(process.cwd(), "./screenshots/baseline/"),
-        formatImageName: "{tag}-{logName}-{width}x{height}",
+        formatImageName: "{tag}-{width}x{height}",
         screenshotPath: join(process.cwd(), "./screenshots/testing/"),
         savePerInstance: true,
         autoSaveBaseline: true,
