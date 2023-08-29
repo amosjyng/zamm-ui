@@ -7,8 +7,11 @@ let tauriDriver;
 exports.config = {
   specs: ["./test/specs/**/*.js"],
   maxInstances: 1,
+  hostname: "localhost",
+  port: 4444,
   capabilities: [
     {
+      browserName: "wry",
       maxInstances: 1,
       "tauri:options": {
         application: "../src-tauri/target/release/zamm",
