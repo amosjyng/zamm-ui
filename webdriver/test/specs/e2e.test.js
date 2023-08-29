@@ -1,15 +1,20 @@
+const maxMismatch =
+  process.env.MISMATCH_TOLERANCE === undefined
+    ? 0
+    : parseFloat(process.env.MISMATCH_TOLERANCE);
+
 describe("Welcome screen", function () {
   it("should render the welcome screen correctly", async function () {
     await $("table"); // ensure page loads before taking screenshot
     await expect(
       await browser.checkFullPageScreen("welcome-screen", {}),
-    ).toEqual(0);
+    ).toBeLessThanOrEqual(maxMismatch);
   });
 
   it("should render the API keys table correctly", async function () {
     await expect(
       await browser.checkElement(await $("table"), "api-keys", {}),
-    ).toEqual(0);
+    ).toBeLessThanOrEqual(maxMismatch);
   });
 
   it("should show unset OpenAI API key", async function () {
