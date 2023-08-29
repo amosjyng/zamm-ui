@@ -1,5 +1,6 @@
 describe("Welcome screen", function () {
   it("should render the welcome screen correctly", async function () {
+    await $("table"); // ensure page loads before taking screenshot
     await expect(
       await browser.checkFullPageScreen("welcome-screen", {}),
     ).toEqual(0);
