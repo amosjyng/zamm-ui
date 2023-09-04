@@ -1,6 +1,8 @@
 import { type Browser, chromium, expect, type Page } from "@playwright/test";
 import { afterAll, beforeAll, describe, test } from "vitest";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
+import { spawn, ChildProcess } from "child_process";
+import fetch from "node-fetch";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -16,11 +18,52 @@ const components: ComponentTestConfig[] = [
   },
 ];
 
+let storybookProcess: ChildProcess | null = null;
+
+const startStorybook = (): Promise<void> => {
+  return new Promise((resolve) => {
+    storybookProcess = spawn("yarn", ["storybook"]);
+    if (!storybookProcess) {
+      throw new Error("Could not start storybook process");
+    } else if (!storybookProcess.stdout || !storybookProcess.stderr) {
+      throw new Error("Could not get storybook output");
+    }
+
+    const storybookStartupMessage =
+      /Storybook \d+\.\d+\.\d+ for sveltekit started/;
+
+    storybookProcess.stdout.on("data", (data) => {
+      const strippedData = data.toString().replace(/\\x1B\[\d+m/g, "");
+      if (storybookStartupMessage.test(strippedData)) {
+        resolve();
+      }
+    });
+
+    storybookProcess.stderr.on("data", (data) => {
+      console.error(`Storybook error: ${data}`);
+    });
+  });
+};
+
+const checkIfStorybookIsRunning = async (): Promise<boolean> => {
+  try {
+    await fetch("http://localhost:6006");
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 describe("Storybook visual tests", () => {
   let page: Page;
   let browser: Browser;
 
   beforeAll(async () => {
+    const isStorybookRunning = await checkIfStorybookIsRunning();
+    if (!isStorybookRunning) {
+      await startStorybook();
+    }
+
     browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
     page = await context.newPage();
@@ -28,6 +71,10 @@ describe("Storybook visual tests", () => {
 
   afterAll(async () => {
     await browser.close();
+
+    if (storybookProcess) {
+      storybookProcess.kill();
+    }
   });
 
   for (const config of components) {
