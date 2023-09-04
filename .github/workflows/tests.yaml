@@ -19,6 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
       - name: Install Tauri dependencies
         run: |
@@ -98,6 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
       - name: Install Tauri dependencies
         run: |
@@ -161,6 +163,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
       - name: Install poetry
         run: |
@@ -185,6 +188,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
       - name: Install Tauri dependencies
         run: |
@@ -216,6 +220,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
       - name: Set up Yarn cache
         uses: actions/cache@v3
@@ -248,6 +253,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
       - name: Install Tauri dependencies
         run: |
