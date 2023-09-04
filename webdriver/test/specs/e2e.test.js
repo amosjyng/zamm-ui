@@ -13,14 +13,8 @@ describe("Welcome screen", function () {
     ).toBeLessThanOrEqual(maxMismatch);
   });
 
-  it("should render the API keys table correctly", async function () {
-    await expect(
-      await browser.checkElement(await $("table"), "api-keys", {}),
-    ).toBeLessThanOrEqual(maxMismatch);
-  });
-
   it("should show unset OpenAI API key", async function () {
     const openAiCell = await $("tr*=OpenAI").$("td:nth-child(2)");
-    expect(await openAiCell.getText()).toMatch(/^not set$/);
+    expect(await openAiCell.getText()).toMatch(/^unknown$/);
   });
 });

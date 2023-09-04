@@ -19,5 +19,5 @@ export function getApiKeys() {
 }
 
 export type ApiKey = { value: string; source: Source }
-export type ApiKeys = { openai: ApiKey | null }
 export type Source = "Environment"
+export type ApiKeys = { openai: ApiKey | null }

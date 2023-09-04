@@ -1,0 +1,3 @@
+[submodule "src-svelte/static/fonts"]
+	path = src-svelte/static/fonts
+	url = https://github.com/amosjyng/zamm-fonts.git

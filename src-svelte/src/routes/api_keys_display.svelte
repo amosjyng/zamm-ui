@@ -15,9 +15,9 @@
         ...loading
       {:then keys}
         {#if keys.openai !== undefined && keys.openai !== null}
-          {keys.openai.value}
+          <span class="actual-key">{keys.openai.value}</span>
         {:else}
-          <span class="unset">not set</span>
+          unknown
         {/if}
       {:catch error}
         error: {error}
@@ -32,22 +32,29 @@
     white-space: nowrap;
   }
 
-  th {
-    color: var(--color-header);
-  }
-
   th,
   td {
     padding: 0 0.5rem;
     text-align: left;
   }
 
-  .key {
-    font-weight: bold;
-    text-transform: lowercase;
+  th {
+    color: var(--color-header);
+    font-family: var(--font-header);
+    text-transform: uppercase;
   }
 
-  .unset {
+  td {
+    font-family: var(--font-body);
+  }
+
+  .key {
     color: var(--color-faded);
+  }
+
+  .actual-key {
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-weight: bold;
   }
 </style>
