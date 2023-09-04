@@ -52,7 +52,7 @@ test("loading by default", async () => {
 test("no API key set", async () => {
   await checkSampleCall(
     "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
-    /^not set$/,
+    /^unknown$/,
   );
 });
 
