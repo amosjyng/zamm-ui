@@ -4,13 +4,21 @@ import { toMatchImageSnapshot } from "jest-image-snapshot";
 
 expect.extend({ toMatchImageSnapshot });
 
+interface ComponentTestConfig {
+  path: string[]; // Represents the Storybook hierarchy path
+  variants: string[];
+}
+
+const components: ComponentTestConfig[] = [
+  {
+    path: ["settings", "api-keys-display"],
+    variants: ["loading", "unknown", "known"],
+  },
+];
+
 describe("Storybook visual tests", () => {
   let page: Page;
   let browser: Browser;
-
-  const components = {
-    "settings-api-keys-display": ["loading", "unknown", "known"],
-  };
 
   beforeAll(async () => {
     browser = await chromium.launch({ headless: false });
@@ -22,15 +30,19 @@ describe("Storybook visual tests", () => {
     await browser.close();
   });
 
-  for (const [component, variants] of Object.entries(components)) {
-    describe(component, () => {
-      for (const variant of variants) {
-        const testName = variant ? variant : component;
+  for (const config of components) {
+    const storybookUrl = config.path.join("-");
+    const storybookPath = config.path.join("/");
+    describe(storybookPath, () => {
+      for (const variant of config.variants) {
+        const testName = variant
+          ? variant
+          : config.path[config.path.length - 1];
         test(`${testName} should render the same`, async () => {
           const variantPrefix = variant ? `--${variant}` : "";
 
           await page.goto(
-            `http://localhost:6006/?path=/story/${component}${variantPrefix}`,
+            `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
           );
 
           const frame = page.frame({ name: "storybook-preview-iframe" });
@@ -44,7 +56,7 @@ describe("Storybook visual tests", () => {
           // @ts-ignore
           expect(screenshot).toMatchImageSnapshot({
             customSnapshotsDir: "screenshots",
-            customSnapshotIdentifier: `${component}/${testName}`,
+            customSnapshotIdentifier: `${storybookPath}/${testName}`,
           });
         });
       }
