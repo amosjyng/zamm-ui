@@ -11,4 +11,5 @@ rules:
 ignorePatterns:
   - build/
   - dist/
+  - "!.storybook"
   - src/lib/sample-call.ts
