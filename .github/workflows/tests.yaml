@@ -246,6 +246,14 @@ jobs:
       - name: Run Svelte Tests
         run: |
           yarn workspace gui test
+      - name: Upload final app
+        if: always() # run even if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: storybook-screenshots
+          path: |
+            src-svelte/screenshots/testing/**/*.png
+          retention-days: 1
   e2e:
     name: Run end-to-end tests
     runs-on: ubuntu-latest

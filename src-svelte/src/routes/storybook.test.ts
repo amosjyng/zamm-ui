@@ -22,7 +22,7 @@ let storybookProcess: ChildProcess | null = null;
 
 const startStorybook = (): Promise<void> => {
   return new Promise((resolve) => {
-    storybookProcess = spawn("yarn", ["storybook"]);
+    storybookProcess = spawn("yarn", ["storybook", "--ci"]);
     if (!storybookProcess) {
       throw new Error("Could not start storybook process");
     } else if (!storybookProcess.stdout || !storybookProcess.stderr) {
@@ -64,7 +64,7 @@ describe("Storybook visual tests", () => {
       await startStorybook();
     }
 
-    browser = await chromium.launch({ headless: false });
+    browser = await chromium.launch({ headless: true });
     const context = await browser.newContext();
     page = await context.newPage();
   });
@@ -102,8 +102,13 @@ describe("Storybook visual tests", () => {
 
           // @ts-ignore
           expect(screenshot).toMatchImageSnapshot({
-            customSnapshotsDir: "screenshots",
+            diffDirection: "vertical",
+            storeReceivedOnFailure: true,
+            customSnapshotsDir: "screenshots/baseline",
             customSnapshotIdentifier: `${storybookPath}/${testName}`,
+            customDiffDir: "screenshots/testing/diff",
+            customReceivedDir: "screenshots/testing/actual",
+            customReceivedPostfix: "",
           });
         });
       }
