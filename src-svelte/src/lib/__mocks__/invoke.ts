@@ -8,7 +8,7 @@ window.__TAURI_INVOKE__ = () => {
     if (nextShouldWait) {
       setTimeout(() => {
         resolve(nextResolution);
-      }, 0); // the re-render never happens, so any timeout is fine
+      }, 1_000_000); // the re-render never happens, so any timeout is fine
     } else {
       resolve(nextResolution);
     }
