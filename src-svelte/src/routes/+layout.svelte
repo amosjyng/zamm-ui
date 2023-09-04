@@ -1,14 +1,6 @@
 <script>
   import Header from "./Header.svelte";
   import "./styles.css";
-  import "@fontsource/teko";
-  import "@fontsource/orbitron";
-  import "@fontsource/kanit";
-  import "@fontsource/play";
-  import "@fontsource/russo-one";
-  import "@fontsource/changa";
-  import "@fontsource/alata";
-  import "@fontsource/saira";
 </script>
 
 <div class="app">
