@@ -23,8 +23,7 @@ async function checkSampleCall(filename: string, expected_display: RegExp) {
   tauriInvokeMock.mockResolvedValueOnce(apiKeys);
 
   render(ApiKeysDisplay, {});
-  expect(sampleCall.request.length).toEqual(0);
-  expect(spy).toHaveBeenLastCalledWith("get_api_keys");
+  expect(spy).toHaveBeenLastCalledWith(...sampleCall.request);
 
   const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
   const openAiKeyCell = within(openAiRow).getAllByRole("cell")[1];

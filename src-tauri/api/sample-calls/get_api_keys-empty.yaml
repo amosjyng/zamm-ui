@@ -1,3 +1,3 @@
-request: []
+request: ["get_api_keys"]
 response: >
   {}

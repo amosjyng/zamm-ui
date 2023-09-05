@@ -35,8 +35,7 @@ mod tests {
 
     fn check_get_api_keys_sample(file_prefix: &str, rust_input: &ZammApiKeys) {
         let greet_sample = read_sample(file_prefix);
-        // zero frontend arguments to get_api_keys
-        assert_eq!(greet_sample.request.len(), 0);
+        assert_eq!(greet_sample.request, vec!["get_api_keys"]);
 
         let actual_keys = get_api_keys_helper(rust_input);
         let expected_keys = parse_api_keys(&greet_sample.response);
