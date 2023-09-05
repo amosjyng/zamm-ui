@@ -6,7 +6,7 @@
 <div class="app">
   <Sidebar />
 
-  <main>
+  <main class="p-4">
     <slot />
   </main>
 </div>
@@ -14,6 +14,5 @@
 <style>
   main {
     margin-left: var(--sidebar-width);
-    padding: 20px;
   }
 </style>
