@@ -5,11 +5,3 @@
 <section>
   <ApiKeysDisplay />
 </section>
-
-<style>
-  section {
-    display: flex;
-    flex-direction: column;
-    flex: 0.6;
-  }
-</style>
