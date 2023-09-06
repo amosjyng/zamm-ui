@@ -6,7 +6,7 @@
 <header>
   <nav>
     {#each icons as icon}
-      <div class="{icon === selectedIcon ? 'selected' : ''} icon rounded-l-md">
+      <div class="{icon === selectedIcon ? 'selected' : ''} icon">
         {icon}
       </div>
     {/each}
@@ -47,10 +47,33 @@
   }
 
   .selected {
+    border-top-left-radius: var(--corner-roundness);
+    border-bottom-left-radius: var(--corner-roundness);
     position: relative;
     background-color: white;
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 2;
     clip-path: inset(-15px 0 -15px -15px);
+  }
+
+  .selected::before,
+  .selected::after {
+    content: "";
+    height: 1rem;
+    width: 1rem;
+    position: absolute;
+    right: 0;
+  }
+
+  .selected::before {
+    bottom: var(--sidebar-width);
+    border-radius: 0 0 var(--corner-roundness) 0;
+    box-shadow: 0 5px 0 0 white;
+  }
+
+  .selected::after {
+    top: var(--sidebar-width);
+    border-radius: 0 var(--corner-roundness) 0 0;
+    box-shadow: 0 -5px 0 0 white;
   }
 </style>

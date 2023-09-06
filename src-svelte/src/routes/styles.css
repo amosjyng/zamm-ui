@@ -25,9 +25,10 @@
   --color-text: rgba(0, 0, 0, 1);
   --color-header: rgba(255, 0, 0, 0.7);
   --color-faded: rgba(0, 0, 0, 0.4);
-  --sidebar-width: 60px;
+  --sidebar-width: 3.25rem;
   --shadow-offset: 4px;
   --shadow-blur: 8px;
+  --corner-roundness: 0.375rem;
   font-family: var(--font-body);
   color: var(--color-text);
   font-weight: 400;
