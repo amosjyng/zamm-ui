@@ -6,7 +6,7 @@
 <div class="app">
   <Sidebar />
 
-  <main class="p-4">
+  <main class="p-4 h-screen">
     <slot />
   </main>
 </div>
