@@ -15,7 +15,7 @@
   font-family: 'Good Timing';
   font-style: normal;
   font-weight: 400;
-  src: url('/fonts/good-timing-rg.ttf') format("truetype");
+  src: url('/fonts/good_timing_rg.otf') format("opentype");
 }
 
 :root {
