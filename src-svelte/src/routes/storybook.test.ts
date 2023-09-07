@@ -107,7 +107,7 @@ describe("Storybook visual tests", () => {
 
           // @ts-ignore
           expect(screenshot).toMatchImageSnapshot({
-            diffDirection: "vertical",
+            diffDirection: "horizontal",
             storeReceivedOnFailure: true,
             customSnapshotsDir: "screenshots/baseline",
             customSnapshotIdentifier: `${storybookPath}/${testName}`,

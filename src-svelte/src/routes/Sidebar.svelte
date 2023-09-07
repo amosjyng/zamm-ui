@@ -1,15 +1,46 @@
 <script>
-  let icons = ["⚙️", "?"];
-  let selectedIcon = "⚙️";
+  import IconSettings from "~icons/ion/settings";
+  import IconChat from "~icons/ph/chat-dots-fill";
 </script>
 
 <header>
+  <svg version="1.1" width="0" height="0">
+    <filter id="inset-shadow">
+      <feOffset dx="0" dy="0" />
+      <feGaussianBlur stdDeviation="1" result="offset-blur" />
+      <feComposite
+        operator="out"
+        in="SourceGraphic"
+        in2="offset-blur"
+        result="inverse"
+      />
+      <feFlood flood-color="#555" flood-opacity=".95" result="color" />
+      <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+      <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+    </filter>
+
+    <filter id="inset-shadow-selected">
+      <feOffset dx="0" dy="0" />
+      <feGaussianBlur stdDeviation="2" result="offset-blur" />
+      <feComposite
+        operator="out"
+        in="SourceGraphic"
+        in2="offset-blur"
+        result="inverse"
+      />
+      <feFlood flood-color="#002966" flood-opacity=".95" result="color" />
+      <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+      <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+    </filter>
+  </svg>
+
   <nav>
-    {#each icons as icon}
-      <div class="{icon === selectedIcon ? 'selected' : ''} icon">
-        {icon}
-      </div>
-    {/each}
+    <div class="selected icon">
+      <IconSettings />
+    </div>
+    <div class="icon">
+      <IconChat />
+    </div>
   </nav>
 </header>
 
@@ -46,6 +77,17 @@
     justify-content: center;
   }
 
+  .icon > :global(:only-child) {
+    font-size: calc(0.5 * var(--sidebar-width));
+    color: #aaa;
+    filter: url(#inset-shadow);
+  }
+
+  .icon.selected > :global(:only-child) {
+    color: #1a75ff;
+    filter: url(#inset-shadow-selected);
+  }
+
   .selected {
     border-top-left-radius: var(--corner-roundness);
     border-bottom-left-radius: var(--corner-roundness);
@@ -68,12 +110,12 @@
   .selected::before {
     bottom: var(--sidebar-width);
     border-radius: 0 0 var(--corner-roundness) 0;
-    box-shadow: 0 5px 0 0 white;
+    box-shadow: 0 0.375rem 0 0 white;
   }
 
   .selected::after {
     top: var(--sidebar-width);
     border-radius: 0 var(--corner-roundness) 0 0;
-    box-shadow: 0 -5px 0 0 white;
+    box-shadow: 0 -0.375rem 0 0 white;
   }
 </style>

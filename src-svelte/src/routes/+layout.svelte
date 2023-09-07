@@ -6,13 +6,14 @@
 <div class="app">
   <Sidebar />
 
-  <main class="p-4 h-screen">
+  <main class="h-screen">
     <slot />
   </main>
 </div>
 
 <style>
   main {
+    padding: 0.5em;
     margin-left: var(--sidebar-width);
   }
 </style>
