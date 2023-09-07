@@ -48,12 +48,16 @@
   header {
     z-index: 1;
     padding-top: 0.75rem;
+    padding-left: var(--sidebar-left-padding);
+    /* this is the icon size, not the sidebar-width, because
+    sidebar-width is supposed to control the total width of the sidebar,
+    whereas CSS width only controls the sidebar's content area */
+    width: var(--sidebar-icon-size);
     background-color: #f4f4f4;
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    width: var(--sidebar-width);
   }
 
   header::before {
@@ -70,15 +74,15 @@
   }
 
   .icon {
-    width: var(--sidebar-width);
-    height: var(--sidebar-width);
+    width: var(--sidebar-icon-size);
+    height: var(--sidebar-icon-size);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .icon > :global(:only-child) {
-    font-size: calc(0.5 * var(--sidebar-width));
+    font-size: calc(0.5 * var(--sidebar-icon-size));
     color: #aaa;
     filter: url(#inset-shadow);
   }
@@ -108,13 +112,13 @@
   }
 
   .selected::before {
-    bottom: var(--sidebar-width);
+    bottom: var(--sidebar-icon-size);
     border-radius: 0 0 var(--corner-roundness) 0;
     box-shadow: 0 0.375rem 0 0 white;
   }
 
   .selected::after {
-    top: var(--sidebar-width);
+    top: var(--sidebar-icon-size);
     border-radius: 0 var(--corner-roundness) 0 0;
     box-shadow: 0 -0.375rem 0 0 white;
   }
