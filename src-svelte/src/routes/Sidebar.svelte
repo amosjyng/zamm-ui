@@ -55,6 +55,7 @@
     width: var(--sidebar-icon-size);
     background-color: #f4f4f4;
     position: fixed;
+    clip-path: inset(0 0 0 0);
     top: 0;
     left: 0;
     height: 100vh;
@@ -68,7 +69,6 @@
     width: 50px;
     height: 100vh;
     box-shadow: calc(-1 * var(--shadow-offset)) 0 var(--shadow-blur) 0 #ccc;
-    clip-path: inset(0px 0 0px -15px);
     pointer-events: none;
     z-index: 1;
   }
@@ -99,7 +99,6 @@
     background-color: white;
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 2;
-    clip-path: inset(-15px 0 -15px -15px);
   }
 
   .selected::before,
