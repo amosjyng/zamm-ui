@@ -26,4 +26,4 @@ tests:
 clean:
 # https://stackoverflow.com/a/41386937/257583
 	find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
-	rm -rf build
+	rm -rf build dist
