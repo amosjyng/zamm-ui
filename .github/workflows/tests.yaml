@@ -6,72 +6,33 @@ on:
     branches: [main]
 
 env:
-  POETRY_VERSION: "1.5.1"
-  PYTHON_VERSION: "3.11.4"
-  NODEJS_VERSION: "20.5.1"
-  RUST_VERSION: "1.71.1"
-  PRE_COMMIT_VERSION: "3.3.3"
+  BUILD_IMAGE: ghcr.io/amosjyng/zamm:v0.0.0-build
 
 jobs:
+  prepare-image:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Dummy step"
+    outputs:
+      image: ${{ env.BUILD_IMAGE }}
   build:
     name: Build entire program
     runs-on: ubuntu-latest
+    needs: prepare-image
+    container:
+      image: ${{ needs.prepare-image.outputs.image }}
+      options: --user root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Install Tauri dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-      - name: Set up Yarn cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            **/node_modules
-            **/.eslintcache
-
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Set up cargo cache
-        uses: Swatinem/rust-cache@v2
-        continue-on-error: false
-        with:
-          workspaces: "src-tauri -> target"
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - name: Install Node dependencies
-        run: |
-          yarn install
-          cd src-svelte && yarn svelte-kit sync
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUST_VERSION }}
-          override: true
-          components: rustfmt, clippy
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
-      - name: Install poetry
-        run: |
-          pipx install poetry==$POETRY_VERSION
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: poetry
-      - name: Install Python dependencies
-        run: poetry install
-        working-directory: src-python
-      # end of common dependency setup
-
+      - run: rustup toolchain list
+      - run: ls -la /root/.rustup/toolchains
       - name: Build artifacts
-        run: make
+        run: make build
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -92,92 +53,41 @@ jobs:
             src-tauri/target/release/bundle/appimage/zamm_*.AppImage
             src-tauri/target/release/bundle/deb/zamm_*.deb
           retention-days: 1
+    outputs:
+      image: ${{ needs.prepare-image.outputs.image }}
   pre-commit:
     name: Check pre-commit hooks
     runs-on: ubuntu-latest
-    needs: build
+    needs: prepare-image
+    container:
+      image: ${{ needs.prepare-image.outputs.image }}
+      options: --user root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Install Tauri dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-      - name: Set up Yarn cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            **/node_modules
-            **/.eslintcache
-
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Set up cargo cache
-        uses: Swatinem/rust-cache@v2
-        continue-on-error: false
-        with:
-          workspaces: "src-tauri -> target"
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - name: Install Node dependencies
-        run: |
-          yarn install
-          cd src-svelte && yarn svelte-kit sync
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUST_VERSION }}
-          override: true
-          components: rustfmt, clippy
-      - name: Install poetry
-        run: |
-          pipx install poetry==$POETRY_VERSION
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: poetry
-      - uses: actions/download-artifact@v3
-        with:
-          name: builds
-      # end of common dependency setup with downloaded artifacts
-
-      - name: Install pre-commit
-        run: |
-          pipx install pre-commit==$PRE_COMMIT_VERSION
-      - uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit/
-          key: pre-commit-4|${{ env.PYTHON_VERSION }}
+      - run: pwd
       - run: pre-commit run --show-diff-on-failure --color=always --all-files
   python:
     name: Run Python tests
     runs-on: ubuntu-latest
     needs: build
+    container:
+      image: ${{ needs.build.outputs.image }}
+      options: --user root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Install poetry
-        run: |
-          pipx install poetry==$POETRY_VERSION
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: poetry
       - uses: actions/download-artifact@v3
         with:
           name: builds
-      # end of common dependency setup with downloaded artifacts
-
       - name: Run Python Tests
         run: poetry run make test
         working-directory: src-python
@@ -185,31 +95,19 @@ jobs:
     name: Run Rust tests
     runs-on: ubuntu-latest
     needs: build
+    container:
+      image: ${{ needs.build.outputs.image }}
+      options: --user root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Install Tauri dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-      - name: Set up cargo cache
-        uses: Swatinem/rust-cache@v2
-        continue-on-error: false
-        with:
-          workspaces: "src-tauri -> target"
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUST_VERSION }}
-          override: true
-          components: rustfmt, clippy
       - uses: actions/download-artifact@v3
         with:
           name: builds
-      # end of common dependency setup with downloaded artifacts
-
       - name: Run Rust Tests
         run: cargo test
         working-directory: src-tauri
@@ -217,32 +115,19 @@ jobs:
     name: Run Svelte tests
     runs-on: ubuntu-latest
     needs: build
+    container:
+      image: ${{ needs.build.outputs.image }}
+      options: --user root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Set up Yarn cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            **/node_modules
-            **/.eslintcache
-
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install Node dependencies
-        run: |
-          yarn install
-          cd src-svelte && yarn install && yarn svelte-kit sync
-          cd ../webdriver && yarn install
       - uses: actions/download-artifact@v3
         with:
           name: builds
-      # end of common dependency setup with downloaded artifacts
-
       - name: Run Svelte Tests
         run: |
           yarn workspace gui test
@@ -258,59 +143,19 @@ jobs:
     name: Run end-to-end tests
     runs-on: ubuntu-latest
     needs: build
+    container:
+      image: ${{ needs.build.outputs.image }}
+      options: --user root
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Install Tauri dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-      - name: Set up Yarn cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            **/node_modules
-            **/.eslintcache
-
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Set up cargo cache
-        uses: Swatinem/rust-cache@v2
-        continue-on-error: false
-        with:
-          workspaces: "src-tauri -> target"
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - name: Install Node dependencies
-        run: |
-          yarn install
-          cd src-svelte && yarn svelte-kit sync
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUST_VERSION }}
-          override: true
-          components: rustfmt, clippy
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
       - uses: actions/download-artifact@v3
         with:
           name: builds
-      # end of common dependency setup with downloaded artifacts
-
-      - name: Install webdriver dependencies
-        run: sudo apt-get install -y webkit2gtk-driver xvfb
-      - name: Install tauri-driver
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: tauri-driver
       - name: Try creating directories
         run: |
           mkdir -p /home/runner/.local/share/zamm/
