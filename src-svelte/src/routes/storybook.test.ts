@@ -16,6 +16,10 @@ const components: ComponentTestConfig[] = [
     path: ["settings", "api-keys-display"],
     variants: ["loading", "unknown", "known"],
   },
+  {
+    path: ["navigation", "sidebar"],
+    variants: ["settings-selected"],
+  },
 ];
 
 let storybookProcess: ChildProcess | null = null;
@@ -97,12 +101,13 @@ describe("Storybook visual tests", () => {
             throw new Error("Could not find Storybook iframe");
           }
 
-          const rootElement = await frame.waitForSelector("#storybook-root");
-          const screenshot = await rootElement.screenshot();
+          const screenshot = await frame
+            .locator("#storybook-root > :first-child")
+            .screenshot();
 
           // @ts-ignore
           expect(screenshot).toMatchImageSnapshot({
-            diffDirection: "vertical",
+            diffDirection: "horizontal",
             storeReceivedOnFailure: true,
             customSnapshotsDir: "screenshots/baseline",
             customSnapshotIdentifier: `${storybookPath}/${testName}`,
