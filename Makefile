@@ -4,6 +4,7 @@ build: python svelte rust
 	cargo tauri build
 
 icon:
+	cp src-svelte/static/logo.png src-tauri/icons/icon.png
 	yarn tauri icon src-tauri/icons/icon.png
 
 test:
