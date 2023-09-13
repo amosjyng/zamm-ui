@@ -1,10 +1,20 @@
 .PHONY: rust-format rust-lint quicktype
 
+BUILD_IMAGE = ghcr.io/amosjyng/zamm:v0.0.0-build
+CURRENT_DIR = $(shell pwd)
+
+build-docker:
+	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make build
+
 build: python svelte rust
 	cargo tauri build
 
 icon:
 	yarn tauri icon src-tauri/icons/icon.png
+
+docker:
+	docker build . -t $(BUILD_IMAGE)
+	docker push $(BUILD_IMAGE)
 
 test:
 	cd src-python && make test
@@ -39,3 +49,8 @@ svelte-lint:
 
 svelte:
 	cd src-svelte && make
+
+clean:
+	cd src-python && make clean
+	cd src-svelte && make clean
+	cd src-tauri && make clean

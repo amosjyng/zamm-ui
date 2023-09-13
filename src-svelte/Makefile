@@ -12,3 +12,6 @@ format:
 lint:
 	yarn svelte-check --fail-on-warnings
 	yarn eslint --fix src/ --ext .js,.ts,.svelte
+
+clean:
+	rm -rf build
