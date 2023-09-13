@@ -1,6 +1,7 @@
 <script>
   import IconSettings from "~icons/ion/settings";
   import IconChat from "~icons/ph/chat-dots-fill";
+  import IconDashboard from "~icons/material-symbols/monitor-heart";
 </script>
 
 <header>
@@ -35,11 +36,14 @@
   </svg>
 
   <nav>
-    <div class="selected icon">
-      <IconSettings />
+    <div class="icon selected">
+      <IconDashboard />
     </div>
     <div class="icon">
       <IconChat />
+    </div>
+    <div class="icon">
+      <IconSettings />
     </div>
   </nav>
 </header>

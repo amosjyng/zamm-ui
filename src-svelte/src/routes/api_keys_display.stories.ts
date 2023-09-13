@@ -4,7 +4,7 @@ import type { StoryObj } from "@storybook/svelte";
 
 export default {
   component: ApiKeysDisplay,
-  title: "Settings/API Keys Display",
+  title: "Dashboard/API Keys Display",
   argTypes: {},
 };
 
