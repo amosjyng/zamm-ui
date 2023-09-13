@@ -5,7 +5,12 @@
 </script>
 
 <header>
-  <svg version="1.1" width="0" height="0">
+  <svg
+    version="1.1"
+    style="visibility: hidden; position: absolute;"
+    width="0"
+    height="0"
+  >
     <filter id="inset-shadow">
       <feOffset dx="0" dy="0" />
       <feGaussianBlur stdDeviation="1" result="offset-blur" />
