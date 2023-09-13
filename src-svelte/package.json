@@ -22,6 +22,7 @@
     "@storybook/addon-interactions": "^7.4.0",
     "@storybook/addon-links": "^7.4.0",
     "@storybook/addon-mdx-gfm": "^7.4.0",
+    "@storybook/addon-viewport": "^7.4.1",
     "@storybook/blocks": "^7.4.0",
     "@storybook/svelte": "^7.4.0",
     "@storybook/sveltekit": "^7.4.0",

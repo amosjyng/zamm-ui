@@ -13,8 +13,12 @@ interface ComponentTestConfig {
 
 const components: ComponentTestConfig[] = [
   {
-    path: ["settings", "api-keys-display"],
+    path: ["dashboard", "api-keys-display"],
     variants: ["loading", "unknown", "known"],
+  },
+  {
+    path: ["dashboard", "metadata"],
+    variants: ["metadata"],
   },
   {
     path: ["navigation", "sidebar"],

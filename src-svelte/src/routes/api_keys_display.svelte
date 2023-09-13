@@ -5,7 +5,7 @@
 </script>
 
 <table>
-  <tr>
+  <tr class="h2">
     <th class="header-text" colspan="2">API Keys</th>
   </tr>
   <tr>
@@ -36,12 +36,6 @@
   td {
     padding: 0 0.5rem;
     text-align: left;
-  }
-
-  th {
-    color: var(--color-header);
-    font-family: var(--font-header);
-    text-transform: uppercase;
   }
 
   td {
