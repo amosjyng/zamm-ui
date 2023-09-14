@@ -1,5 +1,8 @@
-<div class="info-box">
-  <h2>System Information</h2>
+<script lang="ts">
+  import InfoBox from "$lib/InfoBox.svelte";
+</script>
+
+<InfoBox title="System Information">
   <table>
     <tr>
       <th colspan="2">ZAMM</th>
@@ -31,7 +34,7 @@
       <td>Ubuntu 18.04</td>
     </tr>
   </table>
-</div>
+</InfoBox>
 
 <style>
   table {
