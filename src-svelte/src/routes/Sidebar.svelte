@@ -105,7 +105,7 @@
     border-top-left-radius: var(--corner-roundness);
     border-bottom-left-radius: var(--corner-roundness);
     position: relative;
-    background-color: white;
+    background-color: var(--color-background);
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 2;
   }
@@ -122,12 +122,12 @@
   .selected::before {
     bottom: var(--sidebar-icon-size);
     border-radius: 0 0 var(--corner-roundness) 0;
-    box-shadow: 0 0.375rem 0 0 white;
+    box-shadow: 0 0.375rem 0 0 var(--color-background);
   }
 
   .selected::after {
     top: var(--sidebar-icon-size);
     border-radius: 0 var(--corner-roundness) 0 0;
-    box-shadow: 0 -0.375rem 0 0 white;
+    box-shadow: 0 -0.375rem 0 0 var(--color-background);
   }
 </style>
