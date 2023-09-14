@@ -36,6 +36,7 @@
   .container {
     position: relative;
     flex: 1;
+    --cut: 1rem;
   }
 
   .border-box {
@@ -57,14 +58,16 @@
     bottom: 0;
     background: var(--color-border);
     -webkit-mask:
-      linear-gradient(-45deg, transparent 0 1rem, #fff 0) bottom right,
-      linear-gradient(135deg, transparent 0 calc(1rem + 1px), #fff 0) top left;
+      linear-gradient(-45deg, transparent 0 var(--cut), #fff 0) bottom right,
+      linear-gradient(135deg, transparent 0 calc(var(--cut) + 1px), #fff 0) top
+        left;
     -webkit-mask-size: 51% 100%;
     -webkit-mask-repeat: no-repeat;
     mask:
-      linear-gradient(-45deg, transparent 0 calc(1rem + 1px), #fff 0) bottom
-        right,
-      linear-gradient(135deg, transparent 0 calc(1rem + 1px), #fff 0) top left;
+      linear-gradient(-45deg, transparent 0 calc(var(--cut) + 1px), #fff 0)
+        bottom right,
+      linear-gradient(135deg, transparent 0 calc(var(--cut) + 1px), #fff 0) top
+        left;
     mask-size: 51% 100%;
     mask-repeat: no-repeat;
   }
@@ -88,13 +91,13 @@
     bottom: 0;
     background: white;
     -webkit-mask:
-      linear-gradient(-45deg, transparent 0 1rem, #fff 0) bottom right,
-      linear-gradient(135deg, transparent 0 1rem, #fff 0) top left;
+      linear-gradient(-45deg, transparent 0 var(--cut), #fff 0) bottom right,
+      linear-gradient(135deg, transparent 0 var(--cut), #fff 0) top left;
     -webkit-mask-size: 51% 100%;
     -webkit-mask-repeat: no-repeat;
     mask:
-      linear-gradient(-45deg, transparent 0 1rem, #fff 0) bottom right,
-      linear-gradient(135deg, transparent 0 1rem, #fff 0) top left;
+      linear-gradient(-45deg, transparent 0 var(--cut), #fff 0) bottom right,
+      linear-gradient(135deg, transparent 0 var(--cut), #fff 0) top left;
     mask-size: 51% 100%;
     mask-repeat: no-repeat;
   }
@@ -106,6 +109,6 @@
   }
 
   .info-box h2 {
-    margin: -0.25rem 0 0 1rem;
+    margin: -0.25rem 0 0 var(--cut);
   }
 </style>
