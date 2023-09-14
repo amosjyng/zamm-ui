@@ -1,9 +1,5 @@
 @import "@fontsource/jetbrains-mono";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @font-face {
   font-family: 'Nasalization';
   font-style: normal;
