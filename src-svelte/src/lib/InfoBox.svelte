@@ -56,6 +56,11 @@
     right: 0;
     bottom: 0;
     background: var(--color-border);
+    -webkit-mask:
+      linear-gradient(-45deg, transparent 0 1rem, #fff 0) bottom right,
+      linear-gradient(135deg, transparent 0 calc(1rem + 1px), #fff 0) top left;
+    -webkit-mask-size: 51% 100%;
+    -webkit-mask-repeat: no-repeat;
     mask:
       linear-gradient(-45deg, transparent 0 calc(1rem + 1px), #fff 0) bottom
         right,
@@ -82,6 +87,11 @@
     right: 0;
     bottom: 0;
     background: white;
+    -webkit-mask:
+      linear-gradient(-45deg, transparent 0 1rem, #fff 0) bottom right,
+      linear-gradient(135deg, transparent 0 1rem, #fff 0) top left;
+    -webkit-mask-size: 51% 100%;
+    -webkit-mask-repeat: no-repeat;
     mask:
       linear-gradient(-45deg, transparent 0 1rem, #fff 0) bottom right,
       linear-gradient(135deg, transparent 0 1rem, #fff 0) top left;
