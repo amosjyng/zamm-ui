@@ -21,7 +21,7 @@
     </tr>
   </table>
 
-  <table>
+  <table class="less-space">
     <tr>
       <th colspan="2">Computer</th>
     </tr>
@@ -58,5 +58,9 @@
 
   .stability-value {
     color: var(--color-caution);
+  }
+
+  .less-space {
+    margin-bottom: -0.33rem;
   }
 </style>
