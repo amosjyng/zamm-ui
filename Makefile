@@ -16,7 +16,7 @@ docker:
 	docker build . -t $(BUILD_IMAGE)
 	docker push $(BUILD_IMAGE)
 
-test:
+test: python svelte rust
 	cd src-python && make test
 	cd src-svelte && make test
 	cd src-tauri && make test
