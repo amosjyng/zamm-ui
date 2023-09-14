@@ -3,8 +3,6 @@
 </script>
 
 <div class="container">
-  <div class="border-box"></div>
-  <div class="background-box"></div>
   <svg
     style="visibility: hidden; position: absolute;"
     width="0"
@@ -26,9 +24,12 @@
     </defs>
   </svg>
 
-  <div class="info-box">
-    <h2>{title}</h2>
-    <slot />
+  <div class="border-container">
+    <div class="border-box"></div>
+    <div class="info-box">
+      <h2>{title}</h2>
+      <slot />
+    </div>
   </div>
 </div>
 
@@ -37,16 +38,19 @@
     position: relative;
     flex: 1;
     --cut: 1rem;
+    padding: 1px;
+  }
+
+  .border-container {
+    filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.4));
   }
 
   .border-box {
     width: 100%;
     height: 100%;
     position: absolute;
-    top: 0;
-    left: 0;
     filter: url(#round);
-    z-index: 0;
+    z-index: 1;
   }
 
   .border-box::before {
@@ -54,39 +58,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--color-border);
-    -webkit-mask:
-      linear-gradient(-45deg, transparent 0 var(--cut), #fff 0) bottom right,
-      linear-gradient(135deg, transparent 0 calc(var(--cut) + 1px), #fff 0) top
-        left;
-    -webkit-mask-size: 51% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask:
-      linear-gradient(-45deg, transparent 0 calc(var(--cut) + 1px), #fff 0)
-        bottom right,
-      linear-gradient(135deg, transparent 0 calc(var(--cut) + 1px), #fff 0) top
-        left;
-    mask-size: 51% 100%;
-    mask-repeat: no-repeat;
-  }
-
-  .background-box {
-    width: calc(100% - 1px);
-    height: calc(100% - 1px);
-    position: absolute;
-    top: 1;
-    left: 1;
-    filter: url(#round);
-    z-index: 1;
-  }
-
-  .background-box::before {
-    content: "";
-    position: absolute;
-    top: 1px;
-    left: 1px;
     right: 0;
     bottom: 0;
     background: white;
