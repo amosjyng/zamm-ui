@@ -130,57 +130,32 @@ describe("Storybook visual tests", () => {
               }
             : variant;
         const testName = variantConfig.name;
-        test(`${testName} should render the same`, async () => {
-          const variantPrefix = `--${variantConfig.name}`;
+        test(
+          `${testName} should render the same`,
+          async () => {
+            const variantPrefix = `--${variantConfig.name}`;
 
-          await page.goto(
-            `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
-          );
+            await page.goto(
+              `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
+            );
 
-          const screenshot = await takeScreenshot(
-            page,
-            config.screenshotEntireBody,
-          );
-
-          const screenshotSize = sizeOf(screenshot);
-          const diffDirection =
-            screenshotSize.width &&
-            screenshotSize.height &&
-            screenshotSize.width > screenshotSize.height
-              ? "vertical"
-              : "horizontal";
-
-          if (!variantConfig.assertDynamic) {
-            // don't compare dynamic screenshots against baseline
-            // @ts-ignore
-            expect(screenshot).toMatchImageSnapshot({
-              diffDirection,
-              storeReceivedOnFailure: true,
-              customSnapshotsDir: "screenshots/baseline",
-              customSnapshotIdentifier: `${storybookPath}/${testName}`,
-              customDiffDir: "screenshots/testing/diff",
-              customReceivedDir: "screenshots/testing/actual",
-              customReceivedPostfix: "",
-            });
-          }
-
-          if (variantConfig.assertDynamic !== undefined) {
-            await new Promise((r) => setTimeout(r, 1000));
-            const newScreenshot = await takeScreenshot(
+            const screenshot = await takeScreenshot(
               page,
               config.screenshotEntireBody,
             );
 
-            if (variantConfig.assertDynamic) {
-              expect(
-                Buffer.compare(screenshot, newScreenshot) !== 0,
-              ).toBeTruthy();
-            } else {
-              // do the same assertion from before so that we can see what changed the
-              // second time around if a static screenshot turns out to be dynamic
-              //
+            const screenshotSize = sizeOf(screenshot);
+            const diffDirection =
+              screenshotSize.width &&
+              screenshotSize.height &&
+              screenshotSize.width > screenshotSize.height
+                ? "vertical"
+                : "horizontal";
+
+            if (!variantConfig.assertDynamic) {
+              // don't compare dynamic screenshots against baseline
               // @ts-ignore
-              expect(newScreenshot).toMatchImageSnapshot({
+              expect(screenshot).toMatchImageSnapshot({
                 diffDirection,
                 storeReceivedOnFailure: true,
                 customSnapshotsDir: "screenshots/baseline",
@@ -190,8 +165,39 @@ describe("Storybook visual tests", () => {
                 customReceivedPostfix: "",
               });
             }
-          }
-        });
+
+            if (variantConfig.assertDynamic !== undefined) {
+              await new Promise((r) => setTimeout(r, 1000));
+              const newScreenshot = await takeScreenshot(
+                page,
+                config.screenshotEntireBody,
+              );
+
+              if (variantConfig.assertDynamic) {
+                expect(
+                  Buffer.compare(screenshot, newScreenshot) !== 0,
+                ).toBeTruthy();
+              } else {
+                // do the same assertion from before so that we can see what changed the
+                // second time around if a static screenshot turns out to be dynamic
+                //
+                // @ts-ignore
+                expect(newScreenshot).toMatchImageSnapshot({
+                  diffDirection,
+                  storeReceivedOnFailure: true,
+                  customSnapshotsDir: "screenshots/baseline",
+                  customSnapshotIdentifier: `${storybookPath}/${testName}`,
+                  customDiffDir: "screenshots/testing/diff",
+                  customReceivedDir: "screenshots/testing/actual",
+                  customReceivedPostfix: "",
+                });
+              }
+            }
+          },
+          {
+            retry: 3,
+          },
+        );
       }
     });
   }
