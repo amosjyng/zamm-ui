@@ -29,13 +29,28 @@ Loading.parameters = {
   resolution: unknownKeys,
   shouldWait: true,
 };
+Loading.parameters = {
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};
 
 export const Unknown: StoryObj = Template.bind({}) as any;
 Unknown.parameters = {
   resolution: unknownKeys,
 };
+Unknown.parameters = {
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};
 
 export const Known: StoryObj = Template.bind({}) as any;
 Known.parameters = {
   resolution: knownKeys,
+};
+Known.parameters = {
+  viewport: {
+    defaultViewport: "mobile2",
+  },
 };

@@ -3,11 +3,11 @@
 BUILD_IMAGE = ghcr.io/amosjyng/zamm:v0.0.0-build
 CURRENT_DIR = $(shell pwd)
 
-build-docker:
-	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make build
-
 build: python svelte rust
 	cargo tauri build
+
+build-docker:
+	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make build
 
 icon:
 	yarn tauri icon src-tauri/icons/icon.png
@@ -16,7 +16,7 @@ docker:
 	docker build . -t $(BUILD_IMAGE)
 	docker push $(BUILD_IMAGE)
 
-test:
+test: python svelte rust
 	cd src-python && make test
 	cd src-svelte && make test
 	cd src-tauri && make test
