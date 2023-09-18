@@ -10,6 +10,7 @@ expect.extend({ toMatchImageSnapshot });
 interface ComponentTestConfig {
   path: string[]; // Represents the Storybook hierarchy path
   variants: string[] | VariantConfig[];
+  screenshotEntireBody?: boolean;
 }
 
 interface VariantConfig {
@@ -34,10 +35,12 @@ const components: ComponentTestConfig[] = [
   {
     path: ["dashboard", "api-keys-display"],
     variants: ["loading", "unknown", "known"],
+    screenshotEntireBody: true,
   },
   {
     path: ["dashboard", "metadata"],
     variants: ["metadata"],
+    screenshotEntireBody: true,
   },
   {
     path: ["navigation", "sidebar"],
@@ -104,12 +107,15 @@ describe("Storybook visual tests", () => {
     }
   });
 
-  const takeScreenshot = (page: Page) => {
+  const takeScreenshot = (page: Page, screenshotEntireBody?: boolean) => {
     const frame = page.frame({ name: "storybook-preview-iframe" });
     if (!frame) {
       throw new Error("Could not find Storybook iframe");
     }
-    return frame.locator("#storybook-root > :first-child").screenshot();
+    const locator = screenshotEntireBody
+      ? "body"
+      : "#storybook-root > :first-child";
+    return frame.locator(locator).screenshot();
   };
 
   for (const config of components) {
@@ -131,7 +137,10 @@ describe("Storybook visual tests", () => {
             `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
           );
 
-          const screenshot = await takeScreenshot(page);
+          const screenshot = await takeScreenshot(
+            page,
+            config.screenshotEntireBody,
+          );
 
           const screenshotSize = sizeOf(screenshot);
           const diffDirection =
@@ -157,7 +166,10 @@ describe("Storybook visual tests", () => {
 
           if (variantConfig.assertDynamic !== undefined) {
             await new Promise((r) => setTimeout(r, 1000));
-            const newScreenshot = await takeScreenshot(page);
+            const newScreenshot = await takeScreenshot(
+              page,
+              config.screenshotEntireBody,
+            );
 
             if (variantConfig.assertDynamic) {
               expect(

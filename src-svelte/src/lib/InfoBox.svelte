@@ -35,14 +35,14 @@
 
 <style>
   .container {
+    --cut: 1rem;
     position: relative;
     flex: 1;
-    --cut: 1rem;
-    padding: 1px;
+    padding: 0;
   }
 
   .border-container {
-    filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow(0px 1px 4px rgba(26, 58, 58, 0.4));
   }
 
   .border-box {
@@ -80,6 +80,6 @@
   }
 
   .info-box h2 {
-    margin: -0.25rem 0 0 var(--cut);
+    margin: -0.25rem 0 0.5rem var(--cut);
   }
 </style>
