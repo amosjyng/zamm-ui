@@ -243,6 +243,8 @@ jobs:
           name: builds
       # end of common dependency setup with downloaded artifacts
 
+      - name: Update Playwright browsers
+        run: yarn playwright install
       - name: Run Svelte Tests
         run: |
           yarn workspace gui test
