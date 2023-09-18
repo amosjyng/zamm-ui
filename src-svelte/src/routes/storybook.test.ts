@@ -13,6 +13,10 @@ interface ComponentTestConfig {
 
 const components: ComponentTestConfig[] = [
   {
+    path: ["background"],
+    variants: ["static", "dynamic"],
+  },
+  {
     path: ["dashboard", "api-keys-display"],
     variants: ["loading", "unknown", "known"],
   },
