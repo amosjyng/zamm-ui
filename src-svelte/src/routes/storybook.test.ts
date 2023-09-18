@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, test } from "vitest";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { spawn, ChildProcess } from "child_process";
 import fetch from "node-fetch";
+import sizeOf from "image-size";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -113,9 +114,17 @@ describe("Storybook visual tests", () => {
             .locator("#storybook-root > :first-child")
             .screenshot();
 
+          const screenshotSize = sizeOf(screenshot);
+          const diffDirection =
+            screenshotSize.width &&
+            screenshotSize.height &&
+            screenshotSize.width > screenshotSize.height
+              ? "vertical"
+              : "horizontal";
+
           // @ts-ignore
           expect(screenshot).toMatchImageSnapshot({
-            diffDirection: "horizontal",
+            diffDirection,
             storeReceivedOnFailure: true,
             customSnapshotsDir: "screenshots/baseline",
             customSnapshotIdentifier: `${storybookPath}/${testName}`,
