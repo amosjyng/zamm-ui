@@ -1,4 +1,4 @@
-import ApiKeysDisplay from "./api_keys_display.svelte";
+import ApiKeysDisplay from "./ApiKeysDisplay.svelte";
 import type { ApiKeys } from "$lib/bindings";
 import type { StoryObj } from "@storybook/svelte";
 
