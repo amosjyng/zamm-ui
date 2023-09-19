@@ -1887,6 +1887,11 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
+"@rgossiaux/svelte-headlessui@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@rgossiaux/svelte-headlessui/-/svelte-headlessui-2.0.0.tgz#397615a2ea39a44d601d4290a6efd9495b3b112d"
+  integrity sha512-ksh245HqMM8yqkzd/OyAK2FCHZYOSA3ldLIHab7C9S60FmifqT24JFVgi8tZpsDEMk3plbfQvfah93n5IEi8sg==
+
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"

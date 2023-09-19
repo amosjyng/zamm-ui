@@ -20,6 +20,10 @@ interface VariantConfig {
 
 const components: ComponentTestConfig[] = [
   {
+    path: ["reusable", "switch"],
+    variants: ["on", "off"],
+  },
+  {
     path: ["background"],
     variants: [
       {
