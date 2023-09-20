@@ -10,17 +10,17 @@ describe("Switch", () => {
     render(Switch, {});
 
     const onOffSwitch = screen.getByRole("switch");
-    expect(onOffSwitch).toHaveClass("button off");
+    expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
     await act(() => userEvent.click(onOffSwitch));
-    expect(onOffSwitch).toHaveClass("button on");
+    expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
   });
 
   test("can be toggled off", async () => {
     render(Switch, { toggledOn: true });
 
     const onOffSwitch = screen.getByRole("switch");
-    expect(onOffSwitch).toHaveClass("button on");
+    expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
     await act(() => userEvent.click(onOffSwitch));
-    expect(onOffSwitch).toHaveClass("button off");
+    expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
   });
 });

@@ -17,9 +17,19 @@ On.args = {
   label: "Simulation",
   toggledOn: true,
 };
+On.parameters = {
+  viewport: {
+    defaultViewport: "mobile1",
+  },
+};
 
 export const Off: StoryObj = Template.bind({}) as any;
 Off.args = {
   label: "Simulation",
   toggledOn: false,
+};
+Off.parameters = {
+  viewport: {
+    defaultViewport: "mobile1",
+  },
 };
