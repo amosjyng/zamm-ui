@@ -94,7 +94,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    transition: left 0.05s ease-out;
+    transition: left 0.1s;
+    transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
   }
 
   * :global(.groove-contents.off) {
@@ -111,10 +112,14 @@
 
   * :global(.toggle-label.on) {
     background: green;
+    padding-left: var(--label-width);
+    margin-left: calc(-1 * var(--label-width));
   }
 
   * :global(.toggle-label.off) {
     background: red;
+    padding-right: var(--label-width);
+    margin-right: calc(-1 * var(--label-width));
   }
 
   * :global(.toggle-label span) {
