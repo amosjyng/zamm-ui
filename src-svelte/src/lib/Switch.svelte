@@ -1,24 +1,29 @@
 <script lang="ts">
-  import {
-    Switch,
-    SwitchLabel,
-    SwitchGroup,
-  } from "@rgossiaux/svelte-headlessui";
+  import { customAlphabet } from "nanoid/non-secure";
   import {
     draggable,
     type DragOptions,
     type DragEventData,
   } from "@neodrag/svelte";
 
-  const labelWidth = 3 * 18;
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const labelWidth = 3 * rem;
   const offLeft = -labelWidth;
   const onLeft = 0;
+  const transitionAnimation = `
+    transition: left 0.1s;
+    transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
+  `;
+  const nanoid = customAlphabet("1234567890", 6);
+  const switchId = `switch-${nanoid()}`;
 
   export let label: string | undefined = undefined;
   export let toggledOn = false;
   let toggleBound: HTMLElement;
   let left = 0;
-  let transition = "";
+  let transition = transitionAnimation;
+  let startingOffset = 0;
+  let dragging = false;
 
   let toggleDragOptions: DragOptions = {
     axis: "x",
@@ -26,16 +31,29 @@
     render: (data: DragEventData) => {
       left = data.offsetX;
     },
-    onDragStart: (_: DragEventData) => {
+    onDragStart: (data: DragEventData) => {
       transition = "";
+      dragging = false;
+      startingOffset = data.offsetX;
     },
-    onDragEnd: (_: DragEventData) => {
-      transition = `
-        transition: left 0.1s;
-        transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
-      `;
+    onDrag: (data: DragEventData) => {
+      // if we ever start dragging, then the toggle state will depend on the final
+      // resting position, even if it gets returned back to the very beginning.
+      // On the other hand, if we never drag at all, then thet toggle state will simply
+      // flip because it's just a click.
+      //
+      // offsetX starts based on the current position of the switch, not at 0, so we
+      // have to keep track of the starting offset to determine if we've actually
+      // moved
+      dragging = dragging || data.offsetX !== startingOffset;
+    },
+    onDragEnd: (data: DragEventData) => {
+      transition = transitionAnimation;
+      if (dragging) {
+        toggledOn = data.offsetX > offLeft / 2;
+      }
+      // even if toggle state didn't change, reset back to resting position
       toggleDragOptions = updatePosition(toggledOn);
-      console.log("drag ended");
     },
   };
 
@@ -46,64 +64,67 @@
     };
   }
 
+  function toggle() {
+    if (!dragging) {
+      toggledOn = !toggledOn;
+    }
+    dragging = false; // subsequent clicks should register
+  }
+
   $: toggleDragOptions = updatePosition(toggledOn);
   $: left = toggleDragOptions.position?.x ?? 0;
-  $: console.log(`current state: toggle=${toggledOn}, left=${left}`);
 </script>
 
 <div class="container">
-  <SwitchGroup class="switch-group">
-    {#if label}
-      <SwitchLabel>
-        <div class="label">
-          {label}
-        </div>
-      </SwitchLabel>
-    {/if}
-    <Switch bind:checked={toggledOn} class="button">
-      <div class="groove-layer groove">
-        <div class="groove-layer shadow"></div>
-        <div
-          class="groove-contents"
-          class:on={toggledOn}
-          class:off={!toggledOn}
-          style="--left: {left}px; {transition}"
-        >
-          <div class="toggle-label on"><span>On</span></div>
-          <div class="toggle-label"></div>
-          <div class="toggle-label off"><span>Off</span></div>
-        </div>
-      </div>
-      <div class="groove-layer bounds" bind:this={toggleBound}></div>
+  {#if label}
+    <label for={switchId}>{label}</label>
+  {/if}
+  <button
+    type="button"
+    role="switch"
+    tabIndex="0"
+    aria-checked={toggledOn}
+    id={switchId}
+    on:click={toggle}
+  >
+    <div class="groove-layer groove">
+      <div class="groove-layer shadow"></div>
       <div
-        class="groove-contents toggle-layer"
+        class="groove-contents"
         class:on={toggledOn}
         class:off={!toggledOn}
         style="--left: {left}px; {transition}"
       >
+        <div class="toggle-label on"><span>On</span></div>
         <div class="toggle-label"></div>
-        <div class="toggle-label" use:draggable={toggleDragOptions}>
-          <div class="toggle"></div>
-        </div>
-        <div class="toggle-label"></div>
+        <div class="toggle-label off"><span>Off</span></div>
       </div>
-    </Switch>
-  </SwitchGroup>
+    </div>
+    <div class="groove-layer bounds" bind:this={toggleBound}></div>
+    <div
+      class="groove-contents toggle-layer"
+      class:on={toggledOn}
+      class:off={!toggledOn}
+      style="--left: {left}px; {transition}"
+    >
+      <div class="toggle-label"></div>
+      <div class="toggle-label" use:draggable={toggleDragOptions}>
+        <div class="toggle"></div>
+      </div>
+      <div class="toggle-label"></div>
+    </div>
+  </button>
 </div>
 
 <style>
   .container {
-    display: inline-block;
-  }
-
-  * :global(.switch-group) {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 1rem;
   }
 
-  * :global(.button) {
+  button {
     --skew: -20deg;
     --label-width: 3rem;
     --label-height: 1.5rem;
@@ -117,7 +138,7 @@
     background: transparent;
   }
 
-  * :global(.groove-layer) {
+  .groove-layer {
     --groove-width: calc(2 * var(--label-width));
     width: var(--groove-width);
     height: var(--label-height);
@@ -126,15 +147,16 @@
     position: relative;
   }
 
-  * :global(.groove-layer.groove) {
+  .groove-layer.groove {
     overflow: hidden;
   }
 
-  * :global(.groove-layer.shadow) {
+  .groove-layer.shadow {
     box-shadow: inset 0.05rem 0.05rem 0.3rem rgba(0, 0, 0, 0.4);
   }
 
-  *:global(.groove-layer.bounds) {
+  .groove-layer.bounds {
+    transform: skew(calc(-1 * var(--skew)));
     width: calc(1.3 * var(--groove-width));
     margin-left: calc(-0.05 * var(--groove-width));
     background: transparent;
@@ -142,7 +164,7 @@
     top: 0;
   }
 
-  * :global(.groove-contents) {
+  .groove-contents {
     --left: 0;
     z-index: var(--groove-contents-layer);
     display: flex;
@@ -153,7 +175,7 @@
     left: var(--left);
   }
 
-  * :global(.toggle-label) {
+  .toggle-label {
     width: var(--label-width);
     height: var(--label-height);
     display: flex;
@@ -161,19 +183,19 @@
     justify-content: center;
   }
 
-  * :global(.toggle-label.on) {
+  .toggle-label.on {
     background: green;
     padding-left: var(--label-width);
     margin-left: calc(-1 * var(--label-width));
   }
 
-  * :global(.toggle-label.off) {
+  .toggle-label.off {
     background: red;
     padding-right: var(--label-width);
     margin-right: calc(-1 * var(--label-width));
   }
 
-  * :global(.toggle-label span) {
+  .toggle-label span {
     --shadow-offset: 0.05rem;
     --shadow-intensity: 0.3;
     transform: skew(calc(-1 * var(--skew)));
@@ -188,11 +210,11 @@
         rgba(255, 255, 255, var(--shadow-intensity));
   }
 
-  * :global(.groove-contents.toggle-layer) {
+  .groove-contents.toggle-layer {
     z-index: var(--toggle-layer);
   }
 
-  * :global(.toggle) {
+  .toggle {
     position: absolute;
     width: calc(1.05 * var(--label-width));
     height: calc(1.2 * var(--label-height));
