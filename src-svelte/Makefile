@@ -1,7 +1,13 @@
 .PHONY: format lint test
 
-build: $(shell find src -type f \( -name "*.svelte" -o -name "*.js" -o -name "*.ts" -o -name "*.html" \) -not -path "*/node_modules/*")
+build: forks/neodrag/packages/svelte/dist $(shell find src -type f \( -name "*.svelte" -o -name "*.js" -o -name "*.ts" -o -name "*.html" \) -not -path "*/node_modules/*")
 	yarn && yarn svelte-kit sync && yarn build
+
+forks/neodrag/packages/core/dist: forks/neodrag/packages/core/src/*
+	cd forks/neodrag/packages/core && pnpm install && pnpm compile
+
+forks/neodrag/packages/svelte/dist: forks/neodrag/packages/core/dist forks/neodrag/packages/svelte/src/*
+	cd forks/neodrag/packages/svelte && pnpm install && pnpm compile
 
 test:
 	yarn test
@@ -14,4 +20,4 @@ lint:
 	yarn eslint --fix src/ --ext .js,.ts,.svelte
 
 clean:
-	rm -rf build
+	rm -rf build node_modules ../node_modules
