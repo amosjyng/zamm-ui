@@ -3,4 +3,4 @@
 	url = https://github.com/amosjyng/zamm-fonts.git
 [submodule "src-svelte/forks/neodrag"]
 	path = src-svelte/forks/neodrag
-	url = https://github.com/PuruVJ/neodrag.git
+	url = https://github.com/amosjyng/neodrag.git

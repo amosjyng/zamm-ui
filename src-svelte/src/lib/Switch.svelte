@@ -4,9 +4,51 @@
     SwitchLabel,
     SwitchGroup,
   } from "@rgossiaux/svelte-headlessui";
+  import {
+    draggable,
+    type DragOptions,
+    type DragEventData,
+  } from "@neodrag/svelte";
+
+  const labelWidth = 3 * 18;
+  const offLeft = -labelWidth;
+  const onLeft = 0;
 
   export let label: string | undefined = undefined;
   export let toggledOn = false;
+  let toggleBound: HTMLElement;
+  let left = 0;
+  let transition = "";
+
+  let toggleDragOptions: DragOptions = {
+    axis: "x",
+    bounds: () => toggleBound,
+    render: (data: DragEventData) => {
+      left = data.offsetX;
+    },
+    onDragStart: (_: DragEventData) => {
+      transition = "";
+    },
+    onDragEnd: (_: DragEventData) => {
+      transition = `
+        transition: left 0.1s;
+        transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
+      `;
+      toggleDragOptions = updatePosition(toggledOn);
+      console.log("drag ended");
+    },
+  };
+
+  function updatePosition(toggledOn: boolean) {
+    return {
+      ...toggleDragOptions,
+      position: toggledOn ? { x: onLeft, y: 0 } : { x: offLeft, y: 0 },
+    };
+  }
+
+  $: toggleDragOptions = updatePosition(toggledOn);
+  $: left = toggleDragOptions.position?.x ?? 0;
+  $: console.log(`current state: toggle=${toggledOn}, left=${left}`);
 </script>
 
 <div class="container">
@@ -25,19 +67,24 @@
           class="groove-contents"
           class:on={toggledOn}
           class:off={!toggledOn}
+          style="--left: {left}px; {transition}"
         >
           <div class="toggle-label on"><span>On</span></div>
           <div class="toggle-label"></div>
           <div class="toggle-label off"><span>Off</span></div>
         </div>
       </div>
+      <div class="groove-layer bounds" bind:this={toggleBound}></div>
       <div
         class="groove-contents toggle-layer"
         class:on={toggledOn}
         class:off={!toggledOn}
+        style="--left: {left}px; {transition}"
       >
         <div class="toggle-label"></div>
-        <div class="toggle-label"><div class="toggle"></div></div>
+        <div class="toggle-label" use:draggable={toggleDragOptions}>
+          <div class="toggle"></div>
+        </div>
         <div class="toggle-label"></div>
       </div>
     </Switch>
@@ -71,7 +118,8 @@
   }
 
   * :global(.groove-layer) {
-    width: calc(2 * var(--label-width));
+    --groove-width: calc(2 * var(--label-width));
+    width: var(--groove-width);
     height: var(--label-height);
     border-radius: var(--corner-roundness);
     z-index: var(--groove-layer);
@@ -86,20 +134,23 @@
     box-shadow: inset 0.05rem 0.05rem 0.3rem rgba(0, 0, 0, 0.4);
   }
 
+  *:global(.groove-layer.bounds) {
+    width: calc(1.3 * var(--groove-width));
+    margin-left: calc(-0.05 * var(--groove-width));
+    background: transparent;
+    position: absolute;
+    top: 0;
+  }
+
   * :global(.groove-contents) {
+    --left: 0;
     z-index: var(--groove-contents-layer);
     display: flex;
     flex-direction: row;
     align-items: center;
     position: absolute;
     top: 0;
-    left: 0;
-    transition: left 0.1s;
-    transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
-  }
-
-  * :global(.groove-contents.off) {
-    left: calc(-1 * var(--label-width));
+    left: var(--left);
   }
 
   * :global(.toggle-label) {
