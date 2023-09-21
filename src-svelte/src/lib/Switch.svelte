@@ -28,6 +28,7 @@
   let toggleDragOptions: DragOptions = {
     axis: "x",
     bounds: () => toggleBound,
+    inverseScale: 1,
     render: (data: DragEventData) => {
       left = data.offsetX;
     },
@@ -156,9 +157,12 @@
   }
 
   .groove-layer.bounds {
+    /* How much overshoot to allow */
+    --overshoot: 0.2;
+    /* unskew bounds to make reasoning easier */
     transform: skew(calc(-1 * var(--skew)));
-    width: calc(1.3 * var(--groove-width));
-    margin-left: calc(-0.05 * var(--groove-width));
+    width: calc((1 + var(--overshoot)) * var(--groove-width));
+    margin-left: calc(var(--overshoot) / -2 * var(--groove-width));
     background: transparent;
     position: absolute;
     top: 0;
