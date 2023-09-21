@@ -47,8 +47,7 @@ jobs:
           node-version: ${{ env.NODEJS_VERSION }}
       - name: Install Node dependencies
         run: |
-          yarn install
-          cd src-svelte && yarn svelte-kit sync
+          npm install -g pnpm
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -80,6 +79,8 @@ jobs:
             src-python/dist/main
             src-svelte/.svelte-kit/
             src-svelte/build/
+            src-svelte/forks/neodrag/packages/core/dist/
+            src-svelte/forks/neodrag/packages/svelte/dist/
             src-tauri/binaries/zamm-python-x86_64-unknown-linux-gnu
             src-tauri/target/release/zamm
             src-tauri/target/release/zamm-python
@@ -233,16 +234,15 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - uses: actions/download-artifact@v3
+        with:
+          name: builds
       - name: Install Node dependencies
         run: |
           yarn install
           cd src-svelte && yarn install && yarn svelte-kit sync
           cd ../webdriver && yarn install
-      - uses: actions/download-artifact@v3
-        with:
-          name: builds
       # end of common dependency setup with downloaded artifacts
-
       - name: Update Playwright browsers
         run: yarn playwright install
       - name: Run Svelte Tests
