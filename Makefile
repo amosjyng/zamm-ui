@@ -6,8 +6,13 @@ CURRENT_DIR = $(shell pwd)
 build: python svelte rust
 	cargo tauri build
 
+copy-docker-deps:
+	mv /tmp/dependencies/node_modules ./node_modules
+	mv /tmp/dependencies/src-svelte/node_modules ./src-svelte/node_modules
+	mv /tmp/dependencies/target ./src-tauri/target
+
 build-docker:
-	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make build
+	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make copy-docker-deps build
 
 icon:
 	yarn tauri icon src-tauri/icons/icon.png
