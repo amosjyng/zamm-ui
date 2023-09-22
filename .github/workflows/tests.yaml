@@ -53,6 +53,7 @@ jobs:
   pre-commit:
     name: Check pre-commit hooks
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v3
         with:
@@ -100,6 +101,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: poetry
+      - uses: actions/download-artifact@v3
+        with:
+          name: builds
       # end of common dependency setup with downloaded artifacts
 
       - name: Install pre-commit
