@@ -23,4 +23,22 @@ describe("Switch", () => {
     await act(() => userEvent.click(onOffSwitch));
     expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
   });
+
+  test("can have multiple unique labels", async () => {
+    render(Switch, { label: "One" });
+    render(Switch, { label: "Two" });
+
+    const switchOne = screen.getByLabelText("One");
+    expect(switchOne).toHaveAttribute("aria-checked", "false");
+    const switchTwo = screen.getByLabelText("Two");
+    expect(switchTwo).toHaveAttribute("aria-checked", "false");
+
+    await act(() => userEvent.click(switchOne));
+    expect(switchOne).toHaveAttribute("aria-checked", "true");
+    expect(switchTwo).toHaveAttribute("aria-checked", "false");
+
+    await act(() => userEvent.click(switchTwo));
+    expect(switchOne).toHaveAttribute("aria-checked", "true");
+    expect(switchTwo).toHaveAttribute("aria-checked", "true");
+  });
 });
