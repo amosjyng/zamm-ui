@@ -50,4 +50,4 @@ COPY src-tauri/Cargo.toml Cargo.toml
 COPY src-tauri/Cargo.lock Cargo.lock
 RUN mkdir src/ && \
   echo "// dummy file" > src/lib.rs && \
-  cargo build --release
+  cargo build --release --features custom-protocol
