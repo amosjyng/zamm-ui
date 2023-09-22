@@ -83,10 +83,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODEJS_VERSION }}
-      - name: Install Node dependencies
-        run: |
-          yarn install
-          cd src-svelte && yarn svelte-kit sync
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -104,8 +100,14 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: builds
+      - name: Install Node dependencies
+        # this step must run after the download-artifact step because yarn only installs
+        # the dependencies once, and won't update them if the underlying file on disk
+        # change
+        run: |
+          yarn install
+          cd src-svelte && yarn svelte-kit sync
       # end of common dependency setup with downloaded artifacts
-
       - name: Install pre-commit
         run: |
           pipx install pre-commit==$PRE_COMMIT_VERSION

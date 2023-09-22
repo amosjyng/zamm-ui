@@ -38,8 +38,12 @@ WORKDIR /tmp/dependencies
 COPY package.json yarn.lock ./
 COPY src-svelte/package.json ./src-svelte/package.json
 COPY webdriver/package.json ./webdriver/package.json
-RUN json -I -f src-svelte/package.json \
-         -e 'delete this.dependencies["@neodrag/svelte"]' && \
+RUN git clone https://github.com/amosjyng/neodrag.git src-svelte/forks/neodrag && \
+  cd src-svelte/forks/neodrag && \
+  git checkout e954f97 && \
+  pnpm install && \
+  pnpm compile && \
+  cd /tmp/dependencies && \
   yarn
 
 COPY src-python/poetry.lock poetry.lock
@@ -50,4 +54,5 @@ COPY src-tauri/Cargo.toml Cargo.toml
 COPY src-tauri/Cargo.lock Cargo.lock
 RUN mkdir src/ && \
   echo "// dummy file" > src/lib.rs && \
+  echo "pub use tauri_build; fn main () {}" > build.rs && \
   cargo build --release --features custom-protocol

@@ -7,6 +7,7 @@ build: python svelte rust
 	cargo tauri build
 
 copy-docker-deps:
+	mv /tmp/dependencies/src-svelte/forks/neodrag/packages/svelte/dist ./src-svelte/forks/neodrag/packages/svelte/dist
 	mv /tmp/dependencies/node_modules ./node_modules
 	mv /tmp/dependencies/src-svelte/node_modules ./src-svelte/node_modules
 	mv /tmp/dependencies/target ./src-tauri/target
