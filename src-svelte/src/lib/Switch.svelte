@@ -31,6 +31,9 @@
     const audio = new Audio(clickSound);
     audio.volume = 0.05;
     audio.play();
+    if (window._testRecordSoundPlayed !== undefined) {
+      window._testRecordSoundPlayed();
+    }
   }
 
   function playDragClick(offsetX: number) {

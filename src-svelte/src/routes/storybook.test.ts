@@ -1,8 +1,8 @@
 import { type Browser, chromium, expect, type Page } from "@playwright/test";
 import { afterAll, beforeAll, describe, test } from "vitest";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
-import { spawn, ChildProcess } from "child_process";
-import fetch from "node-fetch";
+import type { ChildProcess } from "child_process";
+import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 import sizeOf from "image-size";
 
 expect.extend({ toMatchImageSnapshot });
@@ -53,51 +53,13 @@ const components: ComponentTestConfig[] = [
   },
 ];
 
-let storybookProcess: ChildProcess | null = null;
-
-const startStorybook = (): Promise<void> => {
-  return new Promise((resolve) => {
-    storybookProcess = spawn("yarn", ["storybook", "--ci"]);
-    if (!storybookProcess) {
-      throw new Error("Could not start storybook process");
-    } else if (!storybookProcess.stdout || !storybookProcess.stderr) {
-      throw new Error("Could not get storybook output");
-    }
-
-    const storybookStartupMessage =
-      /Storybook \d+\.\d+\.\d+ for sveltekit started/;
-
-    storybookProcess.stdout.on("data", (data) => {
-      const strippedData = data.toString().replace(/\\x1B\[\d+m/g, "");
-      if (storybookStartupMessage.test(strippedData)) {
-        resolve();
-      }
-    });
-
-    storybookProcess.stderr.on("data", (data) => {
-      console.error(`Storybook error: ${data}`);
-    });
-  });
-};
-
-const checkIfStorybookIsRunning = async (): Promise<boolean> => {
-  try {
-    await fetch("http://localhost:6006");
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 describe("Storybook visual tests", () => {
+  let storybookProcess: ChildProcess | undefined;
   let page: Page;
   let browser: Browser;
 
   beforeAll(async () => {
-    const isStorybookRunning = await checkIfStorybookIsRunning();
-    if (!isStorybookRunning) {
-      await startStorybook();
-    }
+    storybookProcess = await ensureStorybookRunning();
 
     browser = await chromium.launch({ headless: true });
     const context = await browser.newContext();
@@ -106,10 +68,7 @@ describe("Storybook visual tests", () => {
 
   afterAll(async () => {
     await browser.close();
-
-    if (storybookProcess) {
-      storybookProcess.kill();
-    }
+    await killStorybook(storybookProcess);
   });
 
   const takeScreenshot = (page: Page, screenshotEntireBody?: boolean) => {
