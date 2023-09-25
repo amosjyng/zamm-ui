@@ -5,6 +5,7 @@
     type DragOptions,
     type DragEventData,
   } from "@neodrag/svelte";
+  import clickSound from "$lib/sounds/switch.ogg";
 
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
   const labelWidth = 3 * rem;
@@ -24,6 +25,28 @@
   let transition = transitionAnimation;
   let startingOffset = 0;
   let dragging = false;
+  let dragPositionOnLeft = false;
+
+  function playClick() {
+    const audio = new Audio(clickSound);
+    audio.volume = 0.05;
+    audio.play();
+    if (window._testRecordSoundPlayed !== undefined) {
+      window._testRecordSoundPlayed();
+    }
+  }
+
+  function playDragClick(offsetX: number) {
+    if (dragging) {
+      if (dragPositionOnLeft && offsetX >= onLeft) {
+        playClick();
+        dragPositionOnLeft = false;
+      } else if (!dragPositionOnLeft && offsetX <= offLeft) {
+        playClick();
+        dragPositionOnLeft = true;
+      }
+    }
+  }
 
   let toggleDragOptions: DragOptions = {
     axis: "x",
@@ -36,6 +59,7 @@
       transition = "";
       dragging = false;
       startingOffset = data.offsetX;
+      dragPositionOnLeft = !toggledOn;
     },
     onDrag: (data: DragEventData) => {
       // if we ever start dragging, then the toggle state will depend on the final
@@ -47,12 +71,14 @@
       // have to keep track of the starting offset to determine if we've actually
       // moved
       dragging = dragging || data.offsetX !== startingOffset;
+      playDragClick(data.offsetX);
     },
     onDragEnd: (data: DragEventData) => {
       transition = transitionAnimation;
       if (dragging) {
         toggledOn = data.offsetX > offLeft / 2;
       }
+      playDragClick(toggledOn ? onLeft : offLeft);
       // even if toggle state didn't change, reset back to resting position
       toggleDragOptions = updatePosition(toggledOn);
     },
@@ -68,6 +94,7 @@
   function toggle() {
     if (!dragging) {
       toggledOn = !toggledOn;
+      playClick();
     }
     dragging = false; // subsequent clicks should register
   }

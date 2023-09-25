@@ -1,11 +1,22 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Switch from "./Switch.svelte";
 
+const mockAudio = {
+  pause: vi.fn(),
+  play: vi.fn(),
+};
+
+global.Audio = vi.fn().mockImplementation(() => mockAudio);
+
 describe("Switch", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   test("can be toggled on", async () => {
     render(Switch, {});
 
@@ -22,5 +33,32 @@ describe("Switch", () => {
     expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
     await act(() => userEvent.click(onOffSwitch));
     expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+  });
+
+  test("can have multiple unique labels", async () => {
+    render(Switch, { label: "One" });
+    render(Switch, { label: "Two" });
+
+    const switchOne = screen.getByLabelText("One");
+    expect(switchOne).toHaveAttribute("aria-checked", "false");
+    const switchTwo = screen.getByLabelText("Two");
+    expect(switchTwo).toHaveAttribute("aria-checked", "false");
+
+    await act(() => userEvent.click(switchOne));
+    expect(switchOne).toHaveAttribute("aria-checked", "true");
+    expect(switchTwo).toHaveAttribute("aria-checked", "false");
+
+    await act(() => userEvent.click(switchTwo));
+    expect(switchOne).toHaveAttribute("aria-checked", "true");
+    expect(switchTwo).toHaveAttribute("aria-checked", "true");
+  });
+
+  test("plays clicking sound during toggle", async () => {
+    render(Switch, {});
+    expect(mockAudio.play).not.toHaveBeenCalled();
+
+    const onOffSwitch = screen.getByRole("switch");
+    await act(() => userEvent.click(onOffSwitch));
+    expect(mockAudio.play).toHaveBeenCalledTimes(1);
   });
 });
