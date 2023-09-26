@@ -152,6 +152,10 @@
     gap: 1rem;
   }
 
+  label {
+    flex: 1;
+  }
+
   button {
     --skew: -20deg;
     --label-width: 3rem;
@@ -161,6 +165,7 @@
     --toggle-layer: 3;
     cursor: pointer;
     transform: skew(var(--skew));
+    margin-right: calc(-0.5 * var(--label-height) * sin(var(--skew)));
     padding: 0;
     border: none;
     background: transparent;
