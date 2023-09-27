@@ -15,9 +15,11 @@ const Template = ({ ...args }) => ({
 export const DashboardSelected: StoryObj = Template.bind({}) as any;
 DashboardSelected.args = {
   currentRoute: "/",
+  dummyLinks: true,
 };
 
 export const SettingsSelected: StoryObj = Template.bind({}) as any;
 SettingsSelected.args = {
   currentRoute: "/settings",
+  dummyLinks: true,
 };

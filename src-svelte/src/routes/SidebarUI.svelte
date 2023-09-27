@@ -22,6 +22,14 @@
   ];
 
   export let currentRoute: string;
+  export let dummyLinks = false;
+
+  function routeChangeSimulator(newRoute: App.Route) {
+    return (e: MouseEvent) => {
+      e.preventDefault();
+      currentRoute = newRoute.path;
+    };
+  }
 </script>
 
 <header>
@@ -66,7 +74,8 @@
         aria-current={route.path === currentRoute ? "page" : undefined}
         class="icon"
         title={route.name}
-        href={route.path}
+        href={dummyLinks ? "#" : route.path}
+        on:click={dummyLinks ? routeChangeSimulator(route) : undefined}
       >
         <svelte:component this={route.icon} />
       </a>
