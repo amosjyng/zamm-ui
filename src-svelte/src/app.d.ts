@@ -2,13 +2,15 @@
 // for information about these interfaces
 
 import "unplugin-icons/types/svelte";
+import IconSettings from "~icons/ion/settings";
 
 declare global {
   namespace App {
-    // interface Error {}
-    // interface Locals {}
-    // interface PageData {}
-    // interface Platform {}
+    interface Route {
+      name: string;
+      path: string;
+      icon: typeof IconSettings;
+    }
   }
 
   interface Window {
