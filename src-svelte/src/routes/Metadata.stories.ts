@@ -3,7 +3,7 @@ import type { StoryObj } from "@storybook/svelte";
 
 export default {
   component: MetadataComponent,
-  title: "Dashboard/Metadata",
+  title: "Screens/Dashboard/Metadata",
   argTypes: {},
 };
 
