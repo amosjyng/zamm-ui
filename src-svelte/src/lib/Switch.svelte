@@ -7,8 +7,11 @@
   } from "@neodrag/svelte";
   import clickSound from "$lib/sounds/switch.ogg";
 
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-  const labelWidth = 3 * rem;
+  const rootFontSize = parseFloat(
+    getComputedStyle(document.documentElement).fontSize,
+  );
+  const switchSize = 1 * rootFontSize;
+  const labelWidth = 3 * switchSize;
   const offLeft = -labelWidth;
   const onLeft = 0;
   const transitionAnimation = `
@@ -114,6 +117,7 @@
     aria-checked={toggledOn}
     id={switchId}
     on:click={toggle}
+    style="font-size: {switchSize}px;"
   >
     <div class="groove-layer groove">
       <div class="groove-layer shadow"></div>
@@ -151,8 +155,8 @@
     gap: 1rem;
 
     /* button stats */
-    --label-width: 3rem;
-    --label-height: 1.5rem;
+    --label-width: 3em;
+    --label-height: 1.5em;
     --toggle-height: calc(1.2 * var(--label-height));
     height: var(--toggle-height);
   }
@@ -188,7 +192,7 @@
   }
 
   .groove-layer.shadow {
-    box-shadow: inset 0.05rem 0.05rem 0.3rem rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0.05em 0.05em 0.3em rgba(0, 0, 0, 0.4);
   }
 
   .groove-layer.bounds {
@@ -235,11 +239,11 @@
   }
 
   .toggle-label span {
-    --shadow-offset: 0.05rem;
+    --shadow-offset: 0.05em;
     --shadow-intensity: 0.3;
     transform: skew(calc(-1 * var(--skew)));
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.9em;
     font-family: Nasalization, sans-serif;
     text-transform: uppercase;
     text-shadow:
@@ -259,9 +263,9 @@
     height: var(--toggle-height);
     background-color: #ddd;
     box-shadow:
-      0.1rem 0.1rem 0.15rem rgba(0, 0, 0, 0.1),
-      inset -0.1rem -0.1rem 0.15rem rgba(0, 0, 0, 0.3),
-      inset 0.1rem 0.1rem 0.15rem rgba(255, 255, 255, 0.7);
+      0.1em 0.1em 0.15em rgba(0, 0, 0, 0.1),
+      inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
+      inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
     border-radius: var(--corner-roundness);
   }
 </style>
