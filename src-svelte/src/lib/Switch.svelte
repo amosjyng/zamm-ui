@@ -163,6 +163,7 @@
 
   label {
     flex: 1;
+    cursor: pointer;
   }
 
   button {
