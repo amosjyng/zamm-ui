@@ -89,7 +89,7 @@
         id="nav-{route.name.toLowerCase()}"
         title={route.name}
         href={dummyLinks ? "#" : route.path}
-        on:click={routeChangeSimulator(route)}
+        on:click={dummyLinks ? routeChangeSimulator(route) : undefined}
       >
         <svelte:component this={route.icon} />
       </a>

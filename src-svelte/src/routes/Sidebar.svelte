@@ -2,7 +2,8 @@
   import { page } from "$app/stores";
   import SidebarUi from "./SidebarUI.svelte";
 
-  const currentRoute = $page.url.pathname;
+  let currentRoute: string;
+  $: currentRoute = $page.url.pathname;
 </script>
 
 <SidebarUi {currentRoute} />
