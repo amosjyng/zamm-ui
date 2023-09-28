@@ -139,7 +139,6 @@
       <div class="toggle-label" use:draggable={toggleDragOptions}>
         <div class="toggle"></div>
       </div>
-      <div class="toggle-label"></div>
     </div>
   </button>
 </div>
@@ -150,6 +149,12 @@
     flex-direction: row;
     align-items: center;
     gap: 1rem;
+
+    /* button stats */
+    --label-width: 3rem;
+    --label-height: 1.5rem;
+    --toggle-height: calc(1.2 * var(--label-height));
+    height: var(--toggle-height);
   }
 
   label {
@@ -158,14 +163,12 @@
 
   button {
     --skew: -20deg;
-    --label-width: 3rem;
-    --label-height: 1.5rem;
     --groove-contents-layer: 1;
     --groove-layer: 2;
     --toggle-layer: 3;
     cursor: pointer;
     transform: skew(var(--skew));
-    margin-right: calc(-0.5 * var(--label-height) * sin(var(--skew)));
+    margin-right: calc(-0.5 * var(--toggle-height) * sin(var(--skew)));
     padding: 0;
     border: none;
     background: transparent;
@@ -253,7 +256,7 @@
   .toggle {
     position: absolute;
     width: calc(1.05 * var(--label-width));
-    height: calc(1.2 * var(--label-height));
+    height: var(--toggle-height);
     background-color: #ddd;
     box-shadow:
       0.1rem 0.1rem 0.15rem rgba(0, 0, 0, 0.1),
