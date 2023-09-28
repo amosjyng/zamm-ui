@@ -51,6 +51,11 @@ const components: ComponentTestConfig[] = [
     path: ["navigation", "sidebar"],
     variants: ["settings-selected"],
   },
+  {
+    path: ["screens", "settings"],
+    variants: ["tiny-phone-screen", "large-phone-screen", "tablet"],
+    screenshotEntireBody: true,
+  },
 ];
 
 describe("Storybook visual tests", () => {

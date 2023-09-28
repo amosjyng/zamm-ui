@@ -166,6 +166,12 @@
     cursor: pointer;
   }
 
+  @media (min-width: 52rem) {
+    label {
+      white-space: nowrap;
+    }
+  }
+
   button {
     --skew: -20deg;
     --groove-contents-layer: 1;
