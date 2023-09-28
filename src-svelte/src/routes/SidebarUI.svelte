@@ -23,6 +23,16 @@
 
   export let currentRoute: string;
   export let dummyLinks = false;
+  let indicatorPosition: string;
+
+  function setIndicatorPosition(newRoute: string) {
+    const routeIndex = routes.findIndex((r) => r.path === newRoute);
+    indicatorPosition =
+      `calc(var(--icons-top-offset) + ` +
+      routeIndex +
+      `* var(--sidebar-icon-size))`;
+    return indicatorPosition;
+  }
 
   function routeChangeSimulator(newRoute: App.Route) {
     return (e: MouseEvent) => {
@@ -30,6 +40,8 @@
       currentRoute = newRoute.path;
     };
   }
+
+  $: indicatorPosition = setIndicatorPosition(currentRoute);
 </script>
 
 <header>
@@ -69,13 +81,15 @@
   </svg>
 
   <nav>
+    <div class="indicator" style="top: {indicatorPosition};"></div>
     {#each routes as route}
       <a
         aria-current={route.path === currentRoute ? "page" : undefined}
         class="icon"
+        id="nav-{route.name.toLowerCase()}"
         title={route.name}
         href={dummyLinks ? "#" : route.path}
-        on:click={dummyLinks ? routeChangeSimulator(route) : undefined}
+        on:click={routeChangeSimulator(route)}
       >
         <svelte:component this={route.icon} />
       </a>
@@ -85,8 +99,14 @@
 
 <style>
   header {
+    --animation-duration: 0.1s;
+    --icons-top-offset: 0.75rem;
+    --sidebar-left-padding: 0.5rem;
+    --sidebar-icon-size: calc(
+      var(--sidebar-width) - var(--sidebar-left-padding)
+    );
     z-index: 1;
-    padding-top: 0.75rem;
+    padding-top: var(--icons-top-offset);
     padding-left: var(--sidebar-left-padding);
     /* this is the icon size, not the sidebar-width, because
     sidebar-width is supposed to control the total width of the sidebar,
@@ -112,9 +132,13 @@
     z-index: 1;
   }
 
-  .icon {
+  .icon,
+  .indicator {
     width: var(--sidebar-icon-size);
     height: var(--sidebar-icon-size);
+  }
+
+  .icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -124,6 +148,8 @@
     font-size: calc(0.5 * var(--sidebar-icon-size));
     color: #aaa;
     filter: url(#inset-shadow);
+    z-index: 2;
+    transition: color var(--animation-duration) ease-in;
   }
 
   .icon[aria-current="page"] > :global(:only-child) {
@@ -131,17 +157,18 @@
     filter: url(#inset-shadow-selected);
   }
 
-  .icon[aria-current="page"] {
+  .indicator {
     border-top-left-radius: var(--corner-roundness);
     border-bottom-left-radius: var(--corner-roundness);
-    position: relative;
+    position: absolute;
     background-color: var(--color-background);
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
-    z-index: 2;
+    z-index: 1;
+    transition: top var(--animation-duration) ease-out;
   }
 
-  .icon[aria-current="page"]::before,
-  .icon[aria-current="page"]::after {
+  .indicator::before,
+  .indicator::after {
     content: "";
     height: 1rem;
     width: 1rem;
@@ -149,13 +176,13 @@
     right: 0;
   }
 
-  .icon[aria-current="page"]::before {
+  .indicator::before {
     bottom: var(--sidebar-icon-size);
     border-radius: 0 0 var(--corner-roundness) 0;
     box-shadow: 0 0.375rem 0 0 var(--color-background);
   }
 
-  .icon[aria-current="page"]::after {
+  .indicator::after {
     top: var(--sidebar-icon-size);
     border-radius: 0 var(--corner-roundness) 0 0;
     box-shadow: 0 -0.375rem 0 0 var(--color-background);
