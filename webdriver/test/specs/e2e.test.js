@@ -28,6 +28,7 @@ describe("Welcome screen", function () {
   it("should allow navigation to the settings page", async function () {
     findAndClick('a[title="Settings"]');
     findAndClick("aria/Sounds");
+    await browser.pause(500); // for CSS transitions to finish
     expect(
       await browser.checkFullPageScreen("settings-screen", {}),
     ).toBeLessThanOrEqual(maxMismatch);
