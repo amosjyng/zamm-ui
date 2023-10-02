@@ -3,7 +3,7 @@ LABEL org.opencontainers.image.source="https://github.com/amosjyng/zamm"
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
-  apt install -y --no-install-recommends build-essential libssl-dev zlib1g-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev libncurses-dev tk-dev libwebkit2gtk-4.0-dev curl wget file libgtk-3-dev librsvg2-dev ca-certificates software-properties-common && \
+  apt install -y --no-install-recommends build-essential libssl-dev zlib1g-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev libncurses-dev tk-dev libwebkit2gtk-4.0-dev curl wget file libgtk-3-dev librsvg2-dev ca-certificates software-properties-common patchelf && \
   apt-add-repository ppa:git-core/ppa && \
   apt update && \
   apt install -y git
