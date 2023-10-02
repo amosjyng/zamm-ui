@@ -22,6 +22,9 @@ docker:
 	docker build . -t $(BUILD_IMAGE)
 	docker push $(BUILD_IMAGE)
 
+e2e-test: python svelte rust
+	yarn e2e-test
+
 test: python svelte rust
 	cd src-python && make test
 	cd src-svelte && make test

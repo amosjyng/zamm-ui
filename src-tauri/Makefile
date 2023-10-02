@@ -1,6 +1,6 @@
 .PHONY: format lint test tests clean release
 
-target/release/zamm: ./Cargo.toml $(shell find . -type f \( -name "*.rs" \) -not -path "./target/*")
+target/release/zamm: ./Cargo.toml ../src-svelte/build $(shell find . -type f \( -name "*.rs" \) -not -path "./target/*")
 	cargo build --release --features custom-protocol
 	touch target/release/zamm
 
