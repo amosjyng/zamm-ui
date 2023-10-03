@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { soundOn } from "../preferences";
   import { customAlphabet } from "nanoid/non-secure";
   import {
     draggable,
@@ -31,6 +32,10 @@
   let dragPositionOnLeft = false;
 
   function playClick() {
+    if (!$soundOn) {
+      return;
+    }
+
     const audio = new Audio(clickSound);
     audio.volume = 0.05;
     audio.play();
