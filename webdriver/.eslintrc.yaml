@@ -6,3 +6,4 @@ extends:
   - plugin:mocha/recommended
 rules:
   "@typescript-eslint/no-var-requires": off
+  "wdio/no-pause": off

@@ -38,18 +38,23 @@ const components: ComponentTestConfig[] = [
     ],
   },
   {
-    path: ["dashboard", "api-keys-display"],
+    path: ["navigation", "sidebar"],
+    variants: ["settings-selected"],
+  },
+  {
+    path: ["screens", "dashboard", "api-keys-display"],
     variants: ["loading", "unknown", "known"],
     screenshotEntireBody: true,
   },
   {
-    path: ["dashboard", "metadata"],
+    path: ["screens", "dashboard", "metadata"],
     variants: ["metadata"],
     screenshotEntireBody: true,
   },
   {
-    path: ["navigation", "sidebar"],
-    variants: ["settings-selected"],
+    path: ["screens", "settings"],
+    variants: ["tiny-phone-screen", "large-phone-screen", "tablet"],
+    screenshotEntireBody: true,
   },
 ];
 

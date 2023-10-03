@@ -3,7 +3,7 @@ LABEL org.opencontainers.image.source="https://github.com/amosjyng/zamm"
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
-  apt install -y --no-install-recommends build-essential libssl-dev zlib1g-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev libncurses-dev tk-dev libwebkit2gtk-4.0-dev curl wget file libgtk-3-dev librsvg2-dev ca-certificates software-properties-common && \
+  apt install -y --no-install-recommends build-essential libssl-dev zlib1g-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev libncurses-dev tk-dev libwebkit2gtk-4.0-dev curl wget file libgtk-3-dev librsvg2-dev ca-certificates software-properties-common patchelf && \
   apt-add-repository ppa:git-core/ppa && \
   apt update && \
   apt install -y git
@@ -49,6 +49,8 @@ RUN git clone https://github.com/amosjyng/neodrag.git src-svelte/forks/neodrag &
 COPY src-python/poetry.lock poetry.lock
 COPY src-python/pyproject.toml pyproject.toml
 RUN poetry install
+
+RUN apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
 
 COPY src-tauri/Cargo.toml Cargo.toml
 COPY src-tauri/Cargo.lock Cargo.lock

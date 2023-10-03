@@ -4,16 +4,16 @@ BUILD_IMAGE = ghcr.io/amosjyng/zamm:v0.0.0-build
 CURRENT_DIR = $(shell pwd)
 
 build: python svelte rust
-	cargo tauri build
+	cargo tauri build $(ARGS)
 
 copy-docker-deps:
-	mv /tmp/dependencies/src-svelte/forks/neodrag/packages/svelte/dist ./src-svelte/forks/neodrag/packages/svelte/dist
-	mv /tmp/dependencies/node_modules ./node_modules
-	mv /tmp/dependencies/src-svelte/node_modules ./src-svelte/node_modules
-	mv /tmp/dependencies/target ./src-tauri/target
+	mv -n /tmp/dependencies/src-svelte/forks/neodrag/packages/svelte/dist ./src-svelte/forks/neodrag/packages/svelte/dist
+	mv -n /tmp/dependencies/node_modules ./node_modules
+	mv -n /tmp/dependencies/src-svelte/node_modules ./src-svelte/node_modules
+	mv -n /tmp/dependencies/target ./src-tauri/target
 
 build-docker:
-	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make copy-docker-deps build
+	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make copy-docker-deps build ARGS=$(ARGS)
 
 icon:
 	yarn tauri icon src-tauri/icons/icon.png
@@ -21,6 +21,9 @@ icon:
 docker:
 	docker build . -t $(BUILD_IMAGE)
 	docker push $(BUILD_IMAGE)
+
+e2e-test: python svelte rust
+	yarn e2e-test
 
 test: python svelte rust
 	cd src-python && make test

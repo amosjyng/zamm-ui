@@ -53,8 +53,6 @@
   --color-border: #CCC;
   --color-background: #FFF;
   --sidebar-width: 3.75rem;
-  --sidebar-left-padding: 0.5rem;
-  --sidebar-icon-size: calc(var(--sidebar-width) - var(--sidebar-left-padding));
   --shadow-offset: 4px;
   --shadow-blur: 8px;
   --corner-roundness: 0.375rem;
