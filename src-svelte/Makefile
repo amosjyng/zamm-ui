@@ -20,4 +20,4 @@ lint:
 	yarn eslint --fix src/ --ext .js,.ts,.svelte
 
 clean:
-	rm -rf build node_modules ../node_modules
+	rm -rf build node_modules ../node_modules forks/neodrag/packages/svelte/dist/dist
