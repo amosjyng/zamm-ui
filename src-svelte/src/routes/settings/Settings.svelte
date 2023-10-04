@@ -1,12 +1,15 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
   import SettingsSwitch from "./SettingsSwitch.svelte";
-  import { soundOn } from "../../preferences";
+  import { unceasingAnimations, soundOn } from "../../preferences";
 </script>
 
 <InfoBox title="Settings">
   <div class="container">
-    <SettingsSwitch label="Unceasing animations" />
+    <SettingsSwitch
+      label="Unceasing animations"
+      bind:toggledOn={$unceasingAnimations}
+    />
     <SettingsSwitch label="Sounds" bind:toggledOn={$soundOn} />
   </div>
 </InfoBox>
