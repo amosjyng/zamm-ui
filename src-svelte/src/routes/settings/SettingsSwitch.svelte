@@ -6,7 +6,7 @@
 </script>
 
 <div class="container">
-  <Switch {label} {toggledOn} />
+  <Switch {label} bind:toggledOn />
 </div>
 
 <style>
