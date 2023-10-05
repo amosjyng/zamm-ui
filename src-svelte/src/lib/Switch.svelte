@@ -24,6 +24,7 @@
 
   export let label: string | undefined = undefined;
   export let toggledOn = false;
+  export let letParentToggle = false;
   let toggleBound: HTMLElement;
   let left = 0;
   let transition = transitionAnimation;
@@ -99,12 +100,18 @@
     };
   }
 
-  function toggle() {
+  export function toggle() {
     if (!dragging) {
       toggledOn = !toggledOn;
       playClick();
     }
     dragging = false; // subsequent clicks should register
+  }
+
+  function buttonClicked() {
+    if (!letParentToggle) {
+      toggle();
+    }
   }
 
   $: toggleDragOptions = updatePosition(toggledOn);
@@ -121,7 +128,7 @@
     tabIndex="0"
     aria-checked={toggledOn}
     id={switchId}
-    on:click={toggle}
+    on:click={buttonClicked}
     style="font-size: {switchSize}px;"
   >
     <div class="groove-layer groove">
