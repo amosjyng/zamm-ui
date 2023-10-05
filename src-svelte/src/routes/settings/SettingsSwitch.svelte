@@ -3,10 +3,20 @@
 
   export let label: string;
   export let toggledOn = false;
+  let switchChild: Switch;
 </script>
 
-<div class="container">
-  <Switch {label} {toggledOn} />
+<div
+  class="settings-switch container"
+  on:click|preventDefault={switchChild.toggle}
+  role="none"
+>
+  <Switch
+    {label}
+    bind:this={switchChild}
+    bind:toggledOn
+    letParentToggle={true}
+  />
 </div>
 
 <style>
@@ -14,6 +24,7 @@
     padding: calc(0.5 * var(--side-padding)) var(--side-padding);
     border-radius: var(--corner-roundness);
     transition: background 0.5s;
+    cursor: pointer;
   }
 
   .container:hover {

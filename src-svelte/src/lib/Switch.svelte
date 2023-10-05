@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { soundOn } from "../preferences";
   import { customAlphabet } from "nanoid/non-secure";
   import {
     draggable,
@@ -23,6 +24,7 @@
 
   export let label: string | undefined = undefined;
   export let toggledOn = false;
+  export let letParentToggle = false;
   let toggleBound: HTMLElement;
   let left = 0;
   let transition = transitionAnimation;
@@ -31,6 +33,10 @@
   let dragPositionOnLeft = false;
 
   function playClick() {
+    if (!$soundOn) {
+      return;
+    }
+
     const audio = new Audio(clickSound);
     audio.volume = 0.05;
     audio.play();
@@ -94,12 +100,18 @@
     };
   }
 
-  function toggle() {
+  export function toggle() {
     if (!dragging) {
       toggledOn = !toggledOn;
       playClick();
     }
     dragging = false; // subsequent clicks should register
+  }
+
+  function buttonClicked() {
+    if (!letParentToggle) {
+      toggle();
+    }
   }
 
   $: toggleDragOptions = updatePosition(toggledOn);
@@ -116,7 +128,7 @@
     tabIndex="0"
     aria-checked={toggledOn}
     id={switchId}
-    on:click={toggle}
+    on:click={buttonClicked}
     style="font-size: {switchSize}px;"
   >
     <div class="groove-layer groove">

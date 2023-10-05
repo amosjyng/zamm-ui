@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Switch from "./Switch.svelte";
+import { soundOn } from "../preferences";
 
 const mockAudio = {
   pause: vi.fn(),
@@ -60,5 +61,15 @@ describe("Switch", () => {
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
     expect(mockAudio.play).toHaveBeenCalledTimes(1);
+  });
+
+  test("does not play clicking sound when sound off", async () => {
+    render(Switch, {});
+    soundOn.update(() => false);
+    expect(mockAudio.play).not.toHaveBeenCalled();
+
+    const onOffSwitch = screen.getByRole("switch");
+    await act(() => userEvent.click(onOffSwitch));
+    expect(mockAudio.play).not.toHaveBeenCalled();
   });
 });

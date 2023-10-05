@@ -1,4 +1,4 @@
-import BackgroundComponent from "./Background.svelte";
+import BackgroundComponent from "./BackgroundUI.svelte";
 import type { StoryObj } from "@storybook/svelte";
 
 export default {
