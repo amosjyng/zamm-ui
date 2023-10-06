@@ -21,7 +21,7 @@ interface TauriInvokeArgs {
   [key: string]: any;
 }
 
-const tauri_invoke_decorator: Decorator = (
+const TauriInvokeDecorator: Decorator = (
   story: StoryFn,
   context: StoryContext,
 ) => {
@@ -32,4 +32,4 @@ const tauri_invoke_decorator: Decorator = (
   return story(args, context);
 };
 
-export default tauri_invoke_decorator;
+export default TauriInvokeDecorator;
