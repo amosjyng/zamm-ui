@@ -60,7 +60,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--color-background);
+    background: var(--color-foreground);
     -webkit-mask:
       linear-gradient(-45deg, transparent 0 var(--cut), #fff 0) bottom right,
       linear-gradient(135deg, transparent 0 var(--cut), #fff 0) top left;

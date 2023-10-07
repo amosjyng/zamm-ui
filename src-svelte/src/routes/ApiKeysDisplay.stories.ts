@@ -1,11 +1,13 @@
 import ApiKeysDisplay from "./ApiKeysDisplay.svelte";
 import type { ApiKeys } from "$lib/bindings";
 import type { StoryObj } from "@storybook/svelte";
+import TauriInvokeDecorator from "$lib/__mocks__/invoke";
 
 export default {
   component: ApiKeysDisplay,
   title: "Screens/Dashboard/API Keys Display",
   argTypes: {},
+  decorators: [TauriInvokeDecorator],
 };
 
 const Template = ({ ...args }) => ({

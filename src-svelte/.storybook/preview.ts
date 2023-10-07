@@ -1,5 +1,4 @@
 import "../src/routes/styles.css";
-import tauri_invoke_decorator from "../src/lib/__mocks__/invoke";
 
 /** @type { import('@storybook/svelte').Preview } */
 const preview = {
@@ -12,7 +11,7 @@ const preview = {
       },
     },
   },
-  decorators: [tauri_invoke_decorator],
+  decorators: [],
 };
 
 export default preview;
