@@ -38,8 +38,12 @@ const components: ComponentTestConfig[] = [
     ],
   },
   {
-    path: ["navigation", "sidebar"],
-    variants: ["settings-selected"],
+    path: ["layout", "app"],
+    variants: ["static"],
+  },
+  {
+    path: ["layout", "sidebar"],
+    variants: ["dashboard-selected", "settings-selected"],
   },
   {
     path: ["screens", "dashboard", "api-keys-display"],

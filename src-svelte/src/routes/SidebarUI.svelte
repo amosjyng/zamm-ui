@@ -27,10 +27,7 @@
 
   function setIndicatorPosition(newRoute: string) {
     const routeIndex = routes.findIndex((r) => r.path === newRoute);
-    indicatorPosition =
-      `calc(var(--icons-top-offset) + ` +
-      routeIndex +
-      `* var(--sidebar-icon-size))`;
+    indicatorPosition = `calc(${routeIndex} * var(--sidebar-icon-size))`;
     return indicatorPosition;
   }
 
@@ -100,36 +97,21 @@
 <style>
   header {
     --animation-duration: 0.1s;
-    --icons-top-offset: 0.75rem;
+    --icons-top-offset: calc(2 * var(--corner-roundness));
     --sidebar-left-padding: 0.5rem;
     --sidebar-icon-size: calc(
       var(--sidebar-width) - var(--sidebar-left-padding)
     );
-    z-index: 1;
     padding-top: var(--icons-top-offset);
     padding-left: var(--sidebar-left-padding);
-    /* this is the icon size, not the sidebar-width, because
-    sidebar-width is supposed to control the total width of the sidebar,
-    whereas CSS width only controls the sidebar's content area */
-    width: var(--sidebar-icon-size);
-    background-color: #f4f4f4;
-    position: fixed;
+    float: left;
     clip-path: inset(0 0 0 0);
-    top: 0;
-    left: 0;
     height: 100vh;
+    box-sizing: border-box;
   }
 
-  header::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: var(--sidebar-width);
-    width: 50px;
-    height: 100vh;
-    box-shadow: calc(-1 * var(--shadow-offset)) 0 var(--shadow-blur) 0 #ccc;
-    pointer-events: none;
-    z-index: 1;
+  nav {
+    position: relative;
   }
 
   .icon,
@@ -161,7 +143,7 @@
     border-top-left-radius: var(--corner-roundness);
     border-bottom-left-radius: var(--corner-roundness);
     position: absolute;
-    background-color: var(--color-background);
+    background-color: var(--color-foreground);
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 1;
     transition: top var(--animation-duration) ease-out;
@@ -170,8 +152,8 @@
   .indicator::before,
   .indicator::after {
     content: "";
-    height: 1rem;
-    width: 1rem;
+    height: calc(2 * var(--corner-roundness));
+    width: var(--corner-roundness);
     position: absolute;
     right: 0;
   }
@@ -179,12 +161,12 @@
   .indicator::before {
     bottom: var(--sidebar-icon-size);
     border-radius: 0 0 var(--corner-roundness) 0;
-    box-shadow: 0 0.375rem 0 0 var(--color-background);
+    box-shadow: 0 var(--corner-roundness) 0 0 var(--color-foreground);
   }
 
   .indicator::after {
     top: var(--sidebar-icon-size);
     border-radius: 0 var(--corner-roundness) 0 0;
-    box-shadow: 0 -0.375rem 0 0 var(--color-background);
+    box-shadow: 0 calc(-1 * var(--corner-roundness)) 0 0 var(--color-foreground);
   }
 </style>

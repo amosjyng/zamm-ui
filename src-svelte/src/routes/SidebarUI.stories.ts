@@ -3,8 +3,14 @@ import type { StoryObj } from "@storybook/svelte";
 
 export default {
   component: SidebarUI,
-  title: "Navigation/Sidebar",
+  title: "Layout/Sidebar",
   argTypes: {},
+  parameters: {
+    backgrounds: {
+      default: "ZAMM background",
+      values: [{ name: "ZAMM background", value: "#f4f4f4" }],
+    },
+  },
 };
 
 const Template = ({ ...args }) => ({

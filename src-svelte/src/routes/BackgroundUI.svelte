@@ -19,6 +19,7 @@
     left: 0;
     right: 0;
     z-index: -100;
+    overflow: hidden;
     --position: 55%;
     --base-duration: 15s;
     --max-left: -15%;
@@ -40,7 +41,7 @@
     bottom: 0;
     left: -100%;
     opacity: 0.1;
-    position: fixed;
+    position: absolute;
     right: -100%;
     top: 0%;
     z-index: -1;

@@ -51,7 +51,8 @@
   --color-faded: rgba(0, 0, 0, 0.5);
   --color-caution: #FF8C00;
   --color-border: #CCC;
-  --color-background: #FFF;
+  --color-foreground: #FFF;
+  --color-background: #F4F4F4;
   --sidebar-width: 3.75rem;
   --shadow-offset: 4px;
   --shadow-blur: 8px;
@@ -89,5 +90,5 @@ h2 {
 }
 
 body {
-  background-color: var(--color-background);
+  background-color: white;
 }
