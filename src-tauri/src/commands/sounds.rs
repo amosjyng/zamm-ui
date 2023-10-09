@@ -36,3 +36,44 @@ fn play_sound_async(sound: Sound) -> ZammResult<()> {
     thread::sleep(std::time::Duration::from_secs(1));
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::sample_call::SampleCall;
+
+    use std::fs;
+
+    #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    struct PlaySoundRequest {
+        sound: Sound,
+    }
+
+    fn parse_request(request_str: &str) -> PlaySoundRequest {
+        serde_json::from_str(request_str).unwrap()
+    }
+
+    fn read_sample(filename: &str) -> SampleCall {
+        let sample_str = fs::read_to_string(filename)
+            .unwrap_or_else(|_| panic!("No file found at {filename}"));
+        serde_yaml::from_str(&sample_str).unwrap()
+    }
+
+    fn check_play_sound_sample(file_prefix: &str) {
+        let greet_sample = read_sample(file_prefix);
+        assert_eq!(greet_sample.request.len(), 2);
+        assert_eq!(greet_sample.request[0], "play_sound");
+
+        let request = parse_request(&greet_sample.request[1]);
+        #[allow(clippy::let_unit_value)]
+        let actual_result = play_sound(request.sound);
+        let actual_json = serde_json::to_string(&actual_result).unwrap();
+        let expected_json = greet_sample.response;
+        assert_eq!(actual_json, expected_json);
+    }
+
+    #[test]
+    fn test_get_empty_keys() {
+        check_play_sound_sample("./api/sample-calls/play_sound-switch.yaml");
+    }
+}
