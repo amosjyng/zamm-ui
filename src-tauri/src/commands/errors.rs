@@ -37,6 +37,25 @@ impl fmt::Display for SidecarResponseError {
 }
 
 #[derive(thiserror::Error, Debug)]
+pub enum RodioError {
+    #[error(transparent)]
+    Stream {
+        #[from]
+        source: rodio::StreamError,
+    },
+    #[error(transparent)]
+    Decode {
+        #[from]
+        source: rodio::decoder::DecoderError,
+    },
+    #[error(transparent)]
+    Play {
+        #[from]
+        source: rodio::PlayError,
+    },
+}
+
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Failed to spawn sidecar at {expected_path}: {tauri_error}")]
     SidecarSpawn {
@@ -58,6 +77,11 @@ pub enum Error {
         source: serde_json::Error,
     },
     #[error(transparent)]
+    Rodio {
+        #[from]
+        source: RodioError,
+    },
+    #[error(transparent)]
     Tauri {
         #[from]
         source: tauri::Error,
@@ -67,6 +91,27 @@ pub enum Error {
         #[from]
         source: anyhow::Error,
     },
+}
+
+impl From<rodio::StreamError> for Error {
+    fn from(err: rodio::StreamError) -> Self {
+        let rodio_err: RodioError = err.into();
+        rodio_err.into()
+    }
+}
+
+impl From<rodio::decoder::DecoderError> for Error {
+    fn from(err: rodio::decoder::DecoderError) -> Self {
+        let rodio_err: RodioError = err.into();
+        rodio_err.into()
+    }
+}
+
+impl From<rodio::PlayError> for Error {
+    fn from(err: rodio::PlayError) -> Self {
+        let rodio_err: RodioError = err.into();
+        rodio_err.into()
+    }
 }
 
 impl serde::Serialize for Error {

@@ -1,21 +1,38 @@
-import { expect, test, vi } from "vitest";
+import { expect, test, vi, type SpyInstance } from "vitest";
 import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Switch from "./Switch.svelte";
 import { soundOn } from "../preferences";
+import fs from "fs";
+import yaml from "js-yaml";
+import { Convert, type SampleCall } from "$lib/sample-call";
 
-const mockAudio = {
-  pause: vi.fn(),
-  play: vi.fn(),
-};
+const tauriInvokeMock = vi.fn();
 
-global.Audio = vi.fn().mockImplementation(() => mockAudio);
+vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
 
 describe("Switch", () => {
+  let switchCall: SampleCall;
+  let switchRequest: (string | Record<string, string>)[];
+  let spy: SpyInstance;
+
+  beforeAll(() => {
+    const sample_call_yaml = fs.readFileSync(
+      "../src-tauri/api/sample-calls/play_sound-switch.yaml",
+      "utf-8",
+    );
+    const sample_call_json = JSON.stringify(yaml.load(sample_call_yaml));
+    switchCall = Convert.toSampleCall(sample_call_json);
+    switchRequest = switchCall.request;
+    switchRequest[1] = JSON.parse(switchCall.request[1]);
+  });
+
   beforeEach(() => {
-    vi.clearAllMocks();
+    spy = vi.spyOn(window, "__TAURI_INVOKE__");
+    const response = JSON.parse(switchCall.response);
+    tauriInvokeMock.mockResolvedValueOnce(response);
   });
 
   test("can be toggled on", async () => {
@@ -56,20 +73,20 @@ describe("Switch", () => {
 
   test("plays clicking sound during toggle", async () => {
     render(Switch, {});
-    expect(mockAudio.play).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
-    expect(mockAudio.play).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenLastCalledWith(...switchRequest);
   });
 
   test("does not play clicking sound when sound off", async () => {
     render(Switch, {});
     soundOn.update(() => false);
-    expect(mockAudio.play).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
-    expect(mockAudio.play).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 });

@@ -5,18 +5,11 @@ import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import SettingsSwitch from "./SettingsSwitch.svelte";
 
-const mockAudio = {
-  pause: vi.fn(),
-  play: vi.fn(),
-};
+const tauriInvokeMock = vi.fn();
 
-global.Audio = vi.fn().mockImplementation(() => mockAudio);
+vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
 
 describe("Settings switch", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   test("can be toggled on from clicking the container", async () => {
     const { container } = render(SettingsSwitch, { label: "Test" });
 

@@ -1,12 +1,12 @@
 <script lang="ts">
   import { soundOn } from "../preferences";
+  import { playSound } from "./bindings";
   import { customAlphabet } from "nanoid/non-secure";
   import {
     draggable,
     type DragOptions,
     type DragEventData,
   } from "@neodrag/svelte";
-  import clickSound from "$lib/sounds/switch.ogg";
 
   const rootFontSize = parseFloat(
     getComputedStyle(document.documentElement).fontSize,
@@ -37,9 +37,7 @@
       return;
     }
 
-    const audio = new Audio(clickSound);
-    audio.volume = 0.05;
-    audio.play();
+    playSound("Switch");
     if (window._testRecordSoundPlayed !== undefined) {
       window._testRecordSoundPlayed();
     }

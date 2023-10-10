@@ -18,6 +18,11 @@ export function getApiKeys() {
     return invoke()<ApiKeys>("get_api_keys")
 }
 
+export function playSound(sound: Sound) {
+    return invoke()<null>("play_sound", { sound })
+}
+
 export type ApiKey = { value: string; source: Source }
 export type Source = "Environment"
+export type Sound = "Switch"
 export type ApiKeys = { openai: ApiKey | null }

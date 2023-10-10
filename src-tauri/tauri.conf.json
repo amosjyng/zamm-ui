@@ -31,7 +31,7 @@
       "identifier": "dev.zamm",
       "externalBin": ["binaries/zamm-python"],
       "appimage": {
-        "bundleMediaFramework": true
+        "bundleMediaFramework": false
       },
       "icon": [
         "icons/32x32.png",
