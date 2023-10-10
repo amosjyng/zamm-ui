@@ -41,11 +41,11 @@
 
   function routeChangeSimulator(newRoute: App.Route) {
     return (e: MouseEvent) => {
-      e.preventDefault();
       if (newRoute.path !== currentRoute) {
         playWhooshSound();
       }
       if (dummyLinks) {
+        e.preventDefault();
         currentRoute = newRoute.path;
       }
     };
