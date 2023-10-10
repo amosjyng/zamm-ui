@@ -24,5 +24,5 @@ export function playSound(sound: Sound) {
 
 export type ApiKey = { value: string; source: Source }
 export type Source = "Environment"
-export type Sound = "Switch"
+export type Sound = "Switch" | "Whoosh"
 export type ApiKeys = { openai: ApiKey | null }

@@ -13,6 +13,7 @@ use crate::commands::errors::ZammResult;
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub enum Sound {
     Switch,
+    Whoosh,
 }
 
 #[tauri::command]
@@ -27,8 +28,9 @@ pub fn play_sound(sound: Sound) {
 
 fn play_sound_async(sound: Sound) -> ZammResult<()> {
     let (_stream, stream_handle) = OutputStream::try_default()?;
-    let embedded_sound = match sound {
+    let embedded_sound: &[u8] = match sound {
         Sound::Switch => include_bytes!("../../sounds/switch.ogg"),
+        Sound::Whoosh => include_bytes!("../../sounds/whoosh.ogg"),
     };
     let cursor = Cursor::new(embedded_sound);
     let source = Decoder::new(cursor)?;
@@ -73,7 +75,12 @@ mod tests {
     }
 
     #[test]
-    fn test_get_empty_keys() {
+    fn test_play_switch() {
         check_play_sound_sample("./api/sample-calls/play_sound-switch.yaml");
+    }
+
+    #[test]
+    fn test_play_whoosh() {
+        check_play_sound_sample("./api/sample-calls/play_sound-whoosh.yaml");
     }
 }
