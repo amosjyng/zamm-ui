@@ -2,6 +2,8 @@
   import IconSettings from "~icons/ion/settings";
   import IconChat from "~icons/ph/chat-dots-fill";
   import IconDashboard from "~icons/material-symbols/monitor-heart";
+  import { playSound } from "$lib/bindings";
+  import { soundOn } from "../preferences";
 
   const routes: App.Route[] = [
     {
@@ -31,10 +33,21 @@
     return indicatorPosition;
   }
 
+  function playWhooshSound() {
+    if ($soundOn) {
+      playSound("Whoosh");
+    }
+  }
+
   function routeChangeSimulator(newRoute: App.Route) {
     return (e: MouseEvent) => {
-      e.preventDefault();
-      currentRoute = newRoute.path;
+      if (newRoute.path !== currentRoute) {
+        playWhooshSound();
+      }
+      if (dummyLinks) {
+        e.preventDefault();
+        currentRoute = newRoute.path;
+      }
     };
   }
 
@@ -86,7 +99,7 @@
         id="nav-{route.name.toLowerCase()}"
         title={route.name}
         href={dummyLinks ? "#" : route.path}
-        on:click={dummyLinks ? routeChangeSimulator(route) : undefined}
+        on:click={routeChangeSimulator(route)}
       >
         <svelte:component this={route.icon} />
       </a>
