@@ -13,6 +13,7 @@ export default defineConfig({
   resolve: {
     alias: {
       $lib: path.resolve("src/lib"),
+      $app: path.resolve("src/vitest-mocks"),
     },
   },
   test: {
