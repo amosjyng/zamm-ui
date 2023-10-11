@@ -20,7 +20,7 @@ mod python_api;
 mod sample_call;
 mod schema;
 mod setup;
-use commands::{get_api_keys, greet, play_sound};
+use commands::{get_api_keys, get_preferences, greet, play_sound};
 
 pub struct ZammDatabase(Mutex<Option<SqliteConnection>>);
 pub struct ZammApiKeys(Mutex<ApiKeys>);
@@ -28,7 +28,7 @@ pub struct ZammApiKeys(Mutex<ApiKeys>);
 fn main() {
     #[cfg(debug_assertions)]
     ts::export(
-        collect_types![greet, get_api_keys, play_sound],
+        collect_types![greet, get_api_keys, play_sound, get_preferences],
         "../src-svelte/src/lib/bindings.ts",
     )
     .unwrap();
@@ -38,7 +38,12 @@ fn main() {
     tauri::Builder::default()
         .manage(ZammDatabase(Mutex::new(possible_db)))
         .manage(ZammApiKeys(Mutex::new(setup_api_keys())))
-        .invoke_handler(tauri::generate_handler![greet, get_api_keys, play_sound])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            get_api_keys,
+            play_sound,
+            get_preferences
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -56,6 +56,20 @@ pub enum RodioError {
 }
 
 #[derive(thiserror::Error, Debug)]
+pub enum SerdeError {
+    #[error(transparent)]
+    Json {
+        #[from]
+        source: serde_json::Error,
+    },
+    #[error(transparent)]
+    Yaml {
+        #[from]
+        source: serde_yaml::Error,
+    },
+}
+
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Failed to spawn sidecar at {expected_path}: {tauri_error}")]
     SidecarSpawn {
@@ -74,7 +88,7 @@ pub enum Error {
     #[error(transparent)]
     Serde {
         #[from]
-        source: serde_json::Error,
+        source: SerdeError,
     },
     #[error(transparent)]
     Rodio {
@@ -85,6 +99,11 @@ pub enum Error {
     Tauri {
         #[from]
         source: tauri::Error,
+    },
+    #[error(transparent)]
+    Io {
+        #[from]
+        source: std::io::Error,
     },
     #[error("Unknown failure: {source}")]
     Other {
@@ -111,6 +130,20 @@ impl From<rodio::PlayError> for Error {
     fn from(err: rodio::PlayError) -> Self {
         let rodio_err: RodioError = err.into();
         rodio_err.into()
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        let serde_err: SerdeError = err.into();
+        serde_err.into()
+    }
+}
+
+impl From<serde_yaml::Error> for Error {
+    fn from(err: serde_yaml::Error) -> Self {
+        let serde_err: SerdeError = err.into();
+        serde_err.into()
     }
 }
 
