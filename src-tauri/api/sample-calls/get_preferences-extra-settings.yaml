@@ -1,0 +1,6 @@
+request: ["get_preferences"]
+response: >
+  {
+    "unceasing_animations": false,
+    "sound_on": false
+  }

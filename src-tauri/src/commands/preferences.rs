@@ -110,4 +110,12 @@ mod tests {
             "./api/sample-settings/sound-override",
         );
     }
+
+    #[test]
+    fn test_get_preferences_with_extra_settings() {
+        check_get_preferences_sample(
+            "./api/sample-calls/get_preferences-extra-settings.yaml",
+            "./api/sample-settings/extra-settings",
+        );
+    }
 }
