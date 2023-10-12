@@ -1,21 +1,15 @@
 use anyhow::anyhow;
 use path_absolutize::Absolutize;
-use serde::{Deserialize, Serialize};
 
-use specta::{specta, Type};
+use specta::specta;
 use std::fs;
 
 use std::path::PathBuf;
 
 use crate::commands::errors::ZammResult;
+use crate::commands::preferences::models::Preferences;
 
 static PREFERENCES_FILENAME: &str = "preferences.yaml";
-
-#[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
-pub struct Preferences {
-    unceasing_animations: Option<bool>,
-    sound_on: Option<bool>,
-}
 
 fn get_preferences_happy_path(
     maybe_preferences_dir: Option<&PathBuf>,
