@@ -11,21 +11,10 @@ use crate::commands::errors::ZammResult;
 
 static PREFERENCES_FILENAME: &str = "preferences.yaml";
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
+#[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub struct Preferences {
-    #[serde(default)]
-    unceasing_animations: bool,
-    #[serde(default)]
-    sound_on: bool,
-}
-
-impl Default for Preferences {
-    fn default() -> Self {
-        Preferences {
-            unceasing_animations: false,
-            sound_on: true,
-        }
-    }
+    unceasing_animations: Option<bool>,
+    sound_on: Option<bool>,
 }
 
 fn get_preferences_happy_path(
