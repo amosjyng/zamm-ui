@@ -22,7 +22,16 @@ export function playSound(sound: Sound) {
     return invoke()<null>("play_sound", { sound })
 }
 
+export function getPreferences() {
+    return invoke()<Preferences>("get_preferences")
+}
+
+export function setPreferences(preferences: Preferences) {
+    return invoke()<null>("set_preferences", { preferences })
+}
+
 export type ApiKey = { value: string; source: Source }
+export type Preferences = { unceasing_animations: boolean | null; sound_on: boolean | null }
 export type Source = "Environment"
 export type Sound = "Switch" | "Whoosh"
 export type ApiKeys = { openai: ApiKey | null }

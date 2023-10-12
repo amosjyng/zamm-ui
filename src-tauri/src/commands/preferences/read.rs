@@ -1,23 +1,15 @@
-use anyhow::anyhow;
-use path_absolutize::Absolutize;
-
 use specta::specta;
 use std::fs;
 
 use std::path::PathBuf;
 
 use crate::commands::errors::ZammResult;
-use crate::commands::preferences::models::Preferences;
-
-static PREFERENCES_FILENAME: &str = "preferences.yaml";
+use crate::commands::preferences::models::{get_preferences_file, Preferences};
 
 fn get_preferences_happy_path(
-    maybe_preferences_dir: Option<&PathBuf>,
+    maybe_preferences_dir: &Option<PathBuf>,
 ) -> ZammResult<Preferences> {
-    let preferences_dir =
-        maybe_preferences_dir.ok_or(anyhow!("No preferences dir found"))?;
-    let relative_preferences_path = preferences_dir.join(PREFERENCES_FILENAME);
-    let preferences_path = relative_preferences_path.absolutize()?;
+    let preferences_path = get_preferences_file(maybe_preferences_dir.as_ref())?;
     let display_filename = preferences_path.display();
     if preferences_path.exists() {
         println!("Reading preferences from {display_filename}");
@@ -31,7 +23,7 @@ fn get_preferences_happy_path(
 }
 
 fn get_preferences_helper(preferences_path: &Option<PathBuf>) -> Preferences {
-    match get_preferences_happy_path(preferences_path.as_ref()) {
+    match get_preferences_happy_path(preferences_path) {
         Ok(preferences) => preferences,
         Err(e) => {
             eprintln!("Error getting preferences: {e}");
@@ -81,7 +73,7 @@ mod tests {
     #[test]
     fn test_get_preferences_happy_path_without_file() {
         let non_existent_path = PathBuf::from("./non-existent/path");
-        let happy_path_result = get_preferences_happy_path(Some(&non_existent_path));
+        let happy_path_result = get_preferences_happy_path(&Some(non_existent_path));
         assert!(happy_path_result.is_ok());
         assert_eq!(happy_path_result.unwrap(), Preferences::default());
     }

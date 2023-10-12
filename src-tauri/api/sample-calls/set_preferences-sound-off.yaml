@@ -1,0 +1,9 @@
+request:
+  - set_preferences
+  - >
+    {
+      "preferences": {
+        "sound_on": false
+      }
+    }
+response: "null"
