@@ -1,33 +1,30 @@
 use anyhow::anyhow;
-use serde_yaml::mapping::Entry;
-use serde_yaml::Value;
 use specta::specta;
 use std::fs;
 use std::path::PathBuf;
+use toml::map::Entry;
+use toml::Table;
+use toml::Value;
 
 use crate::commands::errors::ZammResult;
 use crate::commands::preferences::models::{get_preferences_file, Preferences};
 
 fn deep_merge(base: &mut Value, other: &Value) {
     match (base, other) {
-        (&mut Value::Mapping(ref mut base_map), Value::Mapping(other_map)) => {
+        (&mut Value::Table(ref mut base_map), Value::Table(other_map)) => {
             for (k, v) in other_map {
-                if !v.is_null() {
-                    match base_map.entry(k.clone()) {
-                        Entry::Vacant(entry) => {
-                            entry.insert(v.clone());
-                        }
-                        Entry::Occupied(mut entry) => {
-                            deep_merge(entry.get_mut(), v);
-                        }
+                match base_map.entry(k.clone()) {
+                    Entry::Vacant(entry) => {
+                        entry.insert(v.clone());
+                    }
+                    Entry::Occupied(mut entry) => {
+                        deep_merge(entry.get_mut(), v);
                     }
                 }
             }
         }
         (base, other) => {
-            if !other.is_null() {
-                *base = other.clone();
-            }
+            *base = other.clone();
         }
     }
 }
@@ -40,17 +37,17 @@ fn set_preferences_helper(
         .as_ref()
         .ok_or(anyhow!("No preferences dir found"))?;
     let preferences_path = get_preferences_file(Some(preferences_dir))?;
-    let mut existing_yaml = if preferences_path.exists() {
+    let mut existing_yaml: Value = if preferences_path.exists() {
         let file_contents = fs::read_to_string(&preferences_path)?;
-        serde_yaml::from_str::<Value>(&file_contents)?
+        toml::from_str::<Table>(&file_contents)?.into()
     } else {
-        serde_yaml::Mapping::new().into()
+        toml::Table::new().into()
     };
 
-    let override_yaml = serde_yaml::to_value(preferences)?;
-    deep_merge(&mut existing_yaml, &override_yaml);
+    let override_toml = Table::try_from(preferences)?;
+    deep_merge(&mut existing_yaml, &override_toml.into());
 
-    let merged_prefs_str = serde_yaml::to_string(&existing_yaml)?;
+    let merged_prefs_str = toml::to_string(&existing_yaml)?;
     fs::create_dir_all(preferences_dir)?;
     fs::write(preferences_path, merged_prefs_str)?;
     Ok(())
@@ -157,7 +154,7 @@ mod tests {
         check_set_preferences_sample(
             "./api/sample-calls/set_preferences-sound-off.yaml",
             None,
-            "./api/sample-settings/sound-override/preferences.yaml",
+            "./api/sample-settings/sound-override/preferences.toml",
         );
     }
 
@@ -165,8 +162,8 @@ mod tests {
     fn test_set_preferences_sound_on_with_extra_settings() {
         check_set_preferences_sample(
             "./api/sample-calls/set_preferences-sound-on.yaml",
-            Some("./api/sample-settings/extra-settings/preferences.yaml"),
-            "./api/sample-settings/extra-settings/sound-on.yaml",
+            Some("./api/sample-settings/extra-settings/preferences.toml"),
+            "./api/sample-settings/extra-settings/sound-on.toml",
         );
     }
 }

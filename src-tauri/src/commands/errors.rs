@@ -63,9 +63,14 @@ pub enum SerdeError {
         source: serde_json::Error,
     },
     #[error(transparent)]
-    Yaml {
+    TomlDeserialize {
         #[from]
-        source: serde_yaml::Error,
+        source: toml::de::Error,
+    },
+    #[error(transparent)]
+    TomlSerialize {
+        #[from]
+        source: toml::ser::Error,
     },
 }
 
@@ -140,8 +145,15 @@ impl From<serde_json::Error> for Error {
     }
 }
 
-impl From<serde_yaml::Error> for Error {
-    fn from(err: serde_yaml::Error) -> Self {
+impl From<toml::de::Error> for Error {
+    fn from(err: toml::de::Error) -> Self {
+        let serde_err: SerdeError = err.into();
+        serde_err.into()
+    }
+}
+
+impl From<toml::ser::Error> for Error {
+    fn from(err: toml::ser::Error) -> Self {
         let serde_err: SerdeError = err.into();
         serde_err.into()
     }
