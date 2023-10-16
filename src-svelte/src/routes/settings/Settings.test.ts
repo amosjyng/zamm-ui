@@ -6,30 +6,11 @@ import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings.svelte";
 import { soundOn } from "../../preferences";
-import fs from "fs";
-import yaml from "js-yaml";
-import { Convert } from "$lib/sample-call";
+import { parseSampleCall, type ParsedCall } from "$lib/sample-call-testing";
 
 const tauriInvokeMock = vi.fn();
 
 vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
-
-interface ParsedCall {
-  request: (string | Record<string, string>)[];
-  response: Record<string, string>;
-}
-
-function parseSampleCall(sampleFile: string): ParsedCall {
-  const sample_call_yaml = fs.readFileSync(sampleFile, "utf-8");
-  const sample_call_json = JSON.stringify(yaml.load(sample_call_yaml));
-  const rawSample = Convert.toSampleCall(sample_call_json);
-  assert(rawSample.request.length === 2);
-  const parsedSample: ParsedCall = {
-    request: [rawSample.request[0], JSON.parse(rawSample.request[1])],
-    response: JSON.parse(rawSample.response),
-  };
-  return parsedSample;
-}
 
 describe("Switch", () => {
   let playSwitchSoundCall: ParsedCall;
@@ -40,12 +21,15 @@ describe("Switch", () => {
   beforeAll(() => {
     playSwitchSoundCall = parseSampleCall(
       "../src-tauri/api/sample-calls/play_sound-switch.yaml",
+      true,
     );
     setSoundOnCall = parseSampleCall(
       "../src-tauri/api/sample-calls/set_preferences-sound-on.yaml",
+      true,
     );
     setSoundOffCall = parseSampleCall(
       "../src-tauri/api/sample-calls/set_preferences-sound-off.yaml",
+      true,
     );
   });
 
