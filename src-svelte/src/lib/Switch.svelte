@@ -25,6 +25,7 @@
   export let label: string | undefined = undefined;
   export let toggledOn = false;
   export let letParentToggle = false;
+  export let onToggle: (toggledOn: boolean) => void = () => undefined;
   let toggleBound: HTMLElement;
   let left = 0;
   let transition = transitionAnimation;
@@ -83,7 +84,11 @@
     onDragEnd: (data: DragEventData) => {
       transition = transitionAnimation;
       if (dragging) {
+        const previousValue = toggledOn;
         toggledOn = data.offsetX > offLeft / 2;
+        if (previousValue !== toggledOn) {
+          onToggle(toggledOn);
+        }
       }
       playDragClick(toggledOn ? onLeft : offLeft);
       // even if toggle state didn't change, reset back to resting position
@@ -101,6 +106,7 @@
   export function toggle() {
     if (!dragging) {
       toggledOn = !toggledOn;
+      onToggle(toggledOn);
       playClick();
     }
     dragging = false; // subsequent clicks should register

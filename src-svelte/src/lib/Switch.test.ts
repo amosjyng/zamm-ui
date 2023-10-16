@@ -89,4 +89,13 @@ describe("Switch", () => {
     await act(() => userEvent.click(onOffSwitch));
     expect(spy).not.toHaveBeenCalled();
   });
+
+  test("calls onToggle when toggled", async () => {
+    const onToggle = vi.fn();
+    render(Switch, { onToggle });
+
+    const onOffSwitch = screen.getByRole("switch");
+    await act(() => userEvent.click(onOffSwitch));
+    expect(onToggle).toBeCalledTimes(1);
+  });
 });

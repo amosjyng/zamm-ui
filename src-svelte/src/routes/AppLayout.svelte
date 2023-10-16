@@ -2,6 +2,19 @@
   import Sidebar from "./Sidebar.svelte";
   import Background from "./Background.svelte";
   import "./styles.css";
+  import { onMount } from "svelte";
+  import { getPreferences } from "$lib/bindings";
+  import { soundOn, unceasingAnimations } from "../preferences";
+
+  onMount(async () => {
+    const prefs = await getPreferences();
+    if (prefs.sound_on !== null) {
+      soundOn.set(prefs.sound_on);
+    }
+    if (prefs.unceasing_animations !== null) {
+      unceasingAnimations.set(prefs.unceasing_animations);
+    }
+  });
 </script>
 
 <div class="app">

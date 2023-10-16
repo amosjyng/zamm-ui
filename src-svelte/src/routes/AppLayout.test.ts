@@ -1,11 +1,11 @@
 import { expect, test, vi, assert } from "vitest";
 import { get } from "svelte/store";
 import "@testing-library/jest-dom";
+import { tick } from "svelte";
 
-import { act, render, screen } from "@testing-library/svelte";
-import userEvent from "@testing-library/user-event";
-import Settings from "./Settings.svelte";
-import { soundOn } from "../../preferences";
+import { render } from "@testing-library/svelte";
+import AppLayout from "./AppLayout.svelte";
+import { soundOn } from "../preferences";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Convert } from "$lib/sample-call";
@@ -19,37 +19,37 @@ interface ParsedCall {
   response: Record<string, string>;
 }
 
-function parseSampleCall(sampleFile: string): ParsedCall {
+function parseSampleCall(
+  sampleFile: string,
+  argumentsExpected: boolean,
+): ParsedCall {
   const sample_call_yaml = fs.readFileSync(sampleFile, "utf-8");
   const sample_call_json = JSON.stringify(yaml.load(sample_call_yaml));
   const rawSample = Convert.toSampleCall(sample_call_json);
-  assert(rawSample.request.length === 2);
+
+  const numExpectedArguments = argumentsExpected ? 2 : 1;
+  assert(rawSample.request.length === numExpectedArguments);
+  const parsedRequest = argumentsExpected
+    ? [rawSample.request[0], JSON.parse(rawSample.request[1])]
+    : rawSample.request;
   const parsedSample: ParsedCall = {
-    request: [rawSample.request[0], JSON.parse(rawSample.request[1])],
+    request: parsedRequest,
     response: JSON.parse(rawSample.response),
   };
   return parsedSample;
 }
 
-describe("Switch", () => {
-  let playSwitchSoundCall: ParsedCall;
-  let setSoundOnCall: ParsedCall;
-  let setSoundOffCall: ParsedCall;
+async function tickFor(ticks: number) {
+  for (let i = 0; i < ticks; i++) {
+    await tick();
+  }
+}
+
+describe("AppLayout", () => {
   let unmatchedCalls: ParsedCall[];
 
-  beforeAll(() => {
-    playSwitchSoundCall = parseSampleCall(
-      "../src-tauri/api/sample-calls/play_sound-switch.yaml",
-    );
-    setSoundOnCall = parseSampleCall(
-      "../src-tauri/api/sample-calls/set_preferences-sound-on.yaml",
-    );
-    setSoundOffCall = parseSampleCall(
-      "../src-tauri/api/sample-calls/set_preferences-sound-off.yaml",
-    );
-  });
-
   beforeEach(() => {
+    vi.clearAllMocks();
     tauriInvokeMock.mockImplementation(
       (...args: (string | Record<string, string>)[]) => {
         const jsonArgs = JSON.stringify(args);
@@ -67,22 +67,35 @@ describe("Switch", () => {
     );
   });
 
-  test("can toggle sound on and off while saving setting", async () => {
-    render(Settings, {});
+  test("will do nothing if no custom settings exist", async () => {
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const soundSwitch = screen.getByLabelText("Sounds");
-    unmatchedCalls = [setSoundOffCall];
-    await act(() => userEvent.click(soundSwitch));
+    const getPreferencesCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
+      false,
+    );
+    unmatchedCalls = [getPreferencesCall];
+
+    render(AppLayout, {});
+    await tickFor(3);
+    expect(get(soundOn)).toBe(true);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+  });
+
+  test("will set sound if sound preference overridden", async () => {
+    expect(get(soundOn)).toBe(true);
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+
+    const getPreferencesCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_preferences-sound-override.yaml",
+      false,
+    );
+    unmatchedCalls = [getPreferencesCall];
+
+    render(AppLayout, {});
+    await tickFor(3);
     expect(get(soundOn)).toBe(false);
     expect(tauriInvokeMock).toBeCalledTimes(1);
-    expect(unmatchedCalls.length).toBe(0);
-
-    unmatchedCalls = [setSoundOnCall, playSwitchSoundCall];
-    await act(() => userEvent.click(soundSwitch));
-    expect(get(soundOn)).toBe(true);
-    expect(tauriInvokeMock).toBeCalledTimes(3);
-    expect(unmatchedCalls.length).toBe(0);
   });
 });

@@ -3,6 +3,7 @@ request:
   - >
     {
       "preferences": {
+        "unceasing_animations": null,
         "sound_on": false
       }
     }
