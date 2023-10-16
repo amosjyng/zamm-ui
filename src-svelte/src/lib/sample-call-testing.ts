@@ -27,3 +27,28 @@ export function parseSampleCall(
   };
   return parsedSample;
 }
+
+export class TauriInvokePlayback {
+  unmatchedCalls: ParsedCall[];
+
+  constructor() {
+    this.unmatchedCalls = [];
+  }
+
+  mockCall(
+    ...args: (string | Record<string, string>)[]
+  ): Promise<Record<string, string>> {
+    const jsonArgs = JSON.stringify(args);
+    const matchingCallIndex = this.unmatchedCalls.findIndex(
+      (call) => JSON.stringify(call.request) === jsonArgs,
+    );
+    assert(matchingCallIndex !== -1, `No matching call found for ${jsonArgs}`);
+    const matchingCall = this.unmatchedCalls[matchingCallIndex].response;
+    this.unmatchedCalls.splice(matchingCallIndex, 1);
+    return Promise.resolve(matchingCall);
+  }
+
+  addCalls(...calls: ParsedCall[]): void {
+    this.unmatchedCalls.push(...calls);
+  }
+}

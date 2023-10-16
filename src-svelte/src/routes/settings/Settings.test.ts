@@ -1,4 +1,4 @@
-import { expect, test, vi, assert } from "vitest";
+import { expect, test, vi, type Mock } from "vitest";
 import { get } from "svelte/store";
 import "@testing-library/jest-dom";
 
@@ -6,17 +6,19 @@ import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings.svelte";
 import { soundOn } from "../../preferences";
-import { parseSampleCall, type ParsedCall } from "$lib/sample-call-testing";
-
-const tauriInvokeMock = vi.fn();
-
-vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
+import {
+  parseSampleCall,
+  type ParsedCall,
+  TauriInvokePlayback,
+} from "$lib/sample-call-testing";
 
 describe("Switch", () => {
+  let tauriInvokeMock: Mock;
+  let playback: TauriInvokePlayback;
+
   let playSwitchSoundCall: ParsedCall;
   let setSoundOnCall: ParsedCall;
   let setSoundOffCall: ParsedCall;
-  let unmatchedCalls: ParsedCall[];
 
   beforeAll(() => {
     playSwitchSoundCall = parseSampleCall(
@@ -34,20 +36,12 @@ describe("Switch", () => {
   });
 
   beforeEach(() => {
+    tauriInvokeMock = vi.fn();
+    vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
+    playback = new TauriInvokePlayback();
     tauriInvokeMock.mockImplementation(
-      (...args: (string | Record<string, string>)[]) => {
-        const jsonArgs = JSON.stringify(args);
-        const matchingCallIndex = unmatchedCalls.findIndex(
-          (call) => JSON.stringify(call.request) === jsonArgs,
-        );
-        assert(
-          matchingCallIndex !== -1,
-          `No matching call found for ${jsonArgs}`,
-        );
-        const matchingCall = unmatchedCalls[matchingCallIndex].response;
-        unmatchedCalls.splice(matchingCallIndex, 1);
-        return Promise.resolve(matchingCall);
-      },
+      (...args: (string | Record<string, string>)[]) =>
+        playback.mockCall(...args),
     );
   });
 
@@ -57,16 +51,16 @@ describe("Switch", () => {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
     const soundSwitch = screen.getByLabelText("Sounds");
-    unmatchedCalls = [setSoundOffCall];
+    playback.addCalls(setSoundOffCall);
     await act(() => userEvent.click(soundSwitch));
     expect(get(soundOn)).toBe(false);
     expect(tauriInvokeMock).toBeCalledTimes(1);
-    expect(unmatchedCalls.length).toBe(0);
+    expect(playback.unmatchedCalls.length).toBe(0);
 
-    unmatchedCalls = [setSoundOnCall, playSwitchSoundCall];
+    playback.addCalls(setSoundOnCall, playSwitchSoundCall);
     await act(() => userEvent.click(soundSwitch));
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).toBeCalledTimes(3);
-    expect(unmatchedCalls.length).toBe(0);
+    expect(playback.unmatchedCalls.length).toBe(0);
   });
 });

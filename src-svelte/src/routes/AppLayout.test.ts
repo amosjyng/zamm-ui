@@ -1,4 +1,4 @@
-import { expect, test, vi, assert } from "vitest";
+import { expect, test, vi, type Mock } from "vitest";
 import { get } from "svelte/store";
 import "@testing-library/jest-dom";
 import { tick } from "svelte";
@@ -6,7 +6,7 @@ import { tick } from "svelte";
 import { render } from "@testing-library/svelte";
 import AppLayout from "./AppLayout.svelte";
 import { soundOn } from "../preferences";
-import { parseSampleCall, type ParsedCall } from "$lib/sample-call-testing";
+import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
 
 const tauriInvokeMock = vi.fn();
 
@@ -19,24 +19,16 @@ async function tickFor(ticks: number) {
 }
 
 describe("AppLayout", () => {
-  let unmatchedCalls: ParsedCall[];
+  let tauriInvokeMock: Mock;
+  let playback: TauriInvokePlayback;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    tauriInvokeMock = vi.fn();
+    vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
+    playback = new TauriInvokePlayback();
     tauriInvokeMock.mockImplementation(
-      (...args: (string | Record<string, string>)[]) => {
-        const jsonArgs = JSON.stringify(args);
-        const matchingCallIndex = unmatchedCalls.findIndex(
-          (call) => JSON.stringify(call.request) === jsonArgs,
-        );
-        assert(
-          matchingCallIndex !== -1,
-          `No matching call found for ${jsonArgs}`,
-        );
-        const matchingCall = unmatchedCalls[matchingCallIndex].response;
-        unmatchedCalls.splice(matchingCallIndex, 1);
-        return Promise.resolve(matchingCall);
-      },
+      (...args: (string | Record<string, string>)[]) =>
+        playback.mockCall(...args),
     );
   });
 
@@ -48,7 +40,7 @@ describe("AppLayout", () => {
       "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
       false,
     );
-    unmatchedCalls = [getPreferencesCall];
+    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, {});
     await tickFor(3);
@@ -64,7 +56,7 @@ describe("AppLayout", () => {
       "../src-tauri/api/sample-calls/get_preferences-sound-override.yaml",
       false,
     );
-    unmatchedCalls = [getPreferencesCall];
+    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, {});
     await tickFor(3);
