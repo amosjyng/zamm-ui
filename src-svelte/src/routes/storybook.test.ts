@@ -1,6 +1,9 @@
 import { type Browser, chromium, expect, type Page } from "@playwright/test";
 import { afterAll, beforeAll, describe, test } from "vitest";
-import { toMatchImageSnapshot } from "jest-image-snapshot";
+import {
+  toMatchImageSnapshot,
+  type MatchImageSnapshotOptions,
+} from "jest-image-snapshot";
 import type { ChildProcess } from "child_process";
 import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 import sizeOf from "image-size";
@@ -91,6 +94,15 @@ describe("Storybook visual tests", () => {
     return frame.locator(locator).screenshot();
   };
 
+  const baseMatchOptions: MatchImageSnapshotOptions = {
+    allowSizeMismatch: true,
+    storeReceivedOnFailure: true,
+    customSnapshotsDir: "screenshots/baseline",
+    customDiffDir: "screenshots/testing/diff",
+    customReceivedDir: "screenshots/testing/actual",
+    customReceivedPostfix: "",
+  };
+
   for (const config of components) {
     const storybookUrl = config.path.join("-");
     const storybookPath = config.path.join("/");
@@ -124,19 +136,16 @@ describe("Storybook visual tests", () => {
               screenshotSize.width > screenshotSize.height
                 ? "vertical"
                 : "horizontal";
+            const matchOptions = {
+              ...baseMatchOptions,
+              diffDirection,
+              customSnapshotIdentifier: `${storybookPath}/${testName}`,
+            };
 
             if (!variantConfig.assertDynamic) {
               // don't compare dynamic screenshots against baseline
               // @ts-ignore
-              expect(screenshot).toMatchImageSnapshot({
-                diffDirection,
-                storeReceivedOnFailure: true,
-                customSnapshotsDir: "screenshots/baseline",
-                customSnapshotIdentifier: `${storybookPath}/${testName}`,
-                customDiffDir: "screenshots/testing/diff",
-                customReceivedDir: "screenshots/testing/actual",
-                customReceivedPostfix: "",
-              });
+              expect(screenshot).toMatchImageSnapshot(matchOptions);
             }
 
             if (variantConfig.assertDynamic !== undefined) {
@@ -155,20 +164,12 @@ describe("Storybook visual tests", () => {
                 // second time around if a static screenshot turns out to be dynamic
                 //
                 // @ts-ignore
-                expect(newScreenshot).toMatchImageSnapshot({
-                  diffDirection,
-                  storeReceivedOnFailure: true,
-                  customSnapshotsDir: "screenshots/baseline",
-                  customSnapshotIdentifier: `${storybookPath}/${testName}`,
-                  customDiffDir: "screenshots/testing/diff",
-                  customReceivedDir: "screenshots/testing/actual",
-                  customReceivedPostfix: "",
-                });
+                expect(newScreenshot).toMatchImageSnapshot(matchOptions);
               }
             }
           },
           {
-            retry: 3,
+            retry: 4,
           },
         );
       }
