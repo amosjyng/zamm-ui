@@ -2,6 +2,22 @@
   import InfoBox from "$lib/InfoBox.svelte";
   import SettingsSwitch from "./SettingsSwitch.svelte";
   import { unceasingAnimations, soundOn } from "../../preferences";
+  import { setPreferences } from "$lib/bindings";
+  import { NullPreferences } from "../../preferences";
+
+  const onUnceasingAnimationsToggle = (newValue: boolean) => {
+    setPreferences({
+      ...NullPreferences,
+      unceasing_animations: newValue,
+    });
+  };
+
+  const onSoundToggle = (newValue: boolean) => {
+    setPreferences({
+      ...NullPreferences,
+      sound_on: newValue,
+    });
+  };
 </script>
 
 <InfoBox title="Settings">
@@ -9,8 +25,13 @@
     <SettingsSwitch
       label="Unceasing animations"
       bind:toggledOn={$unceasingAnimations}
+      onToggle={onUnceasingAnimationsToggle}
     />
-    <SettingsSwitch label="Sounds" bind:toggledOn={$soundOn} />
+    <SettingsSwitch
+      label="Sounds"
+      bind:toggledOn={$soundOn}
+      onToggle={onSoundToggle}
+    />
   </div>
 </InfoBox>
 

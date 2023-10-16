@@ -258,8 +258,6 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           override: true
           components: rustfmt, clippy
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
       - uses: actions/download-artifact@v3
         with:
           name: builds
@@ -267,6 +265,11 @@ jobs:
 
       - name: Install webdriver dependencies
         run: sudo apt-get install -y webkit2gtk-driver xvfb
+      - name: Install tauri-cli
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: tauri-cli
       - name: Install tauri-driver
         uses: actions-rs/cargo@v1
         with:

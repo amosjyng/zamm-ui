@@ -3,6 +3,7 @@
 
   export let label: string;
   export let toggledOn = false;
+  export let onToggle: (toggledOn: boolean) => void = () => undefined;
   let switchChild: Switch;
 </script>
 
@@ -15,6 +16,7 @@
     {label}
     bind:this={switchChild}
     bind:toggledOn
+    {onToggle}
     letParentToggle={true}
   />
 </div>
