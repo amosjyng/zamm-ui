@@ -5,7 +5,7 @@ import { tick } from "svelte";
 
 import { render } from "@testing-library/svelte";
 import AppLayout from "./AppLayout.svelte";
-import { soundOn } from "../preferences";
+import { soundOn } from "$lib/preferences";
 import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
 
 const tauriInvokeMock = vi.fn();

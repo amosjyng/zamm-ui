@@ -4,7 +4,7 @@
   import "./styles.css";
   import { onMount } from "svelte";
   import { getPreferences } from "$lib/bindings";
-  import { soundOn, unceasingAnimations } from "../preferences";
+  import { soundOn, unceasingAnimations } from "$lib/preferences";
 
   onMount(async () => {
     const prefs = await getPreferences();

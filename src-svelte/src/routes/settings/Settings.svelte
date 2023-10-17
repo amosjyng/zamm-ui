@@ -1,9 +1,12 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
   import SettingsSwitch from "./SettingsSwitch.svelte";
-  import { unceasingAnimations, soundOn } from "../../preferences";
+  import {
+    unceasingAnimations,
+    soundOn,
+    NullPreferences,
+  } from "$lib/preferences";
   import { setPreferences } from "$lib/bindings";
-  import { NullPreferences } from "../../preferences";
 
   const onUnceasingAnimationsToggle = (newValue: boolean) => {
     setPreferences({

@@ -3,7 +3,7 @@
   import IconChat from "~icons/ph/chat-dots-fill";
   import IconDashboard from "~icons/material-symbols/monitor-heart";
   import { playSound } from "$lib/bindings";
-  import { soundOn } from "../preferences";
+  import { soundOn } from "$lib/preferences";
 
   const routes: App.Route[] = [
     {

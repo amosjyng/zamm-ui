@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { Preferences } from "$lib/bindings";
+import type { Preferences } from "./bindings";
 
 export const unceasingAnimations = writable(false);
 export const soundOn = writable(true);

@@ -1,5 +1,5 @@
 import type { StoryFn, Decorator, StoryContext } from "@storybook/svelte";
-import { unceasingAnimations } from "../../preferences";
+import { unceasingAnimations } from "$lib/preferences";
 
 interface Preferences {
   unceasingAnimations?: boolean;
