@@ -11,7 +11,9 @@
     if (prefs.sound_on !== null) {
       soundOn.set(prefs.sound_on);
     }
-    if (prefs.unceasing_animations !== null) {
+    if (prefs.unceasing_animations === null) {
+      unceasingAnimations.set(true);
+    } else {
       unceasingAnimations.set(prefs.unceasing_animations);
     }
   });
