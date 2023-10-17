@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { soundOn } from "../preferences";
+  import { soundOn } from "$lib/preferences";
   import { playSound } from "./bindings";
   import { customAlphabet } from "nanoid/non-secure";
   import {

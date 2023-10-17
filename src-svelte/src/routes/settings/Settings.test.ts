@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings.svelte";
-import { soundOn } from "../../preferences";
+import { soundOn } from "$lib/preferences";
 import {
   parseSampleCall,
   type ParsedCall,

@@ -279,6 +279,8 @@ jobs:
         run: |
           mkdir -p /home/runner/.local/share/zamm/
           chmod -R 777 /home/runner/.local/share/zamm/
+          mkdir -p /home/runner/.config/dev.zamm/
+          echo "unceasing_animations = false" > /home/runner/.config/dev.zamm/preferences.toml
           chmod +x src-tauri/target/release/zamm
           chmod +x src-tauri/target/release/zamm-python
       - name: Run headless WebdriverIO tests

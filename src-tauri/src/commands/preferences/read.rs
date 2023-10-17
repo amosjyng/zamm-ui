@@ -14,7 +14,7 @@ fn get_preferences_happy_path(
     if preferences_path.exists() {
         println!("Reading preferences from {display_filename}");
         let contents = fs::read_to_string(preferences_path)?;
-        let preferences: Preferences = serde_yaml::from_str(&contents)?;
+        let preferences: Preferences = toml::from_str(&contents)?;
         Ok(preferences)
     } else {
         println!("No preferences found at {display_filename}");

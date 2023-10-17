@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::path::PathBuf;
 
-pub static PREFERENCES_FILENAME: &str = "preferences.yaml";
+pub static PREFERENCES_FILENAME: &str = "preferences.toml";
 
 #[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub struct Preferences {

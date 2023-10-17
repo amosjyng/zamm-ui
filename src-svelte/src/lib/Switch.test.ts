@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Switch from "./Switch.svelte";
-import { soundOn } from "../preferences";
+import { soundOn } from "$lib/preferences";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Convert, type SampleCall } from "$lib/sample-call";
