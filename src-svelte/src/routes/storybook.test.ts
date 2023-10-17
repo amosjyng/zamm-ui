@@ -1,5 +1,18 @@
-import { type Browser, chromium, expect, type Page } from "@playwright/test";
-import { afterAll, beforeAll, describe, test } from "vitest";
+import {
+  type Browser,
+  chromium,
+  type Page,
+  type BrowserContext,
+} from "@playwright/test";
+import {
+  afterAll,
+  beforeAll,
+  afterEach,
+  beforeEach,
+  describe,
+  test,
+  type TestContext,
+} from "vitest";
 import {
   toMatchImageSnapshot,
   type MatchImageSnapshotOptions,
@@ -7,8 +20,6 @@ import {
 import type { ChildProcess } from "child_process";
 import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 import sizeOf from "image-size";
-
-expect.extend({ toMatchImageSnapshot });
 
 interface ComponentTestConfig {
   path: string[]; // Represents the Storybook hierarchy path
@@ -65,23 +76,39 @@ const components: ComponentTestConfig[] = [
   },
 ];
 
-describe("Storybook visual tests", () => {
+interface StorybookTestContext {
+  page: Page;
+}
+
+describe.concurrent("Storybook visual tests", () => {
   let storybookProcess: ChildProcess | undefined;
-  let page: Page;
   let browser: Browser;
+  let browserContext: BrowserContext;
 
   beforeAll(async () => {
-    storybookProcess = await ensureStorybookRunning();
-
     browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext();
-    page = await context.newPage();
+    browserContext = await browser.newContext();
+    storybookProcess = await ensureStorybookRunning();
   });
 
   afterAll(async () => {
+    await browserContext.close();
     await browser.close();
     await killStorybook(storybookProcess);
   });
+
+  beforeEach<StorybookTestContext>(
+    async (context: TestContext & StorybookTestContext) => {
+      context.page = await browserContext.newPage();
+      context.expect.extend({ toMatchImageSnapshot });
+    },
+  );
+
+  afterEach<StorybookTestContext>(
+    async (context: TestContext & StorybookTestContext) => {
+      await context.page.close();
+    },
+  );
 
   const takeScreenshot = (page: Page, screenshotEntireBody?: boolean) => {
     const frame = page.frame({ name: "storybook-preview-iframe" });
@@ -106,73 +133,72 @@ describe("Storybook visual tests", () => {
   for (const config of components) {
     const storybookUrl = config.path.join("-");
     const storybookPath = config.path.join("/");
-    describe(storybookPath, () => {
-      for (const variant of config.variants) {
-        const variantConfig =
-          typeof variant === "string"
-            ? {
-                name: variant,
-              }
-            : variant;
-        const testName = variantConfig.name;
-        test(
-          `${testName} should render the same`,
-          async () => {
-            const variantPrefix = `--${variantConfig.name}`;
+    for (const variant of config.variants) {
+      const variantConfig =
+        typeof variant === "string"
+          ? {
+              name: variant,
+            }
+          : variant;
+      const testName = variantConfig.name;
+      test(
+        `${testName} should render the same`,
+        async ({ expect, page }: TestContext & StorybookTestContext) => {
+          const variantPrefix = `--${variantConfig.name}`;
 
-            await page.goto(
-              `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
-            );
+          await page.goto(
+            `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
+          );
 
-            const screenshot = await takeScreenshot(
+          const screenshot = await takeScreenshot(
+            page,
+            config.screenshotEntireBody,
+          );
+
+          const screenshotSize = sizeOf(screenshot);
+          const diffDirection =
+            screenshotSize.width &&
+            screenshotSize.height &&
+            screenshotSize.width > screenshotSize.height
+              ? "vertical"
+              : "horizontal";
+          const matchOptions = {
+            ...baseMatchOptions,
+            diffDirection,
+            customSnapshotIdentifier: `${storybookPath}/${testName}`,
+          };
+
+          if (!variantConfig.assertDynamic) {
+            // don't compare dynamic screenshots against baseline
+            // @ts-ignore
+            expect(screenshot).toMatchImageSnapshot(matchOptions);
+          }
+
+          if (variantConfig.assertDynamic !== undefined) {
+            await new Promise((r) => setTimeout(r, 1000));
+            const newScreenshot = await takeScreenshot(
               page,
               config.screenshotEntireBody,
             );
 
-            const screenshotSize = sizeOf(screenshot);
-            const diffDirection =
-              screenshotSize.width &&
-              screenshotSize.height &&
-              screenshotSize.width > screenshotSize.height
-                ? "vertical"
-                : "horizontal";
-            const matchOptions = {
-              ...baseMatchOptions,
-              diffDirection,
-              customSnapshotIdentifier: `${storybookPath}/${testName}`,
-            };
-
-            if (!variantConfig.assertDynamic) {
-              // don't compare dynamic screenshots against baseline
+            if (variantConfig.assertDynamic) {
+              expect(
+                Buffer.compare(screenshot, newScreenshot) !== 0,
+              ).toBeTruthy();
+            } else {
+              // do the same assertion from before so that we can see what changed the
+              // second time around if a static screenshot turns out to be dynamic
+              //
               // @ts-ignore
-              expect(screenshot).toMatchImageSnapshot(matchOptions);
+              expect(newScreenshot).toMatchImageSnapshot(matchOptions);
             }
-
-            if (variantConfig.assertDynamic !== undefined) {
-              await new Promise((r) => setTimeout(r, 1000));
-              const newScreenshot = await takeScreenshot(
-                page,
-                config.screenshotEntireBody,
-              );
-
-              if (variantConfig.assertDynamic) {
-                expect(
-                  Buffer.compare(screenshot, newScreenshot) !== 0,
-                ).toBeTruthy();
-              } else {
-                // do the same assertion from before so that we can see what changed the
-                // second time around if a static screenshot turns out to be dynamic
-                //
-                // @ts-ignore
-                expect(newScreenshot).toMatchImageSnapshot(matchOptions);
-              }
-            }
-          },
-          {
-            retry: 4,
-          },
-        );
-      }
-    });
+          }
+        },
+        {
+          retry: 4,
+          timeout: 10_000,
+        },
+      );
+    }
   }
 });
