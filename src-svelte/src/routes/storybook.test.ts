@@ -149,7 +149,7 @@ describe.concurrent("Storybook visual tests", () => {
               name: variant,
             }
           : variant;
-      const testName = variantConfig.name;
+      const testName = `${storybookPath}/${variantConfig.name}.png`;
       test(
         `${testName} should render the same`,
         async ({ expect, page }: TestContext & StorybookTestContext) => {
@@ -174,7 +174,7 @@ describe.concurrent("Storybook visual tests", () => {
           const matchOptions = {
             ...baseMatchOptions,
             diffDirection,
-            customSnapshotIdentifier: `${storybookPath}/${testName}`,
+            customSnapshotIdentifier: `${storybookPath}/${variantConfig.name}`,
           };
 
           if (!variantConfig.assertDynamic) {
