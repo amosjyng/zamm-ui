@@ -1,7 +1,7 @@
 <script lang="ts">
   import { soundOn } from "$lib/preferences";
   import { playSound } from "./bindings";
-  import { customAlphabet } from "nanoid/non-secure";
+  import getComponentId from "./label-id";
   import {
     draggable,
     type DragOptions,
@@ -19,8 +19,7 @@
     transition: left 0.1s;
     transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
   `;
-  const nanoid = customAlphabet("1234567890", 6);
-  const switchId = `switch-${nanoid()}`;
+  const switchId = getComponentId("switch");
 
   export let label: string | undefined = undefined;
   export let toggledOn = false;
