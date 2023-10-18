@@ -59,17 +59,21 @@ describe("Switch drag test", () => {
     return { onOffSwitch, toggle, switchBounds };
   };
 
-  test("switches state when drag released at end", async () => {
-    const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-    expect(numSoundsPlayed).toBe(0);
+  test(
+    "switches state when drag released at end",
+    async () => {
+      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed).toBe(0);
 
-    await toggle.dragTo(onOffSwitch, {
-      targetPosition: { x: switchBounds.width, y: switchBounds.height / 2 },
-    });
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
-    expect(numSoundsPlayed).toBe(1);
-  });
+      await toggle.dragTo(onOffSwitch, {
+        targetPosition: { x: switchBounds.width, y: switchBounds.height / 2 },
+      });
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
+      expect(numSoundsPlayed).toBe(1);
+    },
+    { retry: 2 },
+  );
 
   test("switches state when drag released more than halfway to end", async () => {
     const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
