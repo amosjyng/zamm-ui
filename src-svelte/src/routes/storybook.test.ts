@@ -39,6 +39,15 @@ const components: ComponentTestConfig[] = [
     screenshotEntireBody: true,
   },
   {
+    path: ["reusable", "slider"],
+    variants: [
+      "tiny-phone-screen",
+      "tiny-phone-screen-with-long-label",
+      "tablet",
+    ],
+    screenshotEntireBody: true,
+  },
+  {
     path: ["background"],
     variants: [
       {
