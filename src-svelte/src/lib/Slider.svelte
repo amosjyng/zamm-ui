@@ -10,6 +10,15 @@
   export let value: number = min;
   let percentageValue: number;
   let stepAttr: string = step ? step.toString() : "any";
+  let grabbing = false;
+
+  const startGrabbing = () => {
+    grabbing = true;
+  };
+
+  const stopGrabbing = () => {
+    grabbing = false;
+  };
 
   $: percentageValue = ((value - min) / (max - min)) * 100.0;
 </script>
@@ -21,11 +30,14 @@
   <input
     type="range"
     id={switchId}
+    class={grabbing ? "grabbing" : ""}
     {min}
     {max}
     bind:value
     step={stepAttr}
     style="--val: {percentageValue}"
+    on:mousedown={startGrabbing}
+    on:mouseup={stopGrabbing}
   />
 </div>
 
@@ -38,10 +50,11 @@
     flex-wrap: wrap;
 
     --skew: -20deg;
-    --label-height: 1.5em;
+    --label-width: 3rem;
+    --label-height: 1.5rem;
     --thumb-height: calc(1.2 * var(--label-height));
-    --thumb-width: 0.75rem;
-    --track-height: calc(0.5 * var(--label-height));
+    --thumb-width: calc(1.05 * var(--label-width));
+    --track-height: calc(1 * var(--label-height));
   }
 
   label {
@@ -53,6 +66,8 @@
     flex: 1;
     min-width: 7rem;
     transform: skew(var(--skew));
+    margin-right: calc(-0.5 * var(--toggle-height) * sin(var(--skew)));
+
     appearance: none;
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
     width: 100%; /* Specific width is required for Firefox. */
@@ -68,6 +83,7 @@
   }
 
   input::-moz-range-thumb {
+    border: none;
     height: var(--thumb-height);
     width: var(--thumb-width);
     background-color: #ddd;
@@ -76,7 +92,11 @@
       inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
       inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
     border-radius: var(--corner-roundness);
-    cursor: ew-resize;
+    cursor: grab;
+  }
+
+  input.grabbing::-moz-range-thumb {
+    cursor: grabbing;
   }
 
   input::-webkit-slider-thumb {
@@ -91,7 +111,11 @@
       inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
       inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
     border-radius: var(--corner-roundness);
-    cursor: ew-resize;
+    cursor: grab;
+  }
+
+  input.grabbing::-webkit-slider-thumb {
+    cursor: grabbing;
   }
 
   input::-moz-range-track {
