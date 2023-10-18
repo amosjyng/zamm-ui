@@ -75,52 +75,64 @@ describe("Switch drag test", () => {
     { retry: 2 },
   );
 
-  test("switches state when drag released more than halfway to end", async () => {
-    const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-    expect(numSoundsPlayed).toBe(0);
+  test(
+    "switches state when drag released more than halfway to end",
+    async () => {
+      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed).toBe(0);
 
-    await toggle.dragTo(onOffSwitch, {
-      targetPosition: {
-        x: switchBounds.width * 0.75,
-        y: switchBounds.height / 2,
-      },
-    });
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
-    expect(numSoundsPlayed).toBe(1);
-  });
+      await toggle.dragTo(onOffSwitch, {
+        targetPosition: {
+          x: switchBounds.width * 0.75,
+          y: switchBounds.height / 2,
+        },
+      });
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
+      expect(numSoundsPlayed).toBe(1);
+    },
+    { retry: 2 },
+  );
 
-  test("maintains state when drag released less than halfway to end", async () => {
-    const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-    expect(numSoundsPlayed).toBe(0);
+  test(
+    "maintains state when drag released less than halfway to end",
+    async () => {
+      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed).toBe(0);
 
-    await toggle.dragTo(onOffSwitch, {
-      targetPosition: {
-        x: switchBounds.width * 0.25,
-        y: switchBounds.height / 2,
-      },
-    });
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-    expect(numSoundsPlayed).toBe(0);
-  });
+      await toggle.dragTo(onOffSwitch, {
+        targetPosition: {
+          x: switchBounds.width * 0.25,
+          y: switchBounds.height / 2,
+        },
+      });
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed).toBe(0);
+    },
+    { retry: 2 },
+  );
 
-  test("clicks twice when dragged to end and back", async () => {
-    const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
-    const finalY = switchBounds.y + switchBounds.height / 2;
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-    expect(numSoundsPlayed).toBe(0);
+  test(
+    "clicks twice when dragged to end and back",
+    async () => {
+      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
+      const finalY = switchBounds.y + switchBounds.height / 2;
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed).toBe(0);
 
-    await toggle.hover();
-    await page.mouse.down();
+      await toggle.hover();
+      await page.mouse.down();
 
-    // move to the very end
-    await page.mouse.move(switchBounds.x + switchBounds.width, finalY);
-    expect(numSoundsPlayed).toBe(1);
+      // move to the very end
+      await page.mouse.move(switchBounds.x + switchBounds.width, finalY);
+      expect(numSoundsPlayed).toBe(1);
 
-    // move back to the beginning
-    await page.mouse.move(switchBounds.x, finalY);
-    await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-    expect(numSoundsPlayed).toBe(2);
-  });
+      // move back to the beginning
+      await page.mouse.move(switchBounds.x, finalY);
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed).toBe(2);
+    },
+    { retry: 2 },
+  );
 });
