@@ -6,8 +6,17 @@
 </script>
 
 <section class="sub-info-box" aria-labelledby={subinfoboxId}>
-  <h3 id={subinfoboxId}>{subheading}</h3>
+  <div class="subheading">
+    <h3 id={subinfoboxId}>{subheading}</h3>
+  </div>
   <div class="content">
     <slot />
   </div>
 </section>
+
+<style>
+  .subheading {
+    width: 100%;
+    text-align: center;
+  }
+</style>

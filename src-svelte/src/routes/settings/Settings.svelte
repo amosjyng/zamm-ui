@@ -63,12 +63,8 @@
     margin-top: 1rem;
   }
 
-  .container {
+  .container:first-of-type {
     margin-top: 0;
-  }
-
-  .container :global(h3) {
-    margin-left: var(--side-padding);
   }
 
   .container :global(.sub-info-box .content) {
@@ -76,7 +72,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.1rem;
-    margin: 0 calc(-1 * var(--side-padding)) 0.5rem;
+    margin: 0.5rem calc(-1 * var(--side-padding));
   }
 
   /* this takes sidebar width into account */
