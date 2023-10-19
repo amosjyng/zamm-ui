@@ -48,6 +48,7 @@
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
+    width: 100%;
 
     --skew: -20deg;
     --label-width: 3rem;

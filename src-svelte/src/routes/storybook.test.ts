@@ -158,6 +158,7 @@ describe.concurrent("Storybook visual tests", () => {
           await page.goto(
             `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
           );
+          await page.locator("button[title='Hide addons [A]']").click();
 
           const screenshot = await takeScreenshot(
             page,

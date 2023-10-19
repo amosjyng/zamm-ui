@@ -1,8 +1,7 @@
 import { expect, test, vi, type Mock } from "vitest";
 import { get } from "svelte/store";
 import "@testing-library/jest-dom";
-
-import { act, render, screen } from "@testing-library/svelte";
+import { act, getByLabelText, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings.svelte";
 import { soundOn } from "$lib/preferences";
@@ -50,7 +49,8 @@ describe("Switch", () => {
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const soundSwitch = screen.getByLabelText("Sounds");
+    const soundRegion = screen.getByRole("region", { name: "Sound" });
+    const soundSwitch = getByLabelText(soundRegion, "Enabled");
     playback.addCalls(setSoundOffCall);
     await act(() => userEvent.click(soundSwitch));
     expect(get(soundOn)).toBe(false);

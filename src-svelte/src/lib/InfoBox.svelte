@@ -1,8 +1,11 @@
 <script lang="ts">
+  import getComponentId from "./label-id";
+
   export let title = "";
+  const infoboxId = getComponentId("infobox");
 </script>
 
-<div class="container">
+<section class="container" aria-labelledby={infoboxId}>
   <svg
     style="visibility: hidden; position: absolute;"
     width="0"
@@ -27,11 +30,11 @@
   <div class="border-container">
     <div class="border-box"></div>
     <div class="info-box">
-      <h2>{title}</h2>
+      <h2 id={infoboxId}>{title}</h2>
       <slot />
     </div>
   </div>
-</div>
+</section>
 
 <style>
   .container {
