@@ -5,7 +5,7 @@ import { tick } from "svelte";
 
 import { render } from "@testing-library/svelte";
 import AppLayout from "./AppLayout.svelte";
-import { soundOn } from "$lib/preferences";
+import { soundOn, volume } from "$lib/preferences";
 import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
 
 const tauriInvokeMock = vi.fn();
@@ -61,6 +61,22 @@ describe("AppLayout", () => {
     render(AppLayout, {});
     await tickFor(3);
     expect(get(soundOn)).toBe(false);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+  });
+
+  test("will set volume if volume preference overridden", async () => {
+    expect(get(volume)).toBe(1);
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+
+    const getPreferencesCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_preferences-volume-override.yaml",
+      false,
+    );
+    playback.addCalls(getPreferencesCall);
+
+    render(AppLayout, {});
+    await tickFor(3);
+    expect(get(volume)).toBe(0.5);
     expect(tauriInvokeMock).toBeCalledTimes(1);
   });
 });

@@ -4,13 +4,18 @@
   import "./styles.css";
   import { onMount } from "svelte";
   import { getPreferences } from "$lib/bindings";
-  import { soundOn, unceasingAnimations } from "$lib/preferences";
+  import { soundOn, unceasingAnimations, volume } from "$lib/preferences";
 
   onMount(async () => {
     const prefs = await getPreferences();
     if (prefs.sound_on !== null) {
       soundOn.set(prefs.sound_on);
     }
+
+    if (prefs.volume !== null) {
+      volume.set(prefs.volume);
+    }
+
     if (prefs.unceasing_animations === null) {
       unceasingAnimations.set(true);
     } else {
