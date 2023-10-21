@@ -58,7 +58,7 @@ describe("Sidebar", () => {
   });
 
   test("plays whoosh sound with right volume during page path change", async () => {
-    volume.update(() => 50);
+    volume.update(() => 0.5);
     await act(() => userEvent.click(settingsLink));
     expect(spy).toHaveBeenLastCalledWith(...whooshRequest);
   });

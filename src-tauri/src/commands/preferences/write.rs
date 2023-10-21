@@ -166,4 +166,13 @@ mod tests {
             "./api/sample-settings/extra-settings/sound-on.toml",
         );
     }
+
+    #[test]
+    fn test_set_preferences_volume_partial() {
+        check_set_preferences_sample(
+            "./api/sample-calls/set_preferences-volume-partial.yaml",
+            None,
+            "./api/sample-settings/volume-override/preferences.toml",
+        );
+    }
 }

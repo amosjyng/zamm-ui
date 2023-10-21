@@ -8,17 +8,23 @@
   export let max: number;
   export let step: number | undefined = undefined;
   export let value: number = min;
+  export let onUpdate: (newValue: number) => void = () => undefined;
   let percentageValue: number;
   let stepAttr: string = step ? step.toString() : "any";
   let grabbing = false;
 
-  const startGrabbing = () => {
+  function startGrabbing() {
     grabbing = true;
-  };
+  }
 
-  const stopGrabbing = () => {
+  function stopGrabbing() {
     grabbing = false;
-  };
+  }
+
+  function onChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    onUpdate(parseFloat(target.value));
+  }
 
   $: percentageValue = ((value - min) / (max - min)) * 100.0;
 </script>
@@ -38,6 +44,7 @@
     style="--val: {percentageValue}"
     on:mousedown={startGrabbing}
     on:mouseup={stopGrabbing}
+    on:change={onChange}
   />
 </div>
 

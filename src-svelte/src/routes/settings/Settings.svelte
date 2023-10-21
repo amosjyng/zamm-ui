@@ -26,6 +26,13 @@
       sound_on: newValue,
     });
   };
+
+  const onVolumeUpdate = (newValue: number) => {
+    setPreferences({
+      ...NullPreferences,
+      volume: newValue,
+    });
+  };
 </script>
 
 <InfoBox title="Settings">
@@ -53,7 +60,13 @@
         bind:toggledOn={$soundOn}
         onToggle={onSoundToggle}
       />
-      <SettingsSlider label="Volume" min={0} max={200} bind:value={$volume} />
+      <SettingsSlider
+        label="Volume"
+        min={0}
+        max={2}
+        onUpdate={onVolumeUpdate}
+        bind:value={$volume}
+      />
     </SubInfoBox>
   </div>
 </InfoBox>

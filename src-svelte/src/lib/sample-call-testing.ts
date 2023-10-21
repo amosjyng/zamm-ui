@@ -42,7 +42,12 @@ export class TauriInvokePlayback {
     const matchingCallIndex = this.unmatchedCalls.findIndex(
       (call) => JSON.stringify(call.request) === jsonArgs,
     );
-    assert(matchingCallIndex !== -1, `No matching call found for ${jsonArgs}`);
+    assert(
+      matchingCallIndex !== -1,
+      `No matching call found for ${jsonArgs}.\nCandidates are ${this.unmatchedCalls
+        .map((call) => JSON.stringify(call.request))
+        .join("\n")}`,
+    );
     const matchingCall = this.unmatchedCalls[matchingCallIndex].response;
     this.unmatchedCalls.splice(matchingCallIndex, 1);
     return Promise.resolve(matchingCall);

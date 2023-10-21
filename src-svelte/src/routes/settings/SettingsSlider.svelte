@@ -6,10 +6,11 @@
   export let max: number;
   export let step: number | undefined = undefined;
   export let value: number = min;
+  export let onUpdate: (newValue: number) => void = () => undefined;
 </script>
 
 <div class="settings-slider container">
-  <Slider {label} {min} {max} {step} bind:value />
+  <Slider {label} {min} {max} {step} {onUpdate} bind:value />
 </div>
 
 <style>

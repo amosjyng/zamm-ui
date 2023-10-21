@@ -5,7 +5,7 @@ export const animationsOn = writable(true);
 export const unceasingAnimations = writable(false);
 export const animationSpeed = writable(4);
 export const soundOn = writable(true);
-export const volume = writable(100);
+export const volume = writable(1);
 
 export const NullPreferences: Preferences = {
   unceasing_animations: null,

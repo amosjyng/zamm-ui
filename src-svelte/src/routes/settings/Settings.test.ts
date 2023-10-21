@@ -3,8 +3,9 @@ import { get } from "svelte/store";
 import "@testing-library/jest-dom";
 import { act, getByLabelText, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { fireEvent } from "@testing-library/dom";
 import Settings from "./Settings.svelte";
-import { soundOn } from "$lib/preferences";
+import { soundOn, volume } from "$lib/preferences";
 import {
   parseSampleCall,
   type ParsedCall,
@@ -18,6 +19,7 @@ describe("Switch", () => {
   let playSwitchSoundCall: ParsedCall;
   let setSoundOnCall: ParsedCall;
   let setSoundOffCall: ParsedCall;
+  let setVolumePartialCall: ParsedCall;
 
   beforeAll(() => {
     playSwitchSoundCall = parseSampleCall(
@@ -30,6 +32,10 @@ describe("Switch", () => {
     );
     setSoundOffCall = parseSampleCall(
       "../src-tauri/api/sample-calls/set_preferences-sound-off.yaml",
+      true,
+    );
+    setVolumePartialCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/set_preferences-volume-partial.yaml",
       true,
     );
   });
@@ -61,6 +67,20 @@ describe("Switch", () => {
     await act(() => userEvent.click(soundSwitch));
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).toBeCalledTimes(3);
+    expect(playback.unmatchedCalls.length).toBe(0);
+  });
+
+  test("can persist changes to volume slider", async () => {
+    render(Settings, {});
+    expect(get(volume)).toBe(1);
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+
+    const soundRegion = screen.getByRole("region", { name: "Sound" });
+    const volumeSlider = getByLabelText(soundRegion, "Volume");
+    playback.addCalls(setVolumePartialCall);
+    await fireEvent.change(volumeSlider, { target: { value: 0.5 } });
+    expect(get(volume)).toBe(0.5);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
     expect(playback.unmatchedCalls.length).toBe(0);
   });
 });
