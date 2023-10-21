@@ -10,7 +10,4 @@ export function playSoundEffect(sound: Sound) {
       window._testRecordSoundPlayed();
     }
   }
-  if (window._testRecordSoundPlayed !== undefined) {
-    window._testRecordSoundPlayed();
-  }
 }

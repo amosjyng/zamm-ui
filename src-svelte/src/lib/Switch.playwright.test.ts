@@ -10,6 +10,8 @@ import { afterAll, beforeAll, describe, test } from "vitest";
 import type { ChildProcess } from "child_process";
 import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 
+const DEBUG_LOGGING = false;
+
 describe("Switch drag test", () => {
   let storybookProcess: ChildProcess | undefined;
   let page: Page;
@@ -29,13 +31,11 @@ describe("Switch drag test", () => {
     );
     page = await context.newPage();
 
-    page.on("console", async (msg) => {
-      const msgArgs = msg.args();
-      const logValues = await Promise.all(
-        msgArgs.map(async (arg) => await arg.jsonValue()),
-      );
-      console.log(...logValues);
-    });
+    if (DEBUG_LOGGING) {
+      page.on("console", (msg) => {
+        console.log(msg);
+      });
+    }
   });
 
   afterAll(async () => {
