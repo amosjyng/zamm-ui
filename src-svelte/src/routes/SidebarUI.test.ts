@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import SidebarUI from "./SidebarUI.svelte";
-import { soundOn } from "$lib/preferences";
+import { soundOn, volume } from "$lib/preferences";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Convert, type SampleCall } from "$lib/sample-call";
@@ -57,7 +57,8 @@ describe("Sidebar", () => {
     expect(settingsLink).toHaveAttribute("aria-current", "page");
   });
 
-  test("plays whoosh sound during page path change", async () => {
+  test("plays whoosh sound with right volume during page path change", async () => {
+    volume.update(() => 50);
     await act(() => userEvent.click(settingsLink));
     expect(spy).toHaveBeenLastCalledWith(...whooshRequest);
   });

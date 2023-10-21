@@ -2,6 +2,7 @@ request:
   - play_sound
   - >
     {
-      "sound": "Switch"
+      "sound": "Switch",
+      "volume": 1
     }
 response: "null"

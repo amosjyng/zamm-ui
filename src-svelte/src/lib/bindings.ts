@@ -18,8 +18,8 @@ export function getApiKeys() {
     return invoke()<ApiKeys>("get_api_keys")
 }
 
-export function playSound(sound: Sound) {
-    return invoke()<null>("play_sound", { sound })
+export function playSound(sound: Sound, volume: number) {
+    return invoke()<null>("play_sound", { sound,volume })
 }
 
 export function getPreferences() {

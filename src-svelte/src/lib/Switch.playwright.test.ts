@@ -28,6 +28,14 @@ describe("Switch drag test", () => {
       () => numSoundsPlayed++,
     );
     page = await context.newPage();
+
+    page.on("console", async (msg) => {
+      const msgArgs = msg.args();
+      const logValues = await Promise.all(
+        msgArgs.map(async (arg) => await arg.jsonValue()),
+      );
+      console.log(...logValues);
+    });
   });
 
   afterAll(async () => {
@@ -64,13 +72,13 @@ describe("Switch drag test", () => {
     async () => {
       const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-      expect(numSoundsPlayed).toBe(0);
+      expect(numSoundsPlayed === 0).toBeTruthy();
 
       await toggle.dragTo(onOffSwitch, {
         targetPosition: { x: switchBounds.width, y: switchBounds.height / 2 },
       });
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
-      expect(numSoundsPlayed).toBe(1);
+      expect(numSoundsPlayed === 1).toBeTruthy();
     },
     { retry: 2 },
   );
@@ -80,7 +88,7 @@ describe("Switch drag test", () => {
     async () => {
       const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-      expect(numSoundsPlayed).toBe(0);
+      expect(numSoundsPlayed === 0).toBeTruthy();
 
       await toggle.dragTo(onOffSwitch, {
         targetPosition: {
@@ -89,7 +97,7 @@ describe("Switch drag test", () => {
         },
       });
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
-      expect(numSoundsPlayed).toBe(1);
+      expect(numSoundsPlayed === 1).toBeTruthy();
     },
     { retry: 2 },
   );
@@ -99,7 +107,7 @@ describe("Switch drag test", () => {
     async () => {
       const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-      expect(numSoundsPlayed).toBe(0);
+      expect(numSoundsPlayed === 0).toBeTruthy();
 
       await toggle.dragTo(onOffSwitch, {
         targetPosition: {
@@ -108,7 +116,7 @@ describe("Switch drag test", () => {
         },
       });
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-      expect(numSoundsPlayed).toBe(0);
+      expect(numSoundsPlayed === 0).toBeTruthy();
     },
     { retry: 2 },
   );
@@ -119,19 +127,19 @@ describe("Switch drag test", () => {
       const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
       const finalY = switchBounds.y + switchBounds.height / 2;
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-      expect(numSoundsPlayed).toBe(0);
+      expect(numSoundsPlayed === 0).toBeTruthy();
 
       await toggle.hover();
       await page.mouse.down();
 
       // move to the very end
       await page.mouse.move(switchBounds.x + switchBounds.width, finalY);
-      expect(numSoundsPlayed).toBe(1);
+      expect(numSoundsPlayed === 1).toBeTruthy();
 
       // move back to the beginning
       await page.mouse.move(switchBounds.x, finalY);
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
-      expect(numSoundsPlayed).toBe(2);
+      expect(numSoundsPlayed === 2).toBeTruthy();
     },
     { retry: 2 },
   );

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { soundOn } from "$lib/preferences";
-  import { playSound } from "./bindings";
+  import { playSoundEffect } from "./sound";
   import getComponentId from "./label-id";
   import {
     draggable,
@@ -33,14 +32,7 @@
   let dragPositionOnLeft = false;
 
   function playClick() {
-    if (!$soundOn) {
-      return;
-    }
-
-    playSound("Switch");
-    if (window._testRecordSoundPlayed !== undefined) {
-      window._testRecordSoundPlayed();
-    }
+    playSoundEffect("Switch");
   }
 
   function playDragClick(offsetX: number) {
