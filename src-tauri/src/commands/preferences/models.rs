@@ -7,10 +7,11 @@ use std::path::PathBuf;
 
 pub static PREFERENCES_FILENAME: &str = "preferences.toml";
 
-#[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, Type)]
 pub struct Preferences {
     unceasing_animations: Option<bool>,
     sound_on: Option<bool>,
+    volume: Option<f32>,
 }
 
 pub fn get_preferences_file(

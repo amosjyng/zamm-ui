@@ -78,7 +78,7 @@ mod tests {
     use std::env;
     use std::fs;
 
-    #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
     struct SetPreferencesRequest {
         preferences: Preferences,
     }

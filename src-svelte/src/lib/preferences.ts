@@ -10,4 +10,5 @@ export const volume = writable(100);
 export const NullPreferences: Preferences = {
   unceasing_animations: null,
   sound_on: null,
+  volume: null,
 };

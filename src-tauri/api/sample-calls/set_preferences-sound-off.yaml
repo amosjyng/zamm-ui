@@ -4,7 +4,8 @@ request:
     {
       "preferences": {
         "unceasing_animations": null,
-        "sound_on": false
+        "sound_on": false,
+        "volume": null
       }
     }
 response: "null"
