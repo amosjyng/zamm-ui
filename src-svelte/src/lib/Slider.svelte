@@ -1,7 +1,19 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { watchResize } from "svelte-watch-resize";
   import getComponentId from "./label-id";
+  import {
+    draggable,
+    type DragOptions,
+    type DragEventData,
+  } from "@neodrag/svelte";
 
-  const switchId = getComponentId("switch");
+  const rootFontSize = parseFloat(
+    getComputedStyle(document.documentElement).fontSize,
+  );
+  const sliderId = getComponentId("slider");
+  const transitionAnimation = `transition: left 0.1s ease-out;`;
+  const overshoot = 0.4 * rootFontSize; // how much overshoot to allow per-side
 
   export let label: string | undefined = undefined;
   export let min = 0;
@@ -9,43 +21,151 @@
   export let step: number | undefined = undefined;
   export let value: number = min;
   export let onUpdate: (newValue: number) => void = () => undefined;
-  let percentageValue: number;
-  let stepAttr: string = step ? step.toString() : "any";
-  let grabbing = false;
+  const range = max - min;
+  let track: HTMLDivElement;
+  let toggleBound: HTMLDivElement;
+  let toggleLabel: HTMLDivElement;
+  let leeway = 0;
+  let left = 0;
+  let transition = transitionAnimation;
+  // needed because unlike Neodrag, we want the class to apply as soon as mousedown
+  // happens
+  let dragging = false;
 
-  function startGrabbing() {
-    grabbing = true;
+  let toggleDragOptions: DragOptions = {
+    axis: "x",
+    bounds: () => toggleBound,
+    inverseScale: 1,
+    // need to set this for neodrag to know that this is a controlled drag
+    position: { x: 0, y: 0 },
+    render: (data: DragEventData) => {
+      left = data.offsetX;
+    },
+    onDragStart: () => {
+      transition = "";
+      dragging = true;
+    },
+    onDragEnd: (data: DragEventData) => {
+      transition = transitionAnimation;
+      const newValue = calculateValue(data.offsetX);
+      updateValue(newValue);
+      // for some reason, unlike in Switch.svelte, onClick runs after onDragEnd
+      // so we need to wait a bit to stop the dragging
+      setTimeout(() => (dragging = false), 100);
+    },
+  };
+
+  function updateValue(newValue: number) {
+    const minStep = step || 0.01;
+    newValue = Math.round(newValue / minStep) * minStep;
+    if (newValue < min) {
+      newValue = min;
+    } else if (newValue > max) {
+      newValue = max;
+    }
+
+    if (newValue !== value) {
+      value = newValue;
+      try {
+        onUpdate(newValue);
+      } catch (e) {
+        console.error(`Error in callback: ${e}`);
+      }
+    }
+
+    // necessary in case we overshoot regular bounds
+    toggleDragOptions = calculatePosition(value);
   }
 
-  function stopGrabbing() {
-    grabbing = false;
+  function toPercentage(value: number) {
+    return (value - min) / range;
   }
 
-  function onChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    onUpdate(parseFloat(target.value));
+  function calculateValue(position: number) {
+    const percentageValue = position / leeway;
+    return min + range * percentageValue;
   }
 
-  $: percentageValue = ((value - min) / (max - min)) * 100.0;
+  function calculatePosition(value: number) {
+    leeway = track.clientWidth - toggleLabel.clientWidth;
+    const x = leeway * toPercentage(value);
+    return {
+      ...toggleDragOptions,
+      position: { x, y: 0 },
+    };
+  }
+
+  function handleResize() {
+    toggleDragOptions = calculatePosition(value);
+  }
+
+  function onClick(e: MouseEvent) {
+    if (dragging) {
+      return;
+    }
+
+    // toggle midpoint should go where cursor is, at least as much as possible
+    // what calculateValue expects though is the left edge of the toggle
+    const toggleTargetLeft =
+      e.clientX - toggleLabel.getBoundingClientRect().width / 2;
+    const offsetX = toggleTargetLeft - track.getBoundingClientRect().left;
+    const newValue = calculateValue(offsetX);
+    updateValue(newValue);
+  }
+
+  function onKeyPress(e: KeyboardEvent) {
+    const finalStepSize = step || range / 10.0;
+    if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      updateValue(value - finalStepSize);
+    } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      updateValue(value + finalStepSize);
+    }
+  }
+
+  onMount(() => {
+    toggleDragOptions = calculatePosition(value);
+  });
+
+  $: left = toggleDragOptions.position?.x ?? 0;
 </script>
 
 <div class="container">
   {#if label}
-    <label for={switchId}>{label}</label>
+    <div class="label" id={sliderId}>{label}</div>
   {/if}
-  <input
-    type="range"
-    id={switchId}
-    class={grabbing ? "grabbing" : ""}
-    {min}
-    {max}
-    bind:value
-    step={stepAttr}
-    style="--val: {percentageValue}"
-    on:mousedown={startGrabbing}
-    on:mouseup={stopGrabbing}
-    on:change={onChange}
-  />
+  <div
+    class="slider"
+    role="slider"
+    tabindex="0"
+    aria-valuemin={min}
+    aria-valuemax={max}
+    aria-valuenow={value}
+    aria-labelledby={sliderId}
+    style="--overshoot: {overshoot}px;"
+    on:click={onClick}
+    on:keydown={onKeyPress}
+  >
+    <div
+      class="groove-layer groove"
+      bind:this={track}
+      use:watchResize={handleResize}
+    >
+      <div class="groove-layer shadow"></div>
+      <div
+        class="groove-contents progress"
+        style="--leeway: {leeway}px; --left: {left}px; {transition}"
+      ></div>
+    </div>
+    <div class="groove-layer bounds" bind:this={toggleBound}></div>
+    <div
+      class="toggle-label"
+      use:draggable={toggleDragOptions}
+      style="--leeway: {leeway}px; --left: {left}px; {transition}"
+      bind:this={toggleLabel}
+    >
+      <div class="toggle" class:grabbing={dragging}></div>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -60,101 +180,94 @@
     --skew: -20deg;
     --label-width: 3rem;
     --label-height: 1.5rem;
-    --thumb-height: calc(1.2 * var(--label-height));
-    --thumb-width: calc(1.05 * var(--label-width));
+    --toggle-height: calc(1.2 * var(--label-height));
+    --toggle-width: calc(1.05 * var(--label-width));
     --track-height: calc(1 * var(--label-height));
   }
 
-  label {
+  .label {
     white-space: nowrap;
     flex: 1;
   }
 
-  input {
+  .slider {
+    --groove-contents-layer: 1;
+    --groove-layer: 2;
+    --toggle-layer: 3;
     flex: 1;
+    height: var(--track-height);
     min-width: 7rem;
+    cursor: pointer;
     transform: skew(var(--skew));
     margin-right: calc(-0.5 * var(--toggle-height) * sin(var(--skew)));
-
-    appearance: none;
-    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-    width: 100%; /* Specific width is required for Firefox. */
-    background: transparent; /* Otherwise white in Chrome */
+    padding: 0;
   }
 
-  input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-  }
-
-  input:focus {
-    outline: none;
-  }
-
-  input::-moz-range-thumb {
-    border: none;
-    height: var(--thumb-height);
-    width: var(--thumb-width);
-    background-color: #ddd;
-    box-shadow:
-      0.1em 0.1em 0.15em rgba(0, 0, 0, 0.1),
-      inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
-      inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
-    border-radius: var(--corner-roundness);
-    cursor: grab;
-  }
-
-  input.grabbing::-moz-range-thumb {
-    cursor: grabbing;
-  }
-
-  input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    margin-top: calc(-0.5 * (var(--thumb-height) - var(--track-height)));
-
-    height: var(--thumb-height);
-    width: var(--thumb-width);
-    background-color: #ddd;
-    box-shadow:
-      0.1em 0.1em 0.15em rgba(0, 0, 0, 0.1),
-      inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
-      inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
-    border-radius: var(--corner-roundness);
-    cursor: grab;
-  }
-
-  input.grabbing::-webkit-slider-thumb {
-    cursor: grabbing;
-  }
-
-  input::-moz-range-track {
+  .groove-layer {
     width: 100%;
-    height: var(--track-height);
+    height: var(--label-height);
     border-radius: var(--corner-roundness);
+    z-index: var(--groove-layer);
+    position: relative;
+  }
+
+  .groove-layer.groove {
+    overflow: hidden;
+  }
+
+  .groove-layer.shadow {
     box-shadow: inset 0.05em 0.05em 0.3em rgba(0, 0, 0, 0.4);
   }
 
-  input::-webkit-slider-runnable-track {
-    width: 100%;
-    height: var(--track-height);
-    border-radius: var(--corner-roundness);
-    box-shadow: inset 0.05em 0.05em 0.3em rgba(0, 0, 0, 0.4);
+  .groove-layer.bounds {
+    width: calc(100% + 2 * var(--overshoot));
+    margin-left: calc(-1 * var(--overshoot));
+    background: transparent;
+    position: float;
+    top: calc(-1 * var(--track-height));
   }
 
-  input::-moz-range-progress {
+  .groove-contents.progress {
+    --total-width: calc(var(--leeway) + var(--overshoot));
+    z-index: var(--groove-contents-layer);
+    position: absolute;
+    top: 0;
+    left: calc(var(--left) - var(--total-width));
+    width: var(--total-width);
+    height: var(--track-height);
     background: linear-gradient(to left, #00f, #bbbbff);
-    height: var(--track-height);
-    border-radius: var(--corner-roundness);
-    box-shadow: inset 0.05em 0.05em 0.3em rgba(0, 0, 0, 0.4);
   }
 
-  input::-webkit-slider-container {
-    /* Chrome tries really hard to make this read-only */
-    -webkit-user-modify: read-write !important;
-    --unit: 1%;
-    background: linear-gradient(to left, #00f, #bbbbff) 0 /
-      calc(var(--val) * var(--unit)) no-repeat;
-    height: var(--track-height);
+  .toggle-label {
+    width: var(--label-width);
+    height: var(--label-height);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    z-index: var(--toggle-layer);
+    position: absolute;
+    left: var(--left);
+    top: 0;
+  }
+
+  .toggle {
+    position: absolute;
+    width: var(--toggle-width);
+    height: var(--toggle-height);
+    background-color: #ddd;
+    box-shadow:
+      0.1em 0.1em 0.15em rgba(0, 0, 0, 0.1),
+      inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
+      inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
     border-radius: var(--corner-roundness);
-    width: 50%;
+  }
+
+  .toggle:hover {
+    cursor: grab;
+  }
+
+  :global(.toggle.grabbing),
+  .toggle.grabbing:hover {
+    cursor: grabbing;
   }
 </style>

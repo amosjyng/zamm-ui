@@ -3,7 +3,6 @@ import { get } from "svelte/store";
 import "@testing-library/jest-dom";
 import { act, getByLabelText, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import { fireEvent } from "@testing-library/dom";
 import Settings from "./Settings.svelte";
 import { soundOn, volume } from "$lib/preferences";
 import {
@@ -78,8 +77,10 @@ describe("Switch", () => {
     const soundRegion = screen.getByRole("region", { name: "Sound" });
     const volumeSlider = getByLabelText(soundRegion, "Volume");
     playback.addCalls(setVolumePartialCall);
-    await fireEvent.change(volumeSlider, { target: { value: 0.5 } });
-    expect(get(volume)).toBe(0.5);
+    volumeSlider.focus();
+    const user = userEvent.setup();
+    await user.keyboard("[ArrowLeft]");
+    expect(get(volume)).toBe(0.8);
     expect(tauriInvokeMock).toBeCalledTimes(1);
     expect(playback.unmatchedCalls.length).toBe(0);
   });

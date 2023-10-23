@@ -11,7 +11,7 @@ pub static PREFERENCES_FILENAME: &str = "preferences.toml";
 pub struct Preferences {
     unceasing_animations: Option<bool>,
     sound_on: Option<bool>,
-    volume: Option<f32>,
+    volume: Option<f64>,
 }
 
 pub fn get_preferences_file(

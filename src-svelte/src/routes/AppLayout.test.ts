@@ -76,7 +76,7 @@ describe("AppLayout", () => {
 
     render(AppLayout, {});
     await tickFor(3);
-    expect(get(volume)).toBe(0.5);
+    expect(get(volume)).toBe(0.8);
     expect(tauriInvokeMock).toBeCalledTimes(1);
   });
 });
