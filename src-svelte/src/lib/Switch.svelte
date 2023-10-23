@@ -35,6 +35,14 @@
     playSoundEffect("Switch");
   }
 
+  function tryToggle(toggledOn: boolean) {
+    try {
+      onToggle(toggledOn);
+    } catch (e) {
+      console.error(`Error in callback: ${e}`);
+    }
+  }
+
   function playDragClick(offsetX: number) {
     if (dragging) {
       if (dragPositionOnLeft && offsetX >= onLeft) {
@@ -49,6 +57,7 @@
 
   let toggleDragOptions: DragOptions = {
     axis: "x",
+    defaultClassDragging: "grabbing",
     bounds: () => toggleBound,
     inverseScale: 1,
     render: (data: DragEventData) => {
@@ -78,7 +87,7 @@
         const previousValue = toggledOn;
         toggledOn = data.offsetX > offLeft / 2;
         if (previousValue !== toggledOn) {
-          onToggle(toggledOn);
+          tryToggle(toggledOn);
         }
       }
       playDragClick(toggledOn ? onLeft : offLeft);
@@ -97,7 +106,7 @@
   export function toggle() {
     if (!dragging) {
       toggledOn = !toggledOn;
-      onToggle(toggledOn);
+      tryToggle(toggledOn);
       playClick();
     }
     dragging = false; // subsequent clicks should register
@@ -281,5 +290,9 @@
       inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
       inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
     border-radius: var(--corner-roundness);
+  }
+
+  :global(.grabbing .toggle) {
+    cursor: grabbing;
   }
 </style>
