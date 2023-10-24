@@ -1,6 +1,7 @@
 request: ["get_preferences"]
 response: >
   {
+    "animations_on": null,
     "unceasing_animations": null,
     "sound_on": null,
     "volume": null

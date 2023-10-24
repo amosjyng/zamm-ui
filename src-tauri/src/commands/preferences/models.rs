@@ -9,6 +9,7 @@ pub static PREFERENCES_FILENAME: &str = "preferences.toml";
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, Type)]
 pub struct Preferences {
+    animations_on: Option<bool>,
     unceasing_animations: Option<bool>,
     sound_on: Option<bool>,
     volume: Option<f64>,

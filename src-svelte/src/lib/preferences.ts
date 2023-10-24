@@ -8,6 +8,7 @@ export const soundOn = writable(true);
 export const volume = writable(1);
 
 export const NullPreferences: Preferences = {
+  animations_on: null,
   unceasing_animations: null,
   sound_on: null,
   volume: null,

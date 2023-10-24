@@ -13,6 +13,13 @@
   } from "$lib/preferences";
   import { setPreferences } from "$lib/bindings";
 
+  const onAnimationsToggle = (newValue: boolean) => {
+    setPreferences({
+      ...NullPreferences,
+      animations_on: newValue,
+    });
+  };
+
   const onUnceasingAnimationsToggle = (newValue: boolean) => {
     setPreferences({
       ...NullPreferences,
@@ -38,7 +45,11 @@
 <InfoBox title="Settings">
   <div class="container">
     <SubInfoBox subheading="Animation">
-      <SettingsSwitch label="Enabled" bind:toggledOn={$animationsOn} />
+      <SettingsSwitch
+        label="Enabled"
+        bind:toggledOn={$animationsOn}
+        onToggle={onAnimationsToggle}
+      />
       <SettingsSwitch
         label="Background"
         bind:toggledOn={$unceasingAnimations}

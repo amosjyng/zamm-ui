@@ -4,7 +4,12 @@
   import "./styles.css";
   import { onMount } from "svelte";
   import { getPreferences } from "$lib/bindings";
-  import { soundOn, unceasingAnimations, volume } from "$lib/preferences";
+  import {
+    soundOn,
+    unceasingAnimations,
+    volume,
+    animationsOn,
+  } from "$lib/preferences";
 
   onMount(async () => {
     const prefs = await getPreferences();
@@ -16,6 +21,10 @@
       volume.set(prefs.volume);
     }
 
+    if (prefs.animations_on !== null) {
+      animationsOn.set(prefs.animations_on);
+    }
+
     if (prefs.unceasing_animations === null) {
       unceasingAnimations.set(true);
     } else {
@@ -24,7 +33,7 @@
   });
 </script>
 
-<div class="app">
+<div class="app" class:animations-disabled={animationsOn}>
   <Sidebar />
 
   <div class="main-container">
@@ -47,6 +56,11 @@
     left: 0;
     background-color: var(--color-background);
     --main-corners: var(--corner-roundness) 0 0 var(--corner-roundness);
+  }
+
+  .app.animations-disabled :global(*) {
+    animation-play-state: paused !important;
+    transition: none !important;
   }
 
   .main-container {
