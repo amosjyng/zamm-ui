@@ -7,6 +7,7 @@
   import {
     soundOn,
     unceasingAnimations,
+    animationSpeed,
     volume,
     animationsOn,
   } from "$lib/preferences";
@@ -30,10 +31,18 @@
     } else {
       unceasingAnimations.set(prefs.unceasing_animations);
     }
+
+    if (prefs.animation_speed !== null) {
+      animationSpeed.set(prefs.animation_speed);
+    }
   });
 </script>
 
-<div id="app" class:animations-disabled={!$animationsOn}>
+<div
+  id="app"
+  class:animations-disabled={!$animationsOn}
+  style="--base-animation-speed: {$animationSpeed};"
+>
   <Sidebar />
 
   <div class="main-container">

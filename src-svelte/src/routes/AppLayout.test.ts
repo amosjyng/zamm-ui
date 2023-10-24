@@ -5,7 +5,12 @@ import { tick } from "svelte";
 
 import { render } from "@testing-library/svelte";
 import AppLayout from "./AppLayout.svelte";
-import { soundOn, volume, animationsOn } from "$lib/preferences";
+import {
+  soundOn,
+  volume,
+  animationsOn,
+  animationSpeed,
+} from "$lib/preferences";
 import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
 
 const tauriInvokeMock = vi.fn();
@@ -98,7 +103,7 @@ describe("AppLayout", () => {
     expect(app.classList).not.toContainEqual("animations-disabled");
   });
 
-  test("will disable animations if settings set", async () => {
+  test("will disable animations if preference overridden", async () => {
     expect(get(animationsOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
@@ -114,5 +119,23 @@ describe("AppLayout", () => {
     expect(tauriInvokeMock).toBeCalledTimes(1);
     const app = document.querySelector("#app") as Element;
     expect(app.classList).toContainEqual("animations-disabled");
+  });
+
+  test("will slow down animations if preference overridden", async () => {
+    expect(get(animationSpeed)).toBe(1);
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+
+    const getPreferencesCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_preferences-animation-speed-override.yaml",
+      false,
+    );
+    playback.addCalls(getPreferencesCall);
+
+    render(AppLayout, {});
+    await tickFor(3);
+    expect(get(animationSpeed)).toBe(0.9);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+    const app = document.querySelector("#app") as Element;
+    expect(app.getAttribute("style")).toEqual("--base-animation-speed: 0.9;");
   });
 });

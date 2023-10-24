@@ -27,6 +27,13 @@
     });
   };
 
+  const onAnimationSpeedUpdate = (newValue: number) => {
+    setPreferences({
+      ...NullPreferences,
+      animation_speed: newValue,
+    });
+  };
+
   const onSoundToggle = (newValue: boolean) => {
     setPreferences({
       ...NullPreferences,
@@ -57,9 +64,10 @@
       />
       <SettingsSlider
         label="General speed"
-        min={0}
-        max={4}
+        min={0.1}
+        max={1}
         bind:value={$animationSpeed}
+        onUpdate={onAnimationSpeedUpdate}
       />
     </SubInfoBox>
   </div>

@@ -11,6 +11,7 @@ pub static PREFERENCES_FILENAME: &str = "preferences.toml";
 pub struct Preferences {
     animations_on: Option<bool>,
     unceasing_animations: Option<bool>,
+    animation_speed: Option<f64>,
     sound_on: Option<bool>,
     volume: Option<f64>,
 }

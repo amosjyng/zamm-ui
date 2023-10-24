@@ -31,7 +31,7 @@ export function setPreferences(preferences: Preferences) {
 }
 
 export type ApiKey = { value: string; source: Source }
-export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; sound_on: boolean | null; volume: number | null }
+export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
 export type Source = "Environment"
 export type Sound = "Switch" | "Whoosh"
 export type ApiKeys = { openai: ApiKey | null }

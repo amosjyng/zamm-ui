@@ -119,15 +119,19 @@ describe.concurrent("Storybook visual tests", () => {
     },
   );
 
-  const takeScreenshot = (page: Page, screenshotEntireBody?: boolean) => {
+  const takeScreenshot = async (page: Page, screenshotEntireBody?: boolean) => {
     const frame = page.frame({ name: "storybook-preview-iframe" });
     if (!frame) {
       throw new Error("Could not find Storybook iframe");
     }
-    const locator = screenshotEntireBody
+    let locator = screenshotEntireBody
       ? "body"
       : "#storybook-root > :first-child";
-    return frame.locator(locator).screenshot();
+    const elementClass = await frame.locator(locator).getAttribute("class");
+    if (elementClass === "storybook-wrapper") {
+      locator = "#storybook-root > :first-child > :first-child";
+    }
+    return await frame.locator(locator).screenshot();
   };
 
   const baseMatchOptions: MatchImageSnapshotOptions = {
