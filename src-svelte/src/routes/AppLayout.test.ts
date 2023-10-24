@@ -5,7 +5,7 @@ import { tick } from "svelte";
 
 import { render } from "@testing-library/svelte";
 import AppLayout from "./AppLayout.svelte";
-import { soundOn, volume } from "$lib/preferences";
+import { soundOn, volume, animationsOn } from "$lib/preferences";
 import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
 
 const tauriInvokeMock = vi.fn();
@@ -78,5 +78,41 @@ describe("AppLayout", () => {
     await tickFor(3);
     expect(get(volume)).toBe(0.8);
     expect(tauriInvokeMock).toBeCalledTimes(1);
+  });
+
+  test("will enable animations by default", async () => {
+    expect(get(animationsOn)).toBe(true);
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+
+    const getPreferencesCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
+      false,
+    );
+    playback.addCalls(getPreferencesCall);
+
+    render(AppLayout, {});
+    await tickFor(3);
+    expect(get(animationsOn)).toBe(true);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+    const app = document.querySelector("#app") as Element;
+    expect(app.classList).not.toContainEqual("animations-disabled");
+  });
+
+  test("will disable animations if settings set", async () => {
+    expect(get(animationsOn)).toBe(true);
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+
+    const getPreferencesCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_preferences-animations-off.yaml",
+      false,
+    );
+    playback.addCalls(getPreferencesCall);
+
+    render(AppLayout, {});
+    await tickFor(3);
+    expect(get(animationsOn)).toBe(false);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+    const app = document.querySelector("#app") as Element;
+    expect(app.classList).toContainEqual("animations-disabled");
   });
 });

@@ -33,7 +33,7 @@
   });
 </script>
 
-<div class="app" class:animations-disabled={animationsOn}>
+<div id="app" class:animations-disabled={!$animationsOn}>
   <Sidebar />
 
   <div class="main-container">
@@ -47,7 +47,7 @@
 </div>
 
 <style>
-  .app {
+  #app {
     box-sizing: border-box;
     height: 100vh;
     width: 100vw;
@@ -58,7 +58,7 @@
     --main-corners: var(--corner-roundness) 0 0 var(--corner-roundness);
   }
 
-  .app.animations-disabled :global(*) {
+  #app.animations-disabled :global(*) {
     animation-play-state: paused !important;
     transition: none !important;
   }
