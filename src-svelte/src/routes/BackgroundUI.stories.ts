@@ -5,7 +5,7 @@ import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
 
 export default {
   component: BackgroundComponent,
-  title: "Background",
+  title: "Layout/Background",
   argTypes: {},
   decorators: [
     SvelteStoresDecorator,

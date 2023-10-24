@@ -48,7 +48,7 @@ const components: ComponentTestConfig[] = [
     screenshotEntireBody: true,
   },
   {
-    path: ["background"],
+    path: ["layout", "background"],
     variants: [
       {
         name: "static",
