@@ -108,7 +108,7 @@ describe("AppLayout", () => {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
     const getPreferencesCall = parseSampleCall(
-      "../src-tauri/api/sample-calls/get_preferences-animations-off.yaml",
+      "../src-tauri/api/sample-calls/get_preferences-animations-override.yaml",
       false,
     );
     playback.addCalls(getPreferencesCall);
