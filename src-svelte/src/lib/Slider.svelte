@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { watchResize } from "svelte-watch-resize";
   import getComponentId from "./label-id";
   import {
     draggable,
@@ -96,7 +95,10 @@
   }
 
   function handleResize() {
+    // disable transition temporarily to avoid progress bar and thumb going out of sync
+    transition = "";
     toggleDragOptions = calculatePosition(value);
+    setTimeout(() => (transition = transitionAnimation), 100);
   }
 
   function onClick(e: MouseEvent) {
@@ -124,6 +126,7 @@
 
   onMount(() => {
     toggleDragOptions = calculatePosition(value);
+    new ResizeObserver(handleResize).observe(track);
   });
 
   $: left = toggleDragOptions.position?.x ?? 0;
@@ -145,11 +148,7 @@
     on:click={onClick}
     on:keydown={onKeyPress}
   >
-    <div
-      class="groove-layer groove"
-      bind:this={track}
-      use:watchResize={handleResize}
-    >
+    <div class="groove-layer groove" bind:this={track}>
       <div class="groove-layer shadow"></div>
       <div
         class="groove-contents progress"

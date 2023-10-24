@@ -21,6 +21,18 @@ describe("Switch", () => {
   let setVolumePartialCall: ParsedCall;
 
   beforeAll(() => {
+    global.ResizeObserver = class ResizeObserver {
+      observe() {
+        // do nothing
+      }
+      unobserve() {
+        // do nothing
+      }
+      disconnect() {
+        // do nothing
+      }
+    };
+
     playSwitchSoundCall = parseSampleCall(
       "../src-tauri/api/sample-calls/play_sound-switch.yaml",
       true,
