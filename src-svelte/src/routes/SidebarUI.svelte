@@ -3,6 +3,7 @@
   import IconChat from "~icons/ph/chat-dots-fill";
   import IconDashboard from "~icons/material-symbols/monitor-heart";
   import { playSoundEffect } from "$lib/sound";
+  import { animationSpeed } from "$lib/preferences";
 
   const routes: App.Route[] = [
     {
@@ -33,7 +34,7 @@
   }
 
   function playWhooshSound() {
-    playSoundEffect("Whoosh");
+    playSoundEffect("Whoosh", $animationSpeed);
   }
 
   function routeChangeSimulator(newRoute: App.Route) {

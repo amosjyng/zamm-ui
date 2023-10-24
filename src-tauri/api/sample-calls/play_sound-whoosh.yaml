@@ -3,6 +3,7 @@ request:
   - >
     {
       "sound": "Whoosh",
-      "volume": 0.5
+      "volume": 0.5,
+      "speed": 0.25
     }
 response: "null"

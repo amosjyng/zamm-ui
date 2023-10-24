@@ -3,6 +3,7 @@ request:
   - >
     {
       "sound": "Switch",
-      "volume": 1
+      "volume": 1,
+      "speed": 1
     }
 response: "null"
