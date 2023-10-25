@@ -43,11 +43,10 @@
   let dragPositionOnLeft = false;
 
   function playClick() {
-    playSoundEffect("Switch");
-  }
-
-  function playDelayedClick() {
-    setTimeout(() => playClick(), getClickDelayMs($animationSpeed));
+    setTimeout(
+      () => playSoundEffect("Switch"),
+      getClickDelayMs($animationSpeed),
+    );
   }
 
   function tryToggle(toggledOn: boolean) {
@@ -122,7 +121,7 @@
     if (!dragging) {
       toggledOn = !toggledOn;
       tryToggle(toggledOn);
-      playDelayedClick();
+      playClick();
     }
     dragging = false; // subsequent clicks should register
   }
