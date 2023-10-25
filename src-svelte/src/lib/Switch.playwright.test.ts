@@ -19,6 +19,7 @@ describe("Switch drag test", () => {
   let browser: Browser;
   let context: BrowserContext;
   let numSoundsPlayed: number;
+  let soundDelays: number[];
 
   beforeAll(async () => {
     storybookProcess = await ensureStorybookRunning();
@@ -28,6 +29,9 @@ describe("Switch drag test", () => {
     await context.exposeFunction(
       "_testRecordSoundPlayed",
       () => numSoundsPlayed++,
+    );
+    await context.exposeFunction("_testRecordSoundDelay", (delay: number) =>
+      soundDelays.push(delay),
     );
     page = await context.newPage();
 
@@ -45,12 +49,12 @@ describe("Switch drag test", () => {
 
   beforeEach(() => {
     numSoundsPlayed = 0;
+    soundDelays = [];
   });
 
   const getSwitchAndToggle = async (initialState = "off") => {
-    await page.goto(
-      `http://localhost:6006/?path=/story/reusable-switch--${initialState}`,
-    );
+    const url = `http://localhost:6006/?path=/story/reusable-switch--${initialState}`;
+    await page.goto(url);
 
     const maybeFrame = page.frame({ name: "storybook-preview-iframe" });
     if (!maybeFrame) {
@@ -92,12 +96,45 @@ describe("Switch drag test", () => {
 
       await toggle.dragTo(onOffSwitch, {
         targetPosition: {
-          x: switchBounds.width * 0.75,
+          x: switchBounds.width * 0.55,
           y: switchBounds.height / 2,
         },
       });
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
       expect(numSoundsPlayed === 1).toBeTruthy();
+      const expectedDelays = [0];
+      expect(
+        JSON.stringify(soundDelays) === JSON.stringify(expectedDelays),
+      ).toBeTruthy();
+    },
+    { retry: 2 },
+  );
+
+  test(
+    "delays click sound when animation speed slow",
+    async () => {
+      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle(
+        "slow-motion",
+      );
+      // ===== same as previous test =====
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
+      expect(numSoundsPlayed === 0).toBeTruthy();
+
+      await toggle.dragTo(onOffSwitch, {
+        targetPosition: {
+          x: switchBounds.width * 0.55,
+          y: switchBounds.height / 2,
+        },
+      });
+      // sound is delayed, wait for it to fire
+      await new Promise((r) => setTimeout(r, 500));
+      await expect(onOffSwitch).toHaveAttribute("aria-checked", "true");
+      expect(numSoundsPlayed === 1).toBeTruthy();
+      // ===== end similarity block =====
+      const expectedDelays = [450];
+      expect(
+        JSON.stringify(soundDelays) === JSON.stringify(expectedDelays),
+      ).toBeTruthy();
     },
     { retry: 2 },
   );
@@ -124,7 +161,9 @@ describe("Switch drag test", () => {
   test(
     "clicks twice when dragged to end and back",
     async () => {
-      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle();
+      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle(
+        "slow-motion",
+      );
       const finalY = switchBounds.y + switchBounds.height / 2;
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
       expect(numSoundsPlayed === 0).toBeTruthy();
@@ -140,6 +179,16 @@ describe("Switch drag test", () => {
       await page.mouse.move(switchBounds.x, finalY);
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
       expect(numSoundsPlayed === 2).toBeTruthy();
+
+      // does not play sound when released
+      await page.mouse.up();
+      expect(numSoundsPlayed === 2).toBeTruthy();
+
+      // should have no delay for both sounds played despite slower animation
+      const expectedDelays = [0, 0];
+      expect(
+        JSON.stringify(soundDelays) === JSON.stringify(expectedDelays),
+      ).toBeTruthy();
     },
     { retry: 2 },
   );

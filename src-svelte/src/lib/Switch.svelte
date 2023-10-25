@@ -42,11 +42,12 @@
   let dragging = false;
   let dragPositionOnLeft = false;
 
-  function playClick() {
-    setTimeout(
-      () => playSoundEffect("Switch"),
-      getClickDelayMs($animationSpeed),
-    );
+  function playClick(delayed = true) {
+    const delay = delayed ? getClickDelayMs($animationSpeed) : 0;
+    setTimeout(() => playSoundEffect("Switch"), delay);
+    if (window._testRecordSoundDelay !== undefined) {
+      window._testRecordSoundDelay(delay);
+    }
   }
 
   function tryToggle(toggledOn: boolean) {
@@ -57,13 +58,13 @@
     }
   }
 
-  function playDragClick(offsetX: number) {
+  function playDragClick(offsetX: number, delayed: boolean) {
     if (dragging) {
       if (dragPositionOnLeft && offsetX >= onLeft) {
-        playClick();
+        playClick(delayed);
         dragPositionOnLeft = false;
       } else if (!dragPositionOnLeft && offsetX <= offLeft) {
-        playClick();
+        playClick(delayed);
         dragPositionOnLeft = true;
       }
     }
@@ -93,7 +94,7 @@
       // have to keep track of the starting offset to determine if we've actually
       // moved
       dragging = dragging || data.offsetX !== startingOffset;
-      playDragClick(data.offsetX);
+      playDragClick(data.offsetX, false);
     },
     onDragEnd: (data: DragEventData) => {
       transition = transitionAnimation;
@@ -104,7 +105,7 @@
           tryToggle(toggledOn);
         }
       }
-      playDragClick(toggledOn ? onLeft : offLeft);
+      playDragClick(toggledOn ? onLeft : offLeft, true);
       // even if toggle state didn't change, reset back to resting position
       toggleDragOptions = updatePosition(toggledOn);
     },
