@@ -47,6 +47,9 @@ const config: StorybookConfig = {
     name: getAbsolutePath("@storybook/sveltekit"),
     options: {},
   },
+  core: {
+    disableWhatsNewNotifications: true,
+  },
   staticDirs: ["../static"],
   docs: {
     autodocs: "tag",
