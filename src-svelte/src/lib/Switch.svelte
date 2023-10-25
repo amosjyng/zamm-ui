@@ -1,5 +1,16 @@
+<script lang="ts" context="module">
+  export function getClickDelayMs(animationSpeed: number) {
+    // time taken to reach other end of switch, meaning that this doesn't account
+    // for the time it takes to bounce back from the overshoot
+    const usualAnimationDurationMs = 50;
+    const presentAnimationDuration = usualAnimationDurationMs / animationSpeed;
+    return Math.max(0, presentAnimationDuration - usualAnimationDurationMs);
+  }
+</script>
+
 <script lang="ts">
   import { playSoundEffect } from "./sound";
+  import { animationSpeed } from "./preferences";
   import getComponentId from "./label-id";
   import {
     draggable,
@@ -33,6 +44,10 @@
 
   function playClick() {
     playSoundEffect("Switch");
+  }
+
+  function playDelayedClick() {
+    setTimeout(() => playClick(), getClickDelayMs($animationSpeed));
   }
 
   function tryToggle(toggledOn: boolean) {
@@ -107,7 +122,7 @@
     if (!dragging) {
       toggledOn = !toggledOn;
       tryToggle(toggledOn);
-      playClick();
+      playDelayedClick();
     }
     dragging = false; // subsequent clicks should register
   }

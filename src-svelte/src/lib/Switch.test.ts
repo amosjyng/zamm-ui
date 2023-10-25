@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import Switch from "./Switch.svelte";
+import Switch, { getClickDelayMs } from "./Switch.svelte";
 import { soundOn } from "$lib/preferences";
 import fs from "fs";
 import yaml from "js-yaml";
@@ -12,6 +12,20 @@ import { Convert, type SampleCall } from "$lib/sample-call";
 const tauriInvokeMock = vi.fn();
 
 vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
+
+describe("Switch delay", () => {
+  test("is 0 under regular animation speeds", () => {
+    expect(getClickDelayMs(1)).toBe(0);
+  });
+
+  test("increases a little when animation is twice as slow", () => {
+    expect(getClickDelayMs(0.5)).toBe(50);
+  });
+
+  test("increases a lot when animation is 10x as slow", () => {
+    expect(getClickDelayMs(0.1)).toBe(450);
+  });
+});
 
 describe("Switch", () => {
   let switchCall: SampleCall;
