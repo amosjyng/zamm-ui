@@ -23,7 +23,7 @@ import sizeOf from "image-size";
 
 const DEFAULT_TIMEOUT =
   process.env.PLAYWRIGHT_TIMEOUT === undefined
-    ? 10_000
+    ? 9_000
     : parseInt(process.env.PLAYWRIGHT_TIMEOUT);
 
 interface ComponentTestConfig {
