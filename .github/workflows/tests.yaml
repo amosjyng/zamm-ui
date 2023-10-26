@@ -42,13 +42,17 @@ jobs:
             src-tauri/target/release/zamm
             src-tauri/target/release/zamm-python
           retention-days: 1
-      - name: Upload final app
+      - name: Upload .deb
         uses: actions/upload-artifact@v3
         with:
-          name: full-app
-          path: |
-            src-tauri/target/release/bundle/appimage/zamm_*.AppImage
-            src-tauri/target/release/bundle/deb/zamm_*.deb
+          name: zamm.deb
+          path: src-tauri/target/release/bundle/deb/zamm_*.deb
+          retention-days: 1
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v3
+        with:
+          name: zamm.AppImage
+          path: src-tauri/target/release/bundle/appimage/zamm_*.AppImage
           retention-days: 1
   pre-commit:
     name: Check pre-commit hooks
@@ -289,5 +293,5 @@ jobs:
         if: always() # run even if tests fail
         uses: actions/upload-artifact@v3
         with:
-          name: test-screenshots
+          name: webdriver-screenshots
           path: webdriver/screenshots/testing/**/*.png
