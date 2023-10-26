@@ -58,7 +58,10 @@ describe("Sidebar", () => {
   });
 
   test("plays whoosh sound with right speed and volume", async () => {
-    volume.update(() => 0.5);
+    // volume is at 0.125 so that when it's boosted 4x to compensate for the 4x
+    // reduction in playback speed, the net volume will be at 0.5 as specified in the
+    // sample file
+    volume.update(() => 0.125);
     animationSpeed.update(() => 0.25);
     await act(() => userEvent.click(settingsLink));
     expect(spy).toHaveBeenLastCalledWith(...whooshRequest);
