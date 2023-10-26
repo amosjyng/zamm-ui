@@ -3,8 +3,11 @@ request:
   - >
     {
       "preferences": {
+        "animations_on": null,
         "unceasing_animations": null,
-        "sound_on": true
+        "animation_speed": null,
+        "sound_on": true,
+        "volume": null
       }
     }
 response: "null"

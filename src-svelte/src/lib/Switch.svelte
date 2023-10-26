@@ -1,7 +1,17 @@
+<script lang="ts" context="module">
+  export function getClickDelayMs(animationSpeed: number) {
+    // time taken to reach other end of switch, meaning that this doesn't account
+    // for the time it takes to bounce back from the overshoot
+    const usualAnimationDurationMs = 50;
+    const presentAnimationDuration = usualAnimationDurationMs / animationSpeed;
+    return Math.max(0, presentAnimationDuration - usualAnimationDurationMs);
+  }
+</script>
+
 <script lang="ts">
-  import { soundOn } from "$lib/preferences";
-  import { playSound } from "./bindings";
-  import { customAlphabet } from "nanoid/non-secure";
+  import { playSoundEffect } from "./sound";
+  import { animationSpeed } from "./preferences";
+  import getComponentId from "./label-id";
   import {
     draggable,
     type DragOptions,
@@ -16,11 +26,10 @@
   const offLeft = -labelWidth;
   const onLeft = 0;
   const transitionAnimation = `
-    transition: left 0.1s;
+    transition: left calc(0.1s / var(--base-animation-speed));
     transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
   `;
-  const nanoid = customAlphabet("1234567890", 6);
-  const switchId = `switch-${nanoid()}`;
+  const switchId = getComponentId("switch");
 
   export let label: string | undefined = undefined;
   export let toggledOn = false;
@@ -33,24 +42,29 @@
   let dragging = false;
   let dragPositionOnLeft = false;
 
-  function playClick() {
-    if (!$soundOn) {
-      return;
-    }
-
-    playSound("Switch");
-    if (window._testRecordSoundPlayed !== undefined) {
-      window._testRecordSoundPlayed();
+  function playClick(delayed = true) {
+    const delay = delayed ? getClickDelayMs($animationSpeed) : 0;
+    setTimeout(() => playSoundEffect("Switch"), delay);
+    if (window._testRecordSoundDelay !== undefined) {
+      window._testRecordSoundDelay(delay);
     }
   }
 
-  function playDragClick(offsetX: number) {
+  function tryToggle(toggledOn: boolean) {
+    try {
+      onToggle(toggledOn);
+    } catch (e) {
+      console.error(`Error in callback: ${e}`);
+    }
+  }
+
+  function playDragClick(offsetX: number, delayed: boolean) {
     if (dragging) {
       if (dragPositionOnLeft && offsetX >= onLeft) {
-        playClick();
+        playClick(delayed);
         dragPositionOnLeft = false;
       } else if (!dragPositionOnLeft && offsetX <= offLeft) {
-        playClick();
+        playClick(delayed);
         dragPositionOnLeft = true;
       }
     }
@@ -58,6 +72,7 @@
 
   let toggleDragOptions: DragOptions = {
     axis: "x",
+    defaultClassDragging: "grabbing",
     bounds: () => toggleBound,
     inverseScale: 1,
     render: (data: DragEventData) => {
@@ -79,7 +94,7 @@
       // have to keep track of the starting offset to determine if we've actually
       // moved
       dragging = dragging || data.offsetX !== startingOffset;
-      playDragClick(data.offsetX);
+      playDragClick(data.offsetX, false);
     },
     onDragEnd: (data: DragEventData) => {
       transition = transitionAnimation;
@@ -87,10 +102,10 @@
         const previousValue = toggledOn;
         toggledOn = data.offsetX > offLeft / 2;
         if (previousValue !== toggledOn) {
-          onToggle(toggledOn);
+          tryToggle(toggledOn);
         }
       }
-      playDragClick(toggledOn ? onLeft : offLeft);
+      playDragClick(toggledOn ? onLeft : offLeft, true);
       // even if toggle state didn't change, reset back to resting position
       toggleDragOptions = updatePosition(toggledOn);
     },
@@ -106,7 +121,7 @@
   export function toggle() {
     if (!dragging) {
       toggledOn = !toggledOn;
-      onToggle(toggledOn);
+      tryToggle(toggledOn);
       playClick();
     }
     dragging = false; // subsequent clicks should register
@@ -290,5 +305,9 @@
       inset -0.1em -0.1em 0.15em rgba(0, 0, 0, 0.3),
       inset 0.1em 0.1em 0.15em rgba(255, 255, 255, 0.7);
     border-radius: var(--corner-roundness);
+  }
+
+  :global(.grabbing .toggle) {
+    cursor: grabbing;
   }
 </style>

@@ -57,16 +57,11 @@
   --shadow-offset: 4px;
   --shadow-blur: 8px;
   --corner-roundness: 0.375rem;
+  --base-animation-speed: 1;
   font-family: var(--font-body);
   color: var(--color-text);
   font-weight: 400;
   font-size: 18px;
-}
-
-th {
-  font-family: var(--font-header);
-  text-transform: uppercase;
-  font-size: 1.1rem;
 }
 
 td, th {
@@ -87,6 +82,14 @@ h2 {
 
 h2 {
   margin-bottom: 0;
+}
+
+h3, th {
+  font-family: var(--font-header);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 400;
+  filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.7));
 }
 
 body {

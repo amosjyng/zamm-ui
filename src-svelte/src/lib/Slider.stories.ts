@@ -1,11 +1,11 @@
-import Switch from "./Switch.svelte";
+import Slider from "./Slider.svelte";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import SvelteStoresDecorator from "$lib/__mocks__/stores";
 import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
 
 export default {
-  component: Switch,
-  title: "Reusable/Switch",
+  component: Slider,
+  title: "Reusable/Slider",
   argTypes: {},
   decorators: [
     SvelteStoresDecorator,
@@ -19,36 +19,51 @@ export default {
 };
 
 const Template = ({ ...args }) => ({
-  Component: Switch,
+  Component: Slider,
   props: args,
 });
 
-export const On: StoryObj = Template.bind({}) as any;
-On.args = {
+export const TinyPhoneScreen: StoryObj = Template.bind({}) as any;
+TinyPhoneScreen.args = {
   label: "Simulation",
-  toggledOn: true,
+  max: 10,
+  value: 5,
 };
-On.parameters = {
+TinyPhoneScreen.parameters = {
   viewport: {
     defaultViewport: "mobile1",
   },
 };
 
-export const Off: StoryObj = Template.bind({}) as any;
-Off.args = {
-  label: "Simulation",
-  toggledOn: false,
+export const TinyPhoneScreenWithLongLabel: StoryObj = Template.bind({}) as any;
+TinyPhoneScreenWithLongLabel.args = {
+  label: "Extra Large Simulation",
+  max: 10,
+  value: 5,
 };
-Off.parameters = {
+TinyPhoneScreenWithLongLabel.parameters = {
   viewport: {
     defaultViewport: "mobile1",
+  },
+};
+
+export const Tablet: StoryObj = Template.bind({}) as any;
+Tablet.args = {
+  label: "Simulation",
+  max: 10,
+  value: 5,
+};
+Tablet.parameters = {
+  viewport: {
+    defaultViewport: "tablet",
   },
 };
 
 export const SlowMotion: StoryObj = Template.bind({}) as any;
 SlowMotion.args = {
-  label: "Simulation",
-  toggledOn: false,
+  label: "Extra Large Simulation",
+  max: 10,
+  value: 5,
 };
 SlowMotion.parameters = {
   viewport: {

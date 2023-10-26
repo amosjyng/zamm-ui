@@ -4,22 +4,45 @@
   import "./styles.css";
   import { onMount } from "svelte";
   import { getPreferences } from "$lib/bindings";
-  import { soundOn, unceasingAnimations } from "$lib/preferences";
+  import {
+    soundOn,
+    unceasingAnimations,
+    animationSpeed,
+    volume,
+    animationsOn,
+  } from "$lib/preferences";
 
   onMount(async () => {
     const prefs = await getPreferences();
     if (prefs.sound_on !== null) {
       soundOn.set(prefs.sound_on);
     }
+
+    if (prefs.volume !== null) {
+      volume.set(prefs.volume);
+    }
+
+    if (prefs.animations_on !== null) {
+      animationsOn.set(prefs.animations_on);
+    }
+
     if (prefs.unceasing_animations === null) {
       unceasingAnimations.set(true);
     } else {
       unceasingAnimations.set(prefs.unceasing_animations);
     }
+
+    if (prefs.animation_speed !== null) {
+      animationSpeed.set(prefs.animation_speed);
+    }
   });
 </script>
 
-<div class="app">
+<div
+  id="app"
+  class:animations-disabled={!$animationsOn}
+  style="--base-animation-speed: {$animationSpeed};"
+>
   <Sidebar />
 
   <div class="main-container">
@@ -33,7 +56,7 @@
 </div>
 
 <style>
-  .app {
+  #app {
     box-sizing: border-box;
     height: 100vh;
     width: 100vw;
@@ -42,6 +65,11 @@
     left: 0;
     background-color: var(--color-background);
     --main-corners: var(--corner-roundness) 0 0 var(--corner-roundness);
+  }
+
+  #app.animations-disabled :global(*) {
+    animation-play-state: paused !important;
+    transition: none !important;
   }
 
   .main-container {

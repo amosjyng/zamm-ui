@@ -3,20 +3,37 @@ import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import Switch from "./Switch.svelte";
-import { soundOn } from "$lib/preferences";
+import Switch, { getClickDelayMs } from "./Switch.svelte";
+import { soundOn, animationSpeed } from "$lib/preferences";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Convert, type SampleCall } from "$lib/sample-call";
 
 const tauriInvokeMock = vi.fn();
+const recordSoundDelay = vi.fn();
 
 vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
+vi.stubGlobal("_testRecordSoundDelay", recordSoundDelay);
+
+describe("Switch delay", () => {
+  test("is 0 under regular animation speeds", () => {
+    expect(getClickDelayMs(1)).toBe(0);
+  });
+
+  test("increases a little when animation is twice as slow", () => {
+    expect(getClickDelayMs(0.5)).toBe(50);
+  });
+
+  test("increases a lot when animation is 10x as slow", () => {
+    expect(getClickDelayMs(0.1)).toBe(450);
+  });
+});
 
 describe("Switch", () => {
   let switchCall: SampleCall;
   let switchRequest: (string | Record<string, string>)[];
-  let spy: SpyInstance;
+  let tauriInvokeSpy: SpyInstance;
+  let recordSoundDelaySpy: SpyInstance;
 
   beforeAll(() => {
     const sample_call_yaml = fs.readFileSync(
@@ -30,7 +47,8 @@ describe("Switch", () => {
   });
 
   beforeEach(() => {
-    spy = vi.spyOn(window, "__TAURI_INVOKE__");
+    tauriInvokeSpy = vi.spyOn(window, "__TAURI_INVOKE__");
+    recordSoundDelaySpy = vi.spyOn(window, "_testRecordSoundDelay");
     const response = JSON.parse(switchCall.response);
     tauriInvokeMock.mockResolvedValueOnce(response);
   });
@@ -73,21 +91,40 @@ describe("Switch", () => {
 
   test("plays clicking sound during toggle", async () => {
     render(Switch, {});
-    expect(spy).not.toHaveBeenCalled();
+    expect(tauriInvokeSpy).not.toHaveBeenCalled();
 
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
-    expect(spy).toHaveBeenLastCalledWith(...switchRequest);
+    expect(tauriInvokeSpy).toHaveBeenLastCalledWith(...switchRequest);
   });
 
   test("does not play clicking sound when sound off", async () => {
     render(Switch, {});
     soundOn.update(() => false);
-    expect(spy).not.toHaveBeenCalled();
+    expect(tauriInvokeSpy).not.toHaveBeenCalled();
 
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
-    expect(spy).not.toHaveBeenCalled();
+    expect(tauriInvokeSpy).not.toHaveBeenCalled();
+  });
+
+  test("does not usually delay click", async () => {
+    render(Switch, {});
+    expect(recordSoundDelaySpy).not.toHaveBeenCalled();
+
+    const onOffSwitch = screen.getByRole("switch");
+    await act(() => userEvent.click(onOffSwitch));
+    expect(recordSoundDelaySpy).toHaveBeenLastCalledWith(0);
+  });
+
+  test("delays click when animation speed is slow", async () => {
+    animationSpeed.set(0.1);
+    render(Switch, {});
+    expect(recordSoundDelaySpy).not.toHaveBeenCalled();
+
+    const onOffSwitch = screen.getByRole("switch");
+    await act(() => userEvent.click(onOffSwitch));
+    expect(recordSoundDelaySpy).toHaveBeenLastCalledWith(450);
   });
 
   test("calls onToggle when toggled", async () => {

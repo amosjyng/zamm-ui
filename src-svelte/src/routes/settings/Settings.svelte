@@ -1,17 +1,36 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
+  import SubInfoBox from "$lib/SubInfoBox.svelte";
   import SettingsSwitch from "./SettingsSwitch.svelte";
+  import SettingsSlider from "./SettingsSlider.svelte";
   import {
+    animationsOn,
+    animationSpeed,
     unceasingAnimations,
     soundOn,
+    volume,
     NullPreferences,
   } from "$lib/preferences";
   import { setPreferences } from "$lib/bindings";
+
+  const onAnimationsToggle = (newValue: boolean) => {
+    setPreferences({
+      ...NullPreferences,
+      animations_on: newValue,
+    });
+  };
 
   const onUnceasingAnimationsToggle = (newValue: boolean) => {
     setPreferences({
       ...NullPreferences,
       unceasing_animations: newValue,
+    });
+  };
+
+  const onAnimationSpeedUpdate = (newValue: number) => {
+    setPreferences({
+      ...NullPreferences,
+      animation_speed: newValue,
     });
   };
 
@@ -21,35 +40,76 @@
       sound_on: newValue,
     });
   };
+
+  const onVolumeUpdate = (newValue: number) => {
+    setPreferences({
+      ...NullPreferences,
+      volume: newValue,
+    });
+  };
 </script>
 
 <InfoBox title="Settings">
   <div class="container">
-    <SettingsSwitch
-      label="Unceasing animations"
-      bind:toggledOn={$unceasingAnimations}
-      onToggle={onUnceasingAnimationsToggle}
-    />
-    <SettingsSwitch
-      label="Sounds"
-      bind:toggledOn={$soundOn}
-      onToggle={onSoundToggle}
-    />
+    <SubInfoBox subheading="Animation">
+      <SettingsSwitch
+        label="Enabled"
+        bind:toggledOn={$animationsOn}
+        onToggle={onAnimationsToggle}
+      />
+      <SettingsSwitch
+        label="Background"
+        bind:toggledOn={$unceasingAnimations}
+        onToggle={onUnceasingAnimationsToggle}
+      />
+      <SettingsSlider
+        label="General speed"
+        min={0.1}
+        max={1}
+        bind:value={$animationSpeed}
+        onUpdate={onAnimationSpeedUpdate}
+      />
+    </SubInfoBox>
+  </div>
+
+  <div class="container">
+    <SubInfoBox subheading="Sound">
+      <SettingsSwitch
+        label="Enabled"
+        bind:toggledOn={$soundOn}
+        onToggle={onSoundToggle}
+      />
+      <SettingsSlider
+        label="Volume"
+        min={0}
+        max={2}
+        onUpdate={onVolumeUpdate}
+        bind:value={$volume}
+      />
+    </SubInfoBox>
   </div>
 </InfoBox>
 
 <style>
   .container {
+    margin-top: 1rem;
+  }
+
+  .container:first-of-type {
+    margin-top: 0;
+  }
+
+  .container :global(.sub-info-box .content) {
     --side-padding: 0.8rem;
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.1rem;
-    margin: 0 calc(-1 * var(--side-padding)) 0.5rem;
+    margin: 0.5rem calc(-1 * var(--side-padding));
   }
 
   /* this takes sidebar width into account */
   @media (min-width: 52rem) {
-    .container {
+    .container :global(.sub-info-box .content) {
       grid-template-columns: 1fr 1fr;
     }
   }

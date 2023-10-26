@@ -87,6 +87,14 @@ mod tests {
     }
 
     #[test]
+    fn test_get_preferences_with_volume_override() {
+        check_get_preferences_sample(
+            "./api/sample-calls/get_preferences-volume-override.yaml",
+            "./api/sample-settings/volume-override",
+        );
+    }
+
+    #[test]
     fn test_get_preferences_with_extra_settings() {
         check_get_preferences_sample(
             "./api/sample-calls/get_preferences-extra-settings.yaml",

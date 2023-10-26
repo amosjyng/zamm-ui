@@ -21,6 +21,11 @@ import type { ChildProcess } from "child_process";
 import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 import sizeOf from "image-size";
 
+const DEFAULT_TIMEOUT =
+  process.env.PLAYWRIGHT_TIMEOUT === undefined
+    ? 9_000
+    : parseInt(process.env.PLAYWRIGHT_TIMEOUT);
+
 interface ComponentTestConfig {
   path: string[]; // Represents the Storybook hierarchy path
   variants: string[] | VariantConfig[];
@@ -39,7 +44,16 @@ const components: ComponentTestConfig[] = [
     screenshotEntireBody: true,
   },
   {
-    path: ["background"],
+    path: ["reusable", "slider"],
+    variants: [
+      "tiny-phone-screen",
+      "tiny-phone-screen-with-long-label",
+      "tablet",
+    ],
+    screenshotEntireBody: true,
+  },
+  {
+    path: ["layout", "background"],
     variants: [
       {
         name: "static",
@@ -88,6 +102,7 @@ describe.concurrent("Storybook visual tests", () => {
   beforeAll(async () => {
     browser = await chromium.launch({ headless: true });
     browserContext = await browser.newContext();
+    browserContext.setDefaultTimeout(DEFAULT_TIMEOUT);
     storybookProcess = await ensureStorybookRunning();
   });
 
@@ -110,15 +125,19 @@ describe.concurrent("Storybook visual tests", () => {
     },
   );
 
-  const takeScreenshot = (page: Page, screenshotEntireBody?: boolean) => {
+  const takeScreenshot = async (page: Page, screenshotEntireBody?: boolean) => {
     const frame = page.frame({ name: "storybook-preview-iframe" });
     if (!frame) {
       throw new Error("Could not find Storybook iframe");
     }
-    const locator = screenshotEntireBody
+    let locator = screenshotEntireBody
       ? "body"
       : "#storybook-root > :first-child";
-    return frame.locator(locator).screenshot();
+    const elementClass = await frame.locator(locator).getAttribute("class");
+    if (elementClass === "storybook-wrapper") {
+      locator = "#storybook-root > :first-child > :first-child";
+    }
+    return await frame.locator(locator).screenshot();
   };
 
   const baseMatchOptions: MatchImageSnapshotOptions = {
@@ -140,7 +159,7 @@ describe.concurrent("Storybook visual tests", () => {
               name: variant,
             }
           : variant;
-      const testName = variantConfig.name;
+      const testName = `${storybookPath}/${variantConfig.name}.png`;
       test(
         `${testName} should render the same`,
         async ({ expect, page }: TestContext & StorybookTestContext) => {
@@ -149,6 +168,7 @@ describe.concurrent("Storybook visual tests", () => {
           await page.goto(
             `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
           );
+          await page.locator("button[title='Hide addons [A]']").click();
 
           const screenshot = await takeScreenshot(
             page,
@@ -165,7 +185,7 @@ describe.concurrent("Storybook visual tests", () => {
           const matchOptions = {
             ...baseMatchOptions,
             diffDirection,
-            customSnapshotIdentifier: `${storybookPath}/${testName}`,
+            customSnapshotIdentifier: `${storybookPath}/${variantConfig.name}`,
           };
 
           if (!variantConfig.assertDynamic) {

@@ -2,8 +2,8 @@
   import IconSettings from "~icons/ion/settings";
   import IconChat from "~icons/ph/chat-dots-fill";
   import IconDashboard from "~icons/material-symbols/monitor-heart";
-  import { playSound } from "$lib/bindings";
-  import { soundOn } from "$lib/preferences";
+  import { playSoundEffect } from "$lib/sound";
+  import { animationSpeed } from "$lib/preferences";
 
   const routes: App.Route[] = [
     {
@@ -34,9 +34,7 @@
   }
 
   function playWhooshSound() {
-    if ($soundOn) {
-      playSound("Whoosh");
-    }
+    playSoundEffect("Whoosh", $animationSpeed);
   }
 
   function routeChangeSimulator(newRoute: App.Route) {
@@ -109,7 +107,7 @@
 
 <style>
   header {
-    --animation-duration: 0.1s;
+    --animation-duration: calc(0.1s / var(--base-animation-speed));
     --icons-top-offset: calc(2 * var(--corner-roundness));
     --sidebar-left-padding: 0.5rem;
     --sidebar-icon-size: calc(

@@ -18,8 +18,8 @@ export function getApiKeys() {
     return invoke()<ApiKeys>("get_api_keys")
 }
 
-export function playSound(sound: Sound) {
-    return invoke()<null>("play_sound", { sound })
+export function playSound(sound: Sound, volume: number, speed: number) {
+    return invoke()<null>("play_sound", { sound,volume,speed })
 }
 
 export function getPreferences() {
@@ -31,7 +31,7 @@ export function setPreferences(preferences: Preferences) {
 }
 
 export type ApiKey = { value: string; source: Source }
-export type Preferences = { unceasing_animations: boolean | null; sound_on: boolean | null }
+export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
 export type Source = "Environment"
 export type Sound = "Switch" | "Whoosh"
 export type ApiKeys = { openai: ApiKey | null }
