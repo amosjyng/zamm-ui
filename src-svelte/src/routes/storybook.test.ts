@@ -21,6 +21,11 @@ import type { ChildProcess } from "child_process";
 import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 import sizeOf from "image-size";
 
+const DEFAULT_TIMEOUT =
+  process.env.PLAYWRIGHT_TIMEOUT === undefined
+    ? 10_000
+    : parseInt(process.env.PLAYWRIGHT_TIMEOUT);
+
 interface ComponentTestConfig {
   path: string[]; // Represents the Storybook hierarchy path
   variants: string[] | VariantConfig[];
@@ -97,6 +102,7 @@ describe.concurrent("Storybook visual tests", () => {
   beforeAll(async () => {
     browser = await chromium.launch({ headless: true });
     browserContext = await browser.newContext();
+    browserContext.setDefaultTimeout(DEFAULT_TIMEOUT);
     storybookProcess = await ensureStorybookRunning();
   });
 
