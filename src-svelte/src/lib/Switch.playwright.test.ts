@@ -113,9 +113,8 @@ describe("Switch drag test", () => {
   test(
     "delays click sound when animation speed slow",
     async () => {
-      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle(
-        "slow-motion",
-      );
+      const { onOffSwitch, toggle, switchBounds } =
+        await getSwitchAndToggle("slow-motion");
       // ===== same as previous test =====
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
       expect(numSoundsPlayed === 0).toBeTruthy();
@@ -161,9 +160,8 @@ describe("Switch drag test", () => {
   test(
     "clicks twice when dragged to end and back",
     async () => {
-      const { onOffSwitch, toggle, switchBounds } = await getSwitchAndToggle(
-        "slow-motion",
-      );
+      const { onOffSwitch, toggle, switchBounds } =
+        await getSwitchAndToggle("slow-motion");
       const finalY = switchBounds.y + switchBounds.height / 2;
       await expect(onOffSwitch).toHaveAttribute("aria-checked", "false");
       expect(numSoundsPlayed === 0).toBeTruthy();
