@@ -73,9 +73,10 @@
   }
 
   .main-container {
+    --sidebar-space: calc(var(--sidebar-width) - 0.5px);
     height: 100vh;
     box-sizing: border-box;
-    margin-left: var(--sidebar-width);
+    margin-left: var(--sidebar-space);
     overflow: scroll;
     border-radius: var(--main-corners);
     background-color: var(--color-foreground);
@@ -88,7 +89,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    left: var(--sidebar-width);
+    left: var(--sidebar-space);
     right: 0;
   }
 
