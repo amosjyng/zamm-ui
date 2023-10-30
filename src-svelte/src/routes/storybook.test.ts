@@ -53,6 +53,11 @@ const components: ComponentTestConfig[] = [
     screenshotEntireBody: true,
   },
   {
+    path: ["reusable", "infobox"],
+    variants: ["regular"],
+    screenshotEntireBody: true,
+  },
+  {
     path: ["layout", "background"],
     variants: [
       {
