@@ -1,8 +1,13 @@
 <script>
   import AppLayout from "./AppLayout.svelte";
+  import PageTransition from "./PageTransition.svelte";
   import "./styles.css";
+
+  export let data;
 </script>
 
 <AppLayout>
-  <slot />
+  <PageTransition currentRoute={data.url}>
+    <slot />
+  </PageTransition>
 </AppLayout>

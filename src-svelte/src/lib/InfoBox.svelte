@@ -1,19 +1,11 @@
 <script lang="ts">
   import getComponentId from "./label-id";
-  import { fly } from "svelte/transition";
-  import { animationSpeed } from "$lib/preferences";
 
   export let title = "";
   const infoboxId = getComponentId("infobox");
-  let transitionSpeedMs: number;
-  $: transitionSpeedMs = 100 / $animationSpeed;
 </script>
 
-<section
-  class="container"
-  aria-labelledby={infoboxId}
-  transition:fly={{ x: "-20%", duration: transitionSpeedMs }}
->
+<section class="container" aria-labelledby={infoboxId}>
   <svg
     style="visibility: hidden; position: absolute;"
     width="0"
