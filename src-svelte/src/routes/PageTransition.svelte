@@ -16,8 +16,9 @@
 
   export function getTransitionTiming(
     totalDurationMs: number,
-    spacingFraction: number,
+    overlapFraction: number,
   ): TransitionTiming {
+    const spacingFraction = -overlapFraction;
     // let
     //   d = duration of a single transition
     //   s = spacing between transitions as fraction of d
@@ -36,11 +37,11 @@
 
   export function getTransitions(
     totalDurationMs: number,
-    spacingFraction: number,
+    overlapFraction: number,
   ): Transitions {
     const { duration, delay } = getTransitionTiming(
       totalDurationMs,
-      spacingFraction,
+      overlapFraction,
     );
     const commonalities = { x: "-20%", duration };
     return {
