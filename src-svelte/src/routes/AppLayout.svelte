@@ -77,7 +77,8 @@
     height: 100vh;
     box-sizing: border-box;
     margin-left: var(--sidebar-space);
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
     border-radius: var(--main-corners);
     background-color: var(--color-foreground);
     box-shadow: calc(-1 * var(--shadow-offset)) 0 var(--shadow-blur) 0 #ccc;

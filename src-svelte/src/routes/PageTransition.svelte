@@ -1,4 +1,6 @@
 <script lang="ts" context="module">
+  import { cubicIn, backOut } from "svelte/easing";
+
   interface TransitionTiming {
     duration: number;
     delay?: number;
@@ -43,31 +45,23 @@
       totalDurationMs,
       overlapFraction,
     );
-    const commonalities = { x: "-20%", duration };
+    const out = { x: "-20%", duration, easing: cubicIn };
     return {
-      out: {
-        ...commonalities,
-        easing: cubicIn,
-      },
-      in: {
-        ...commonalities,
-        easing: cubicOut,
-        delay,
-      },
+      out,
+      in: { ...out, delay, easing: backOut },
     };
   }
 </script>
 
 <script lang="ts">
   import { fly } from "svelte/transition";
-  import { cubicIn, cubicOut } from "svelte/easing";
-  import { animationSpeed } from "$lib/preferences";
+  import { animationsOn, animationSpeed } from "$lib/preferences";
 
   export let currentRoute: string;
 
-  // same speed as sidebar UI
-  $: totalDurationMs = 100 / $animationSpeed;
-  $: transitions = getTransitions(totalDurationMs, 0.2);
+  // twice the speed of sidebar UI slider
+  $: totalDurationMs = $animationsOn ? 200 / $animationSpeed : 0;
+  $: transitions = getTransitions(totalDurationMs, 0);
 </script>
 
 {#key currentRoute}

@@ -2,6 +2,7 @@
   import InfoBox from "$lib/InfoBox.svelte";
   import SubInfoBox from "$lib/SubInfoBox.svelte";
   import PageTransition from "./PageTransition.svelte";
+  import { animationsOn } from "$lib/preferences";
 
   let routeA = true;
 
@@ -12,7 +13,7 @@
   $: currentRoute = routeA ? "/a.html" : "/b.html";
 </script>
 
-<div class="storybook-wrapper">
+<div class="storybook-wrapper" class:animations-disabled={!$animationsOn}>
   <button class="route-toggle" on:click={toggleRoute}>Toggle route</button>
   <PageTransition {currentRoute} {...$$restProps}>
     {#if routeA}
@@ -54,6 +55,11 @@
     width: 100%;
     box-sizing: border-box;
     position: relative;
+  }
+
+  .animations-disabled :global(*) {
+    animation-play-state: paused !important;
+    transition: none !important;
   }
 
   .route-toggle {
