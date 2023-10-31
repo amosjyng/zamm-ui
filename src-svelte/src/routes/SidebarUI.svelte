@@ -145,12 +145,13 @@
     color: #aaa;
     filter: url(#inset-shadow);
     z-index: 2;
-    transition: color var(--animation-duration) ease-in;
+    transition: color var(--animation-duration) ease-out;
   }
 
   .icon[aria-current="page"] > :global(:only-child) {
     color: #1a75ff;
     filter: url(#inset-shadow-selected);
+    transition-delay: var(--animation-duration);
   }
 
   .indicator {
