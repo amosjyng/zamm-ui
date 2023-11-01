@@ -89,7 +89,7 @@
   </svg>
 
   <nav>
-    <div class="indicator" style="top: {indicatorPosition};"></div>
+    <div class="indicator" style="--top: {indicatorPosition};"></div>
     {#each routes as route}
       <a
         aria-current={route.path === currentRoute ? "page" : undefined}
@@ -157,10 +157,12 @@
     border-top-left-radius: var(--corner-roundness);
     border-bottom-left-radius: var(--corner-roundness);
     position: absolute;
+    top: 0;
     background-color: var(--color-foreground);
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 1;
-    transition: top var(--animation-duration) ease-out;
+    transform: translateY(var(--top));
+    transition: transform var(--animation-duration) ease-out;
   }
 
   .indicator::before,

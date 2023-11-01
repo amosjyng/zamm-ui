@@ -12,7 +12,7 @@
   );
   const sliderId = getComponentId("slider");
   const transitionAnimation =
-    `transition: left ` +
+    `transition: transform ` +
     `calc(0.1s / var(--base-animation-speed)) ` +
     `ease-out;`;
   const overshoot = 0.4 * rootFontSize; // how much overshoot to allow per-side
@@ -234,7 +234,8 @@
     z-index: var(--groove-contents-layer);
     position: absolute;
     top: 0;
-    left: calc(var(--left) - var(--total-width));
+    left: calc(-1 * var(--total-width));
+    transform: translateX(var(--left));
     width: var(--total-width);
     height: var(--track-height);
     background: linear-gradient(to left, #00f, #bbbbff);
@@ -248,8 +249,9 @@
     align-items: center;
     z-index: var(--toggle-layer);
     position: absolute;
-    left: var(--left);
+    left: 0;
     top: 0;
+    transform: translateX(var(--left));
   }
 
   .toggle {
