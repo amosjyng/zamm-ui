@@ -107,7 +107,7 @@
 
 <style>
   header {
-    --animation-duration: calc(0.1s / var(--base-animation-speed));
+    --animation-duration: calc(0.2s / var(--base-animation-speed));
     --icons-top-offset: calc(2 * var(--corner-roundness));
     --sidebar-left-padding: 0.5rem;
     --sidebar-icon-size: calc(
@@ -151,7 +151,6 @@
   .icon[aria-current="page"] > :global(:only-child) {
     color: #1a75ff;
     filter: url(#inset-shadow-selected);
-    transition-delay: var(--animation-duration);
   }
 
   .indicator {
