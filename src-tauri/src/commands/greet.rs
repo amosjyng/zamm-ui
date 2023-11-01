@@ -16,7 +16,7 @@ fn greet_helper<T: SidecarExecutor>(t: &T, name: &str) -> ZammResult<String> {
     Ok(format!("{greeting} via Rust"))
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[specta]
 pub fn greet(name: &str) -> ZammResult<String> {
     match greet_helper(&SidecarExecutorImpl {}, name) {

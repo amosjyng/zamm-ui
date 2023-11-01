@@ -32,7 +32,7 @@ fn get_preferences_helper(preferences_path: &Option<PathBuf>) -> Preferences {
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[specta]
 pub fn get_preferences(app_handle: tauri::AppHandle) -> Preferences {
     let app_dir = app_handle.path_resolver().app_config_dir();
