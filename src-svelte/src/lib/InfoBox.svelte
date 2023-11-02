@@ -1,8 +1,108 @@
 <script lang="ts">
   import getComponentId from "./label-id";
+  import { cubicInOut } from "svelte/easing";
+  import { animationSpeed } from "./preferences";
+  import { fade } from "svelte/transition";
 
   export let title = "";
   const infoboxId = getComponentId("infobox");
+
+  interface RevealParams {
+    delay: number;
+    duration: number;
+  }
+
+  class SubAnimation {
+    delayFraction: number;
+    durationFraction: number;
+    css: (t: number) => string;
+
+    constructor(anim: {
+      delayFraction: number;
+      durationFraction: number;
+      css: (t: number) => string;
+    }) {
+      this.delayFraction = anim.delayFraction;
+      this.durationFraction = anim.durationFraction;
+      this.css = anim.css;
+    }
+
+    cssForGlobalTime(t: number) {
+      if (t < this.delayFraction) {
+        return this.css(0);
+      } else if (t > this.delayFraction + this.durationFraction) {
+        return this.css(1);
+      }
+
+      const subAnimationTime = (t - this.delayFraction) / this.durationFraction;
+      return this.css(subAnimationTime);
+    }
+  }
+
+  class ProperyAnimation extends SubAnimation {
+    constructor(anim: {
+      delayFraction: number;
+      durationFraction: number;
+      property: string;
+      min: number;
+      max: number;
+      unit: string;
+      easingFunction?: (t: number) => number;
+    }) {
+      const growth = anim.max - anim.min;
+      const easingFunction = anim.easingFunction ?? cubicInOut;
+      const css = (t: number) => {
+        const easing = easingFunction(t);
+        const value = anim.min + growth * easing;
+        return `${anim.property}: ${value}${anim.unit};`;
+      };
+      super({
+        delayFraction: anim.delayFraction,
+        durationFraction: anim.durationFraction,
+        css,
+      });
+    }
+  }
+
+  function reveal(node: Element, { delay, duration }: RevealParams) {
+    const actualWidth = node.clientWidth;
+    const actualHeight = node.clientHeight;
+    const minDimensions = 3 * 18; // 3 rem
+
+    const growWidth = new ProperyAnimation({
+      delayFraction: 0,
+      durationFraction: 0.5,
+      property: "width",
+      min: minDimensions,
+      max: actualWidth,
+      unit: "px",
+    });
+
+    const growHeight = new ProperyAnimation({
+      delayFraction: 0.4,
+      durationFraction: 0.6,
+      property: "height",
+      min: minDimensions,
+      max: actualHeight,
+      unit: "px",
+    });
+
+    return {
+      delay,
+      duration,
+      css: (t: number) => {
+        const width = growWidth.cssForGlobalTime(t);
+        const height = growHeight.cssForGlobalTime(t);
+        return width + height;
+      },
+    };
+  }
+
+  // let the first half of page transition play before starting
+  $: borderBoxDelay = 100 / $animationSpeed;
+  $: borderBoxDuration = 200 / $animationSpeed;
+  $: infoBoxDelay = 260 / $animationSpeed;
+  $: infoBoxDuration = 100 / $animationSpeed;
 </script>
 
 <section class="container" aria-labelledby={infoboxId}>
@@ -28,8 +128,14 @@
   </svg>
 
   <div class="border-container">
-    <div class="border-box"></div>
-    <div class="info-box">
+    <div
+      class="border-box"
+      in:reveal|global={{ delay: borderBoxDelay, duration: borderBoxDuration }}
+    ></div>
+    <div
+      class="info-box"
+      in:fade|global={{ delay: infoBoxDelay, duration: infoBoxDuration }}
+    >
       <h2 id={infoboxId}>{title}</h2>
       <slot />
     </div>
