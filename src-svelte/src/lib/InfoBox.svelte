@@ -3,6 +3,7 @@
   import { cubicInOut } from "svelte/easing";
   import { animationSpeed } from "./preferences";
   import { fade } from "svelte/transition";
+  import { firstPageLoad } from "./firstPageLoad";
 
   export let title = "";
   const infoboxId = getComponentId("infobox");
@@ -99,10 +100,10 @@
   }
 
   // let the first half of page transition play before starting
-  $: borderBoxDelay = 100 / $animationSpeed;
-  $: borderBoxDuration = 200 / $animationSpeed;
-  $: infoBoxDelay = 260 / $animationSpeed;
-  $: infoBoxDuration = 100 / $animationSpeed;
+  $: borderBoxDelay = $firstPageLoad ? 100 / $animationSpeed : 0;
+  $: borderBoxDuration = $firstPageLoad ? 200 / $animationSpeed : 0;
+  $: infoBoxDelay = $firstPageLoad ? 260 / $animationSpeed : 0;
+  $: infoBoxDuration = $firstPageLoad ? 100 / $animationSpeed : 0;
 </script>
 
 <section class="container" aria-labelledby={infoboxId}>

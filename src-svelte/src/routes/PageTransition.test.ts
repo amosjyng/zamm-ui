@@ -1,6 +1,11 @@
 import { getTransitionTiming } from "./PageTransition.svelte";
+import PageTransitionControl from "./PageTransitionControl.svelte";
+import { act, render, screen } from "@testing-library/svelte";
+import userEvent from "@testing-library/user-event";
+import { get } from "svelte/store";
+import { firstPageLoad } from "$lib/firstPageLoad";
 
-describe("PageTransition", () => {
+describe("PageTransition durations", () => {
   it("should halve the duration if no overlap", () => {
     const totalTime = 100;
     const overlapFraction = 0;
@@ -51,5 +56,36 @@ describe("PageTransition", () => {
       duration: expectedDuration,
       delay: expectedDelay,
     });
+  });
+});
+
+describe("PageTransition", () => {
+  let routeInput: HTMLElement;
+  let navigateButton: HTMLElement;
+
+  const navigateTo = async (url: string) => {
+    await act(() => userEvent.type(routeInput, url));
+    await act(() => userEvent.click(navigateButton));
+  };
+
+  beforeEach(() => {
+    render(PageTransitionControl, { currentRoute: "/" });
+    routeInput = screen.getByLabelText("Route");
+    navigateButton = screen.getByText("Navigate");
+  });
+
+  it("should set first page load on initial visit", async () => {
+    expect(get(firstPageLoad)).toEqual(true);
+  });
+
+  it("should set first page load on visit to new page", async () => {
+    await navigateTo("/settings");
+    expect(get(firstPageLoad)).toEqual(true);
+  });
+
+  it("should unset first page load on visit to old page", async () => {
+    await navigateTo("/settings");
+    await navigateTo("/");
+    expect(get(firstPageLoad)).toEqual(false);
   });
 });

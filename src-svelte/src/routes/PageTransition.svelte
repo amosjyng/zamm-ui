@@ -56,12 +56,24 @@
 <script lang="ts">
   import { fly } from "svelte/transition";
   import { animationsOn, animationSpeed } from "$lib/preferences";
+  import { firstPageLoad } from "$lib/firstPageLoad";
 
   export let currentRoute: string;
+  const visitedKeys = new Set<string>();
+
+  function checkFirstPageLoad(key: string) {
+    if (visitedKeys.has(key)) {
+      firstPageLoad.set(false);
+    } else {
+      visitedKeys.add(key);
+      firstPageLoad.set(true);
+    }
+  }
 
   // twice the speed of sidebar UI slider
   $: totalDurationMs = $animationsOn ? 200 / $animationSpeed : 0;
   $: transitions = getTransitions(totalDurationMs, 0);
+  $: checkFirstPageLoad(currentRoute);
 </script>
 
 {#key currentRoute}
