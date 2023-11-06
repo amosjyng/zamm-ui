@@ -7,6 +7,7 @@
 
   export let title = "";
   const infoboxId = getComponentId("infobox");
+  const heightDelayFraction = 0.4;
 
   class SubAnimation {
     delayFraction: number;
@@ -80,8 +81,8 @@
     });
 
     const growHeight = new ProperyAnimation({
-      delayFraction: 0.4,
-      durationFraction: 0.6,
+      delayFraction: heightDelayFraction,
+      durationFraction: 1 - heightDelayFraction,
       property: "height",
       min: minDimensions,
       max: actualHeight,
@@ -111,13 +112,22 @@
     }
 
     const text = node.textContent ?? "";
+    const length = text.length + 1;
 
     return {
       delay,
       duration,
       tick: (t: number) => {
-        const i = Math.trunc(text.length * t);
-        node.textContent = text.slice(0, i);
+        const i = Math.trunc(length * t);
+        node.textContent = i === 0 ? "" : text.slice(0, i - 1);
+        if (t == 0) {
+          node.classList.remove("typewriting");
+          node.classList.remove("done");
+        } else if (t == 1) {
+          node.classList.add("done");
+        } else {
+          node.classList.add("typewriting");
+        }
       },
     };
   }
@@ -127,8 +137,12 @@
   $: borderBoxDuration = $firstPageLoad ? 200 / $animationSpeed : 0;
   $: infoBoxDelay = $firstPageLoad ? 260 / $animationSpeed : 0;
   $: infoBoxDuration = $firstPageLoad ? 100 / $animationSpeed : 0;
-  $: titleDelay = $firstPageLoad ? 110 / $animationSpeed : 0;
-  $: titleDuration = $firstPageLoad ? borderBoxDuration * 0.3 : 0;
+  $: heightStart = borderBoxDelay + heightDelayFraction * borderBoxDuration;
+  $: titleDelay = $firstPageLoad ? 120 / $animationSpeed : 0;
+  // title typing should end when height starts growing
+  $: titleDuration = heightStart - titleDelay;
+  // cursor fade should end when height stops growing
+  $: cursorFadeDuration = (1 - heightDelayFraction) * borderBoxDuration;
 </script>
 
 <section class="container" aria-labelledby={infoboxId}>
@@ -162,6 +176,7 @@
       <h2
         in:typewriter|global={{ delay: titleDelay, duration: titleDuration }}
         id={infoboxId}
+        style="--fade-duration: {cursorFadeDuration}ms;"
       >
         {title}
       </h2>
@@ -223,5 +238,14 @@
 
   .info-box h2 {
     margin: -0.25rem 0 0.5rem var(--cut);
+  }
+
+  .info-box :global(h2.typewriting::after) {
+    content: "█";
+    transition: opacity var(--fade-duration) ease-out;
+  }
+
+  .info-box :global(h2.typewriting.done::after) {
+    opacity: 0;
   }
 </style>
