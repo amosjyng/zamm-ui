@@ -1,5 +1,8 @@
 <script lang="ts">
   import InfoBox from "./InfoBox.svelte";
+  import { firstPageLoad } from "$lib/firstPageLoad";
+
+  firstPageLoad.set(true);
 </script>
 
 <InfoBox {...$$restProps}>
