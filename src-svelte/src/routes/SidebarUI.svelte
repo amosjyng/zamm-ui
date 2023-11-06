@@ -89,7 +89,7 @@
   </svg>
 
   <nav>
-    <div class="indicator" style="top: {indicatorPosition};"></div>
+    <div class="indicator" style="--top: {indicatorPosition};"></div>
     {#each routes as route}
       <a
         aria-current={route.path === currentRoute ? "page" : undefined}
@@ -107,7 +107,7 @@
 
 <style>
   header {
-    --animation-duration: calc(0.1s / var(--base-animation-speed));
+    --animation-duration: calc(0.2s / var(--base-animation-speed));
     --icons-top-offset: calc(2 * var(--corner-roundness));
     --sidebar-left-padding: 0.5rem;
     --sidebar-icon-size: calc(
@@ -151,17 +151,18 @@
   .icon[aria-current="page"] > :global(:only-child) {
     color: #1a75ff;
     filter: url(#inset-shadow-selected);
-    transition-delay: var(--animation-duration);
   }
 
   .indicator {
     border-top-left-radius: var(--corner-roundness);
     border-bottom-left-radius: var(--corner-roundness);
     position: absolute;
+    top: 0;
     background-color: var(--color-foreground);
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 1;
-    transition: top var(--animation-duration) ease-out;
+    transform: translateY(var(--top));
+    transition: transform var(--animation-duration) ease-out;
   }
 
   .indicator::before,

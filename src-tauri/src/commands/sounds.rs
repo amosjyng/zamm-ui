@@ -16,7 +16,7 @@ pub enum Sound {
     Whoosh,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[specta]
 pub fn play_sound(sound: Sound, volume: f32, speed: f32) {
     thread::spawn(move || {

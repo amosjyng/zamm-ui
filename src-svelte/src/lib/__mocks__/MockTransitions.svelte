@@ -3,13 +3,15 @@
 
   function toggleVisibility() {
     visible = !visible;
+
+    setTimeout(() => {
+      visible = !visible;
+    }, 100);
   }
 </script>
 
 <div class="storybook-wrapper">
-  <button class="visibility-toggle" on:click={toggleVisibility}
-    >Toggle visibility</button
-  >
+  <button class="visibility-toggle" on:click={toggleVisibility}>Remount</button>
   {#if visible}
     <slot />
   {/if}

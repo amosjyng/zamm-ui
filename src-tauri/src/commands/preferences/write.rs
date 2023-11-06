@@ -53,7 +53,7 @@ fn set_preferences_helper(
     Ok(())
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[specta]
 pub fn set_preferences(
     app_handle: tauri::AppHandle,

@@ -26,7 +26,7 @@
   const offLeft = -labelWidth;
   const onLeft = 0;
   const transitionAnimation = `
-    transition: left calc(0.1s / var(--base-animation-speed));
+    transition: transform calc(0.1s / var(--base-animation-speed));
     transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
   `;
   const switchId = getComponentId("switch");
@@ -253,7 +253,7 @@
     align-items: center;
     position: absolute;
     top: 0;
-    left: var(--left);
+    transform: translateX(var(--left));
   }
 
   .toggle-label {
