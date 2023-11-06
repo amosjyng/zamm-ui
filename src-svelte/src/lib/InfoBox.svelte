@@ -8,11 +8,6 @@
   export let title = "";
   const infoboxId = getComponentId("infobox");
 
-  interface RevealParams {
-    delay: number;
-    duration: number;
-  }
-
   class SubAnimation {
     delayFraction: number;
     durationFraction: number;
@@ -65,7 +60,12 @@
     }
   }
 
-  function reveal(node: Element, { delay, duration }: RevealParams) {
+  interface AnimationParams {
+    delay: number;
+    duration: number;
+  }
+
+  function reveal(node: Element, { delay, duration }: AnimationParams) {
     const actualWidth = node.clientWidth;
     const actualHeight = node.clientHeight;
     const minDimensions = 3 * 18; // 3 rem
@@ -99,11 +99,36 @@
     };
   }
 
+  function typewriter(node: Element, { delay, duration }: AnimationParams) {
+    const valid =
+      node.childNodes.length === 1 &&
+      node.childNodes[0].nodeType === Node.TEXT_NODE;
+
+    if (!valid) {
+      throw new Error(
+        `This transition only works on elements with a single text node child`,
+      );
+    }
+
+    const text = node.textContent ?? "";
+
+    return {
+      delay,
+      duration,
+      tick: (t: number) => {
+        const i = Math.trunc(text.length * t);
+        node.textContent = text.slice(0, i);
+      },
+    };
+  }
+
   // let the first half of page transition play before starting
   $: borderBoxDelay = $firstPageLoad ? 100 / $animationSpeed : 0;
   $: borderBoxDuration = $firstPageLoad ? 200 / $animationSpeed : 0;
   $: infoBoxDelay = $firstPageLoad ? 260 / $animationSpeed : 0;
   $: infoBoxDuration = $firstPageLoad ? 100 / $animationSpeed : 0;
+  $: titleDelay = $firstPageLoad ? 110 / $animationSpeed : 0;
+  $: titleDuration = $firstPageLoad ? borderBoxDuration * 0.3 : 0;
 </script>
 
 <section class="container" aria-labelledby={infoboxId}>
@@ -133,12 +158,19 @@
       class="border-box"
       in:reveal|global={{ delay: borderBoxDelay, duration: borderBoxDuration }}
     ></div>
-    <div
-      class="info-box"
-      in:fade|global={{ delay: infoBoxDelay, duration: infoBoxDuration }}
-    >
-      <h2 id={infoboxId}>{title}</h2>
-      <slot />
+    <div class="info-box">
+      <h2
+        in:typewriter|global={{ delay: titleDelay, duration: titleDuration }}
+        id={infoboxId}
+      >
+        {title}
+      </h2>
+      <div
+        class="info-content"
+        in:fade|global={{ delay: infoBoxDelay, duration: infoBoxDuration }}
+      >
+        <slot />
+      </div>
     </div>
   </div>
 </section>
