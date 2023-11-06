@@ -18,20 +18,10 @@ export const Regular: StoryObj = Template.bind({}) as any;
 Regular.args = {
   title: "Simulation",
 };
-Regular.parameters = {
-  viewport: {
-    defaultViewport: "tablet",
-  },
-};
 
 export const MountTransition: StoryObj = Template.bind({}) as any;
 MountTransition.args = {
   title: "Simulation",
-};
-MountTransition.parameters = {
-  viewport: {
-    defaultViewport: "tablet",
-  },
 };
 MountTransition.decorators = [
   SvelteStoresDecorator,
@@ -48,9 +38,6 @@ SlowMotion.args = {
   title: "Simulation",
 };
 SlowMotion.parameters = {
-  viewport: {
-    defaultViewport: "tablet",
-  },
   preferences: {
     animationSpeed: 0.1,
   },
