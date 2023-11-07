@@ -51,3 +51,22 @@ SlowMotion.decorators = [
     };
   },
 ];
+
+export const Motionless: StoryObj = Template.bind({}) as any;
+Motionless.args = {
+  title: "Simulation",
+};
+Motionless.parameters = {
+  preferences: {
+    animationsOn: false,
+  },
+};
+Motionless.decorators = [
+  SvelteStoresDecorator,
+  (story: StoryFn) => {
+    return {
+      Component: MockTransitions,
+      slot: story,
+    };
+  },
+];

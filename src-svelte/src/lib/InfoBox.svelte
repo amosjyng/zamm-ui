@@ -1,7 +1,7 @@
 <script lang="ts">
   import getComponentId from "./label-id";
   import { cubicInOut } from "svelte/easing";
-  import { animationSpeed } from "./preferences";
+  import { animationSpeed, animationsOn } from "./preferences";
   import { fade } from "svelte/transition";
   import { firstPageLoad } from "./firstPageLoad";
 
@@ -118,6 +118,9 @@
       delay,
       duration,
       tick: (t: number) => {
+        if (duration === 0) {
+          return;
+        }
         const i = Math.trunc(length * t);
         node.textContent = i === 0 ? "" : text.slice(0, i - 1);
         if (t == 0) {
@@ -132,13 +135,14 @@
     };
   }
 
+  $: shouldAnimate = $animationsOn && $firstPageLoad;
   // let the first half of page transition play before starting
-  $: borderBoxDelay = $firstPageLoad ? 100 / $animationSpeed : 0;
-  $: borderBoxDuration = $firstPageLoad ? 200 / $animationSpeed : 0;
-  $: infoBoxDelay = $firstPageLoad ? 260 / $animationSpeed : 0;
-  $: infoBoxDuration = $firstPageLoad ? 100 / $animationSpeed : 0;
+  $: borderBoxDelay = shouldAnimate ? 100 / $animationSpeed : 0;
+  $: borderBoxDuration = shouldAnimate ? 200 / $animationSpeed : 0;
+  $: infoBoxDelay = shouldAnimate ? 260 / $animationSpeed : 0;
+  $: infoBoxDuration = shouldAnimate ? 100 / $animationSpeed : 0;
   $: heightStart = borderBoxDelay + heightDelayFraction * borderBoxDuration;
-  $: titleDelay = $firstPageLoad ? 120 / $animationSpeed : 0;
+  $: titleDelay = shouldAnimate ? 120 / $animationSpeed : 0;
   // title typing should end when height starts growing
   $: titleDuration = heightStart - titleDelay;
   // cursor fade should end when height stops growing
