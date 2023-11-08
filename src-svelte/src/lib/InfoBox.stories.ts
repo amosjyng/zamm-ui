@@ -22,6 +22,7 @@ Regular.args = {
 export const MountTransition: StoryObj = Template.bind({}) as any;
 MountTransition.args = {
   title: "Simulation",
+  preDelay: 0,
 };
 MountTransition.decorators = [
   SvelteStoresDecorator,
@@ -36,6 +37,7 @@ MountTransition.decorators = [
 export const SlowMotion: StoryObj = Template.bind({}) as any;
 SlowMotion.args = {
   title: "Simulation",
+  preDelay: 0,
 };
 SlowMotion.parameters = {
   preferences: {
