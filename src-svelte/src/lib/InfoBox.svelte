@@ -559,7 +559,7 @@
   import getComponentId from "./label-id";
   import { cubicInOut, cubicOut, linear } from "svelte/easing";
   import { animationSpeed, animationsOn } from "./preferences";
-  import { fade, type TransitionConfig } from "svelte/transition";
+  import type { TransitionConfig } from "svelte/transition";
   import { firstPageLoad } from "./firstPageLoad";
 
   export let title = "";
@@ -677,13 +677,22 @@
     };
   }
 
+  function revealInfoBox(node: Element, timing: TransitionTimingMs) {
+    return {
+      delay: timing.delayMs(),
+      duration: timing.durationMs(),
+      tick: (tGlobalFraction: number) => {
+        if (timing.durationMs() === 0) {
+          return;
+        }
+        node.setAttribute("style", `opacity: ${tGlobalFraction};`);
+      },
+    };
+  }
+
   $: shouldAnimate = $animationsOn && $firstPageLoad;
   $: timingScaleFactor = shouldAnimate ? 1 / $animationSpeed : 0;
   $: timing = getAnimationTiming(preDelay, timingScaleFactor);
-  $: infoBoxArgs = {
-    delay: timing.infoBox.delayMs(),
-    duration: timing.infoBox.durationMs(),
-  };
 </script>
 
 <section class="container" aria-labelledby={infoboxId}>
@@ -714,7 +723,7 @@
       <h2 in:revealTitle|global={timing.title} id={infoboxId}>
         {title}
       </h2>
-      <div class="info-content" in:fade|global={infoBoxArgs}>
+      <div class="info-content" in:revealInfoBox|global={timing.infoBox}>
         <slot />
       </div>
     </div>
