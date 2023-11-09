@@ -60,72 +60,97 @@ describe("InfoBox animation timing", () => {
     const timing = getAnimationTiming(preDelay, timingScaleFactor);
 
     // regular border box animation values
-    expect(timing.borderBox.growX().startFraction()).toEqual(0.0);
-    expect(timing.borderBox.growX().endFraction()).toEqual(0.5);
-    expect(timing.borderBox.growY().startFraction()).toEqual(0.4);
-    expect(timing.borderBox.growY().endFraction()).toEqual(1.0);
-    expect(timing.borderBox.overall.startMs()).toEqual(0);
-    expect(timing.borderBox.overall.endMs()).toEqual(200);
+    const borderBoxMs = new TimingGroupAsCollection([
+      // grow x
+      new PrimitiveTimingMs({ startMs: 0, endMs: 200 }),
+      // grow y
+      new PrimitiveTimingMs({ startMs: 180, endMs: 330 }),
+    ]);
+    expect(timing.borderBox.asCollection()).toEqual(borderBoxMs);
 
     // regular title animation values
     const titleCollectionMs = new TimingGroupAsCollection([
-      new PrimitiveTimingMs({ startMs: 20, endMs: 80 }),
-      new PrimitiveTimingMs({ startMs: 80, endMs: 200 }),
+      // typewriter
+      new PrimitiveTimingMs({ startMs: 20, endMs: 200 }),
+      // cursor fade
+      new PrimitiveTimingMs({ startMs: 240, endMs: 330 }),
     ]);
     expect(timing.title.asCollection()).toEqual(titleCollectionMs);
 
     // regular info box animation values
-    expect(timing.infoBox.delayMs()).toEqual(150);
-    expect(timing.infoBox.durationMs()).toEqual(100);
+    expect(timing.infoBox).toEqual(
+      new PrimitiveTimingMs({
+        startMs: 280,
+        endMs: 380,
+      }),
+    );
   });
 
   it("should not let delays affect fractions or durations", () => {
-    const preDelay = 100;
-    const timingScaleFactor = 1;
-    const timing = getAnimationTiming(preDelay, timingScaleFactor);
+    const delay = 100;
+    const scaleFactor = 1;
+    const timing = getAnimationTiming(0, scaleFactor);
+    const scaledTiming = getAnimationTiming(delay, scaleFactor);
 
     // regular border box animation values
-    expect(timing.borderBox.growX().startFraction()).toEqual(0.0);
-    expect(timing.borderBox.growX().endFraction()).toEqual(0.5);
-    expect(timing.borderBox.growY().startFraction()).toEqual(0.4);
-    expect(timing.borderBox.growY().endFraction()).toEqual(1.0);
-    expect(timing.borderBox.overall.startMs()).toEqual(100);
-    expect(timing.borderBox.overall.endMs()).toEqual(300);
+    expect(timing.borderBox.growX()).toEqual(scaledTiming.borderBox.growX());
+    expect(timing.borderBox.growY()).toEqual(scaledTiming.borderBox.growY());
+    expect(timing.borderBox.overall.delayMs() + delay).toEqual(
+      scaledTiming.borderBox.overall.delayMs(),
+    );
+    expect(timing.borderBox.overall.durationMs()).toEqual(
+      scaledTiming.borderBox.overall.durationMs(),
+    );
 
     // regular title animation values
-    const titleCollectionMs = new TimingGroupAsCollection([
-      new PrimitiveTimingMs({ startMs: 120, endMs: 180 }),
-      new PrimitiveTimingMs({ startMs: 180, endMs: 300 }),
-    ]);
-    expect(timing.title.asCollection()).toEqual(titleCollectionMs);
+    expect(timing.title.typewriter()).toEqual(scaledTiming.title.typewriter());
+    expect(timing.title.cursorFade()).toEqual(scaledTiming.title.cursorFade());
+    expect(timing.title.overall.delayMs() + delay).toEqual(
+      scaledTiming.title.overall.delayMs(),
+    );
+    expect(timing.title.overall.durationMs()).toEqual(
+      scaledTiming.title.overall.durationMs(),
+    );
 
     // regular info box animation values
-    expect(timing.infoBox.delayMs()).toEqual(250);
-    expect(timing.infoBox.durationMs()).toEqual(100);
+    expect(timing.infoBox.delayMs() + delay).toEqual(
+      scaledTiming.infoBox.delayMs(),
+    );
+    expect(timing.infoBox.durationMs()).toEqual(
+      scaledTiming.infoBox.durationMs(),
+    );
   });
 
   it("should not let scaling affect fractions", () => {
-    const preDelay = 100;
-    const timingScaleFactor = 10;
-    const timing = getAnimationTiming(preDelay, timingScaleFactor);
+    const preDelay = 0;
+    const scaleFactor = 10;
+    const timing = getAnimationTiming(preDelay, 1);
+    const scaledTiming = getAnimationTiming(preDelay, scaleFactor);
 
     // regular border box animation values
-    expect(timing.borderBox.growX().startFraction()).toEqual(0.0);
-    expect(timing.borderBox.growX().endFraction()).toEqual(0.5);
-    expect(timing.borderBox.growY().startFraction()).toEqual(0.4);
-    expect(timing.borderBox.growY().endFraction()).toEqual(1.0);
-    expect(timing.borderBox.overall.startMs()).toEqual(1000);
-    expect(timing.borderBox.overall.endMs()).toEqual(3000);
+    expect(timing.borderBox.growX()).toEqual(scaledTiming.borderBox.growX());
+    expect(timing.borderBox.growY()).toEqual(scaledTiming.borderBox.growY());
+    expect(timing.borderBox.overall.startMs() * scaleFactor).toEqual(
+      scaledTiming.borderBox.overall.startMs(),
+    );
+    expect(timing.borderBox.overall.endMs() * scaleFactor).toEqual(
+      scaledTiming.borderBox.overall.endMs(),
+    );
 
     // regular title animation values
-    const titleCollectionMs = new TimingGroupAsCollection([
-      new PrimitiveTimingMs({ startMs: 1200, endMs: 1800 }),
-      new PrimitiveTimingMs({ startMs: 1800, endMs: 3000 }),
-    ]);
-    expect(timing.title.asCollection()).toEqual(titleCollectionMs);
+    expect(timing.title.typewriter()).toEqual(scaledTiming.title.typewriter());
+    expect(timing.title.cursorFade()).toEqual(scaledTiming.title.cursorFade());
+    expect(timing.title.overall.startMs() * scaleFactor).toEqual(
+      scaledTiming.title.overall.startMs(),
+    );
+    expect(timing.title.overall.endMs() * scaleFactor).toEqual(
+      scaledTiming.title.overall.endMs(),
+    );
 
     // regular info box animation values
-    expect(timing.infoBox.delayMs()).toEqual(2500);
-    expect(timing.infoBox.durationMs()).toEqual(1000);
+    expect(timing.infoBox.startMs() * 10).toEqual(
+      scaledTiming.infoBox.startMs(),
+    );
+    expect(timing.infoBox.endMs() * 10).toEqual(scaledTiming.infoBox.endMs());
   });
 });

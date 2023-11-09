@@ -4,6 +4,7 @@
     delayMs(): number;
     startMs(): number;
     endMs(): number;
+    round(): TransitionTimingMs;
     delayByMs(delayMs: number): TransitionTimingMs;
     hastenByMs(hastenMs: number): TransitionTimingMs;
     scaleBy(factor: number): TransitionTimingMs;
@@ -15,6 +16,7 @@
     delayFraction(): number;
     startFraction(): number;
     endFraction(): number;
+    round(): TransitionTimingFraction;
     unnestFrom(container: TransitionTimingMs): TransitionTimingMs;
     localize(globalTimeFraction: number): number;
   }
@@ -218,6 +220,12 @@
       });
     }
 
+    round(): TimingGroupAsCollection {
+      return new TimingGroupAsCollection(
+        this.children.map((child) => child.round()),
+      );
+    }
+
     delayByMs(delayMs: number): TimingGroupAsCollection {
       return new TimingGroupAsCollection(
         this.children.map((child) => child.delayByMs(delayMs)),
@@ -283,6 +291,13 @@
       return this.overall.endMs();
     }
 
+    round(): TimingGroupAsIndividual {
+      return new TimingGroupAsIndividual({
+        overall: this.overall.round(),
+        children: this.children.map((child) => child.round()),
+      });
+    }
+
     delayByMs(delayMs: number): TimingGroupAsIndividual {
       return new TimingGroupAsIndividual({
         overall: this.overall.delayByMs(delayMs),
@@ -325,6 +340,10 @@
       return this.children[1];
     }
 
+    round(): BorderBoxTimingCollection {
+      return new BorderBoxTimingCollection(super.round().children);
+    }
+
     delayByMs(delayMs: number): BorderBoxTimingCollection {
       return new BorderBoxTimingCollection(super.delayByMs(delayMs).children);
     }
@@ -359,6 +378,14 @@
 
     growY(): TransitionTimingFraction {
       return this.children[1];
+    }
+
+    round(): BorderBoxTiming {
+      const rounded = super.round();
+      return new BorderBoxTiming({
+        overall: rounded.overall,
+        children: rounded.children,
+      });
     }
 
     asCollection(): BorderBoxTimingCollection {
@@ -472,22 +499,22 @@
   ): InfoBoxTiming {
     const growX = new PrimitiveTimingMs({
       startMs: 0,
-      endMs: 100,
+      durationMs: 200,
     });
     const growY = new PrimitiveTimingMs({
-      startMs: 80,
-      endMs: 200,
+      startMs: growX.endMs() - 20,
+      durationMs: 150,
     });
     const borderBox = newBorderBoxTimingCollection({ growX, growY });
     const typewriter = new PrimitiveTimingMs({
       // give X a head start
       startMs: growX.startMs() + 20,
-      // finish by the time Y is ready to start growing
-      endMs: growY.startMs(),
+      // but finish at the same time
+      endMs: growX.endMs(),
     });
     const cursorFade = new PrimitiveTimingMs({
-      // starts as soon as title typing ends
-      startMs: typewriter.endMs(),
+      // stay for a second after typewriter finishes
+      startMs: typewriter.endMs() + 40,
       // finishes simultaneously with Y
       endMs: growY.endMs(),
     });
@@ -495,8 +522,8 @@
       // can start fading in before border box finishes growing completely, so long as
       // border box growth is *mostly* done and already contains the entirety of the
       // info box
-      delayMs: growY.endMs() - 50,
-      durationMs: 100, // go at same speed as Y advance
+      delayMs: growY.endMs() - growY.durationMs() / 3,
+      durationMs: 100, // regular speed
     });
     const title = newTitleTimingCollection({ typewriter, cursorFade });
     const infoBoxTimingCollection = newInfoBoxTimingCollection({
@@ -530,7 +557,7 @@
 
 <script lang="ts">
   import getComponentId from "./label-id";
-  import { cubicInOut, cubicOut } from "svelte/easing";
+  import { cubicInOut, cubicOut, linear } from "svelte/easing";
   import { animationSpeed, animationsOn } from "./preferences";
   import { fade, type TransitionConfig } from "svelte/transition";
   import { firstPageLoad } from "./firstPageLoad";
@@ -573,6 +600,7 @@
       min: minDimensions,
       max: actualWidth,
       unit: "px",
+      easingFunction: linear,
     });
 
     const growHeight = new ProperyAnimation({
