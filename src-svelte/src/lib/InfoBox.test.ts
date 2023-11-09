@@ -4,9 +4,19 @@ import {
   PrimitiveTimingFraction,
   TimingGroupAsCollection,
   TimingGroupAsIndividual,
+  inverseCubicInOut,
 } from "./InfoBox.svelte";
+import { cubicInOut } from "svelte/easing";
 
 describe("InfoBox animation timing", () => {
+  it("should invert cubic in-out correctly", () => {
+    expect(inverseCubicInOut(0)).toEqual(0);
+    expect(inverseCubicInOut(0.5)).toEqual(0.5);
+    expect(inverseCubicInOut(1)).toEqual(1);
+    expect(inverseCubicInOut(cubicInOut(0.25))).toEqual(0.25);
+    expect(inverseCubicInOut(cubicInOut(0.75))).toEqual(0.75);
+  });
+
   it("should enable ms timings to be defined in different ways", () => {
     const timingMs1 = new PrimitiveTimingMs({ startMs: 100, endMs: 300 });
     const timingMs2 = new PrimitiveTimingMs({ delayMs: 100, durationMs: 200 });
@@ -80,8 +90,8 @@ describe("InfoBox animation timing", () => {
     // regular info box animation values
     expect(timing.infoBox).toEqual(
       new PrimitiveTimingMs({
-        startMs: 280,
-        endMs: 380,
+        delayMs: 180,
+        durationMs: 260,
       }),
     );
   });

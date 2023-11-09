@@ -522,8 +522,8 @@
       // can start fading in before border box finishes growing completely, so long as
       // border box growth is *mostly* done and already contains the entirety of the
       // info box
-      delayMs: growY.endMs() - growY.durationMs() / 3,
-      durationMs: 100, // regular speed
+      delayMs: growY.startMs(),
+      durationMs: 260,
     });
     const title = newTitleTimingCollection({ typewriter, cursorFade });
     const infoBoxTimingCollection = newInfoBoxTimingCollection({
@@ -551,6 +551,16 @@
 
     tickForGlobalTime(tGlobalFraction: number): T {
       return this.tick(this.timing.localize(tGlobalFraction));
+    }
+  }
+
+  export function inverseCubicInOut(t: number) {
+    if (t < 0.5) {
+      // Solve the cubic equation for t < 0.5
+      return Math.cbrt(t / 4.0);
+    } else {
+      // Solve the cubic equation for t >= 0.5
+      return (Math.cbrt(2.0 * (t - 1.0)) + 2.0) / 2.0;
     }
   }
 </script>
@@ -609,6 +619,7 @@
       min: minDimensions,
       max: actualHeight,
       unit: "px",
+      easingFunction: cubicInOut,
     });
 
     return {
@@ -677,15 +688,98 @@
     };
   }
 
-  function revealInfoBox(node: Element, timing: TransitionTimingMs) {
+  class RevealContent extends SubAnimation<void> {
+    constructor(anim: { node: Element; timing: TransitionTimingFraction }) {
+      const easingFunction = cubicOut;
+      super({
+        timing: anim.timing,
+        tick: (tLocalFraction: number) => {
+          const opacity = easingFunction(tLocalFraction);
+          anim.node.setAttribute("style", `opacity: ${opacity};`);
+        },
+      });
+    }
+  }
+
+  function revealInfoBox(node: Element, timing: InfoBoxTiming) {
+    // the items near the bottom can be revealed early instead of waiting for the
+    // border box to completely finish growing. This is because the cubic in-out growth
+    // feels very slow towards the end, and to wait for this to finish before starting
+    // the fade-in makes the fade-in of the last item in particular feel
+    // disproportionately slow. Therefore, we cap the "effective" bottom of the node
+    // at 70% of the parent's actual height.
+    const earlyRevealFraction = 0.3;
+    const revealCutoffFraction = 1 - earlyRevealFraction;
+    // how much time we have in total to kick off animations:
+    // 1. This should actually take the same amount of time as Y takes to grow,
+    //    except that it's slightly delayed to give Y growth a headstart
+    // 2. This should leave enough time for the last element to transition
+    const totalKickoffMs = timing.borderBox.asCollection().growY().durationMs();
+    const theoreticalTotalKickoffFraction =
+      totalKickoffMs / timing.infoBox.durationMs();
+    if (theoreticalTotalKickoffFraction > 1) {
+      throw new Error("Info box animation is too short to reveal all elements");
+    }
+    const actualTotalKickoffFraction =
+      theoreticalTotalKickoffFraction * revealCutoffFraction;
+    const perElementRevealFraction = 1 - actualTotalKickoffFraction;
+    const { height: infoBoxHeight, top: infoBoxTop } =
+      node.getBoundingClientRect();
+    const revealAnimations: RevealContent[] = [];
+
+    const getChildKickoffFraction = (child: Element) => {
+      const childRect = child.getBoundingClientRect();
+      const childBottomYRelativeToInfoBox =
+        childRect.top + childRect.height - infoBoxTop;
+      const equivalentYProgress = inverseCubicInOut(
+        childBottomYRelativeToInfoBox / infoBoxHeight,
+      );
+      const adjustedYProgress = Math.min(
+        revealCutoffFraction,
+        equivalentYProgress,
+      );
+      const delayFraction = adjustedYProgress * theoreticalTotalKickoffFraction;
+      return new PrimitiveTimingFraction({
+        delayFraction,
+        durationFraction: perElementRevealFraction,
+      });
+    };
+
+    const addNodeAnimations = (currentNode: Element) => {
+      // if there are text-only elements that are not part of any node, we fade-in the
+      // whole parent at once to avoid the text appearing before anything else -- e.g.
+      // if there's something like "some text in <em>some tag</em>", the "some text in"
+      // will appear immediately while "some tag" takes a moment to fade in
+      if (
+        currentNode.children.length === 0 ||
+        currentNode.children.length === currentNode.childNodes.length
+      ) {
+        revealAnimations.push(
+          new RevealContent({
+            node: currentNode,
+            timing: getChildKickoffFraction(currentNode),
+          }),
+        );
+      } else {
+        for (const child of currentNode.children) {
+          addNodeAnimations(child);
+        }
+      }
+    };
+
+    addNodeAnimations(node);
+
     return {
-      delay: timing.delayMs(),
-      duration: timing.durationMs(),
+      delay: timing.infoBox.delayMs(),
+      duration: timing.infoBox.durationMs(),
       tick: (tGlobalFraction: number) => {
-        if (timing.durationMs() === 0) {
+        if (timing.infoBox.durationMs() === 0) {
           return;
         }
-        node.setAttribute("style", `opacity: ${tGlobalFraction};`);
+
+        revealAnimations.forEach((anim) => {
+          anim.tickForGlobalTime(tGlobalFraction);
+        });
       },
     };
   }
@@ -723,7 +817,7 @@
       <h2 in:revealTitle|global={timing.title} id={infoboxId}>
         {title}
       </h2>
-      <div class="info-content" in:revealInfoBox|global={timing.infoBox}>
+      <div class="info-content" in:revealInfoBox|global={timing}>
         <slot />
       </div>
     </div>
