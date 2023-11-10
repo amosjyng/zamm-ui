@@ -574,6 +574,7 @@
 
   export let title = "";
   export let preDelay = 100;
+  export let maxWidth = "50rem";
   const infoboxId = getComponentId("infobox");
 
   class ProperyAnimation extends SubAnimation<string> {
@@ -789,7 +790,11 @@
   $: timing = getAnimationTiming(preDelay, timingScaleFactor);
 </script>
 
-<section class="container" aria-labelledby={infoboxId}>
+<section
+  class="container"
+  aria-labelledby={infoboxId}
+  style="max-width: {maxWidth};"
+>
   <svg
     style="visibility: hidden; position: absolute;"
     width="0"
