@@ -570,10 +570,10 @@
   import { cubicInOut, cubicOut, linear } from "svelte/easing";
   import { animationSpeed, animationsOn } from "./preferences";
   import type { TransitionConfig } from "svelte/transition";
-  import { firstPageLoad } from "./firstPageLoad";
+  import { firstAppLoad, firstPageLoad } from "./firstPageLoad";
 
   export let title = "";
-  export let preDelay = 100;
+  export let preDelay = $firstAppLoad ? 0 : 100;
   export let maxWidth = "50rem";
   const infoboxId = getComponentId("infobox");
   let titleElement: HTMLElement | undefined;

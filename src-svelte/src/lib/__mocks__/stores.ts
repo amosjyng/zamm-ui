@@ -4,6 +4,7 @@ import {
   unceasingAnimations,
   animationSpeed,
 } from "$lib/preferences";
+import { firstAppLoad, firstPageLoad } from "$lib/firstPageLoad";
 
 interface Preferences {
   animationsOn?: boolean;
@@ -22,6 +23,10 @@ const SvelteStoresDecorator: Decorator = (
 ) => {
   const { args, parameters } = context;
   const { preferences } = parameters as StoreArgs;
+
+  // set to their defaults on first load
+  firstAppLoad.set(true);
+  firstPageLoad.set(true);
 
   if (preferences?.animationsOn === undefined) {
     animationsOn.set(true);
