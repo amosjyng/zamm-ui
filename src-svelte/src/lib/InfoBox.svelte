@@ -643,11 +643,6 @@
         tick: (tLocalFraction: number) => {
           const i = Math.trunc(length * tLocalFraction);
           anim.node.textContent = i === 0 ? "" : text.slice(0, i - 1);
-          if (tLocalFraction == 0) {
-            anim.node.classList.remove("typewriting");
-          } else {
-            anim.node.classList.add("typewriting");
-          }
         },
       });
     }
@@ -880,7 +875,7 @@
     margin: -0.25rem 0 0.5rem var(--cut);
   }
 
-  .info-box :global(h2.typewriting::after) {
+  .info-box h2::after {
     content: "█";
     opacity: var(--cursor-opacity);
   }
