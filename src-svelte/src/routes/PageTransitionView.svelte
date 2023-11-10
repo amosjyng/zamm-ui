@@ -25,7 +25,7 @@
         </p>
       </InfoBox>
     {:else}
-      <InfoBox title="Reality">
+      <InfoBox title="Reality: Subjective or Objective?">
         <SubInfoBox subheading="Stuart Candy">
           <p>
             It is better to be surprised by a simulation, rather than blindsided
