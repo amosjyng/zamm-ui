@@ -576,6 +576,7 @@
   export let preDelay = 100;
   export let maxWidth = "50rem";
   const infoboxId = getComponentId("infobox");
+  let titleElement: HTMLElement | undefined;
 
   class ProperyAnimation extends SubAnimation<string> {
     constructor(anim: {
@@ -603,21 +604,26 @@
   ): TransitionConfig {
     const actualWidth = node.clientWidth;
     const actualHeight = node.clientHeight;
-    const minDimensions = 3 * 18; // 3 rem
+    const heightPerTitleLinePx = 26;
+    const titleHeight = (titleElement as HTMLElement).clientHeight;
+    // multiply by 1.3 to account for small pixel differences between browsers
+    const titleIsMultiline = titleHeight > heightPerTitleLinePx * 1.3;
+    const minHeight = titleHeight + heightPerTitleLinePx; // add a little for padding
+    const minWidth = 3.5 * heightPerTitleLinePx;
 
     const growWidth = new ProperyAnimation({
       timing: timing.growX(),
       property: "width",
-      min: minDimensions,
+      min: minWidth,
       max: actualWidth,
       unit: "px",
-      easingFunction: linear,
+      easingFunction: titleIsMultiline ? cubicOut : linear,
     });
 
     const growHeight = new ProperyAnimation({
       timing: timing.growY(),
       property: "height",
-      min: minDimensions,
+      min: minHeight,
       max: actualHeight,
       unit: "px",
       easingFunction: cubicInOut,
@@ -814,7 +820,11 @@
   <div class="border-container">
     <div class="border-box" in:revealOutline|global={timing.borderBox}></div>
     <div class="info-box">
-      <h2 in:revealTitle|global={timing.title} id={infoboxId}>
+      <h2
+        in:revealTitle|global={timing.title}
+        id={infoboxId}
+        bind:this={titleElement}
+      >
         {title}
       </h2>
       <div class="info-content" in:revealInfoBox|global={timing}>
