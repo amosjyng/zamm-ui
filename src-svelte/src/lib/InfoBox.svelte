@@ -911,6 +911,15 @@
     position: relative;
     z-index: 2;
     padding: 1rem;
+    text-align: justify;
+  }
+
+  .info-box h2 {
+    text-align: left;
+  }
+
+  .info-box :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .info-box h2 {
