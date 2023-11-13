@@ -6,12 +6,12 @@
 <section class="homepage-banner">
   <img src="/logo.png" alt="Robot typing on keyboard" />
   <div class="metadata-container">
-    <Metadata />
+    <Metadata childNumber={0} />
   </div>
 </section>
 
 <section>
-  <ApiKeysDisplay />
+  <ApiKeysDisplay childNumber={1} />
 </section>
 
 <style>

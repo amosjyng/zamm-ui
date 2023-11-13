@@ -573,10 +573,13 @@
   import { firstAppLoad, firstPageLoad } from "./firstPageLoad";
 
   export let title = "";
+  export let childNumber = 0;
   export let preDelay = $firstAppLoad ? 0 : 100;
   export let maxWidth = "50rem";
   const infoboxId = getComponentId("infobox");
   let titleElement: HTMLElement | undefined;
+  const perChildStagger = 100;
+  const totalDelay = preDelay + childNumber * perChildStagger;
 
   class ProperyAnimation extends SubAnimation<string> {
     constructor(anim: {
@@ -788,7 +791,7 @@
 
   $: shouldAnimate = $animationsOn && $firstPageLoad;
   $: timingScaleFactor = shouldAnimate ? 1 / $animationSpeed : 0;
-  $: timing = getAnimationTiming(preDelay, timingScaleFactor);
+  $: timing = getAnimationTiming(totalDelay, timingScaleFactor);
 </script>
 
 <section
