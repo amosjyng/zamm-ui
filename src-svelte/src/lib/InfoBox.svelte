@@ -695,7 +695,7 @@
 
   class RevealContent extends SubAnimation<void> {
     constructor(anim: { node: Element; timing: TransitionTimingFraction }) {
-      const easingFunction = cubicOut;
+      const easingFunction = linear;
       super({
         timing: anim.timing,
         tick: (tLocalFraction: number) => {
