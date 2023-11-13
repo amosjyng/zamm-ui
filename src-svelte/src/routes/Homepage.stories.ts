@@ -1,11 +1,11 @@
-import HompageComponent from "./Homepage.svelte";
+import DashboardComponent from "./Dashboard.svelte";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import TauriInvokeDecorator from "$lib/__mocks__/invoke";
 import MockPageTransitions from "$lib/__mocks__/MockPageTransitions.svelte";
 
 export default {
-  component: HompageComponent,
-  title: "Screens/Homepage",
+  component: DashboardComponent,
+  title: "Screens/Dashboard",
   argTypes: {},
   decorators: [
     TauriInvokeDecorator,
@@ -19,12 +19,12 @@ export default {
 };
 
 const Template = ({ ...args }) => ({
-  Component: HompageComponent,
+  Component: DashboardComponent,
   props: args,
 });
 
-export const Homepage: StoryObj = Template.bind({}) as any;
-Homepage.parameters = {
+export const FullPage: StoryObj = Template.bind({}) as any;
+FullPage.parameters = {
   resolution: {
     openai: null,
   },
