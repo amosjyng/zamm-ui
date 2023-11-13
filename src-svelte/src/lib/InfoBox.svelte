@@ -449,6 +449,7 @@
     borderBox: BorderBoxTiming;
     title: TitleTiming;
     infoBox: TransitionTimingMs;
+    overallFadeIn: TransitionTimingMs;
   }
 
   class InfoBoxTimingCollection extends TimingGroupAsCollection {
@@ -464,6 +465,10 @@
       return this.children[2];
     }
 
+    overallFadeIn(): TransitionTimingMs {
+      return this.children[3];
+    }
+
     delayByMs(delayMs: number): InfoBoxTimingCollection {
       return new InfoBoxTimingCollection(super.delayByMs(delayMs).children);
     }
@@ -477,6 +482,7 @@
         borderBox: this.borderBox().asIndividual(),
         title: this.title().asIndividual(),
         infoBox: this.infoBox(),
+        overallFadeIn: this.overallFadeIn(),
       };
     }
   }
@@ -485,12 +491,19 @@
     borderBox,
     title,
     infoBox,
+    overallFadeIn,
   }: {
     borderBox: BorderBoxTimingCollection;
     title: TitleTimingCollection;
     infoBox: TransitionTimingMs;
+    overallFadeIn: TransitionTimingMs;
   }) {
-    return new InfoBoxTimingCollection([borderBox, title, infoBox]);
+    return new InfoBoxTimingCollection([
+      borderBox,
+      title,
+      infoBox,
+      overallFadeIn,
+    ]);
   }
 
   export function getAnimationTiming(
@@ -526,15 +539,26 @@
       durationMs: 260,
     });
     const title = newTitleTimingCollection({ typewriter, cursorFade });
-    const infoBoxTimingCollection = newInfoBoxTimingCollection({
+
+    const effectsGroup = new TimingGroupAsCollection([
       borderBox,
       title,
       infoBox,
+    ]).delayByMs(overallDelayMs);
+    const [delayedBorder, delayedTitle, delayedInfo] = effectsGroup.children;
+
+    const overallFadeIn = new PrimitiveTimingMs({
+      startMs: Math.max(0, effectsGroup.startMs() - 50),
+      endMs: effectsGroup.startMs(),
     });
-    return infoBoxTimingCollection
-      .delayByMs(overallDelayMs)
-      .scaleBy(timingScaleFactor)
-      .finalize();
+
+    const infoBoxTimingCollection = newInfoBoxTimingCollection({
+      borderBox: delayedBorder as BorderBoxTimingCollection,
+      title: delayedTitle as TitleTimingCollection,
+      infoBox: delayedInfo,
+      overallFadeIn,
+    });
+    return infoBoxTimingCollection.scaleBy(timingScaleFactor).finalize();
   }
 
   class SubAnimation<T> {
@@ -569,12 +593,18 @@
   import getComponentId from "./label-id";
   import { cubicInOut, cubicOut, linear } from "svelte/easing";
   import { animationSpeed, animationsOn } from "./preferences";
-  import type { TransitionConfig } from "svelte/transition";
-  import { firstPageLoad } from "./firstPageLoad";
+  import { fade, type TransitionConfig } from "svelte/transition";
+  import { firstAppLoad, firstPageLoad } from "./firstPageLoad";
 
   export let title = "";
-  export let preDelay = 100;
+  export let childNumber = 0;
+  export let preDelay = $firstAppLoad ? 0 : 100;
+  export let maxWidth: string | undefined = undefined;
+  let maxWidthStyle = maxWidth === undefined ? "" : `max-width: ${maxWidth};`;
   const infoboxId = getComponentId("infobox");
+  let titleElement: HTMLElement | undefined;
+  const perChildStagger = 100;
+  const totalDelay = preDelay + childNumber * perChildStagger;
 
   class ProperyAnimation extends SubAnimation<string> {
     constructor(anim: {
@@ -602,21 +632,26 @@
   ): TransitionConfig {
     const actualWidth = node.clientWidth;
     const actualHeight = node.clientHeight;
-    const minDimensions = 3 * 18; // 3 rem
+    const heightPerTitleLinePx = 26;
+    const titleHeight = (titleElement as HTMLElement).clientHeight;
+    // multiply by 1.3 to account for small pixel differences between browsers
+    const titleIsMultiline = titleHeight > heightPerTitleLinePx * 1.3;
+    const minHeight = titleHeight + heightPerTitleLinePx; // add a little for padding
+    const minWidth = 3.5 * heightPerTitleLinePx;
 
     const growWidth = new ProperyAnimation({
       timing: timing.growX(),
       property: "width",
-      min: minDimensions,
+      min: minWidth,
       max: actualWidth,
       unit: "px",
-      easingFunction: linear,
+      easingFunction: titleIsMultiline ? cubicOut : linear,
     });
 
     const growHeight = new ProperyAnimation({
       timing: timing.growY(),
       property: "height",
-      min: minDimensions,
+      min: minHeight,
       max: actualHeight,
       unit: "px",
       easingFunction: cubicInOut,
@@ -642,11 +677,6 @@
         tick: (tLocalFraction: number) => {
           const i = Math.trunc(length * tLocalFraction);
           anim.node.textContent = i === 0 ? "" : text.slice(0, i - 1);
-          if (tLocalFraction == 0) {
-            anim.node.classList.remove("typewriting");
-          } else {
-            anim.node.classList.add("typewriting");
-          }
         },
       });
     }
@@ -690,7 +720,7 @@
 
   class RevealContent extends SubAnimation<void> {
     constructor(anim: { node: Element; timing: TransitionTimingFraction }) {
-      const easingFunction = cubicOut;
+      const easingFunction = linear;
       super({
         timing: anim.timing,
         tick: (tLocalFraction: number) => {
@@ -786,10 +816,19 @@
 
   $: shouldAnimate = $animationsOn && $firstPageLoad;
   $: timingScaleFactor = shouldAnimate ? 1 / $animationSpeed : 0;
-  $: timing = getAnimationTiming(preDelay, timingScaleFactor);
+  $: timing = getAnimationTiming(totalDelay, timingScaleFactor);
+  $: overallFadeInArgs = {
+    delay: timing.overallFadeIn.delayMs(),
+    duration: timing.overallFadeIn.durationMs(),
+  };
 </script>
 
-<section class="container" aria-labelledby={infoboxId}>
+<section
+  class="container"
+  aria-labelledby={infoboxId}
+  style={maxWidthStyle}
+  in:fade|global={overallFadeInArgs}
+>
   <svg
     style="visibility: hidden; position: absolute;"
     width="0"
@@ -814,7 +853,11 @@
   <div class="border-container">
     <div class="border-box" in:revealOutline|global={timing.borderBox}></div>
     <div class="info-box">
-      <h2 in:revealTitle|global={timing.title} id={infoboxId}>
+      <h2
+        in:revealTitle|global={timing.title}
+        id={infoboxId}
+        bind:this={titleElement}
+      >
         {title}
       </h2>
       <div class="info-content" in:revealInfoBox|global={timing}>
@@ -868,6 +911,15 @@
     position: relative;
     z-index: 2;
     padding: 1rem;
+    text-align: justify;
+  }
+
+  .info-box h2 {
+    text-align: left;
+  }
+
+  .info-box :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .info-box h2 {
@@ -875,7 +927,7 @@
     margin: -0.25rem 0 0.5rem var(--cut);
   }
 
-  .info-box :global(h2.typewriting::after) {
+  .info-box h2::after {
     content: "█";
     opacity: var(--cursor-opacity);
   }

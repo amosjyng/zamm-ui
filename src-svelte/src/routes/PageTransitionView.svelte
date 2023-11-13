@@ -53,6 +53,7 @@
 <style>
   .storybook-wrapper {
     width: 100%;
+    max-width: 50rem;
     box-sizing: border-box;
     position: relative;
   }

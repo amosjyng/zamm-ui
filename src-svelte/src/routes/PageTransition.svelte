@@ -56,16 +56,32 @@
 <script lang="ts">
   import { fly } from "svelte/transition";
   import { animationsOn, animationSpeed } from "$lib/preferences";
-  import { firstPageLoad } from "$lib/firstPageLoad";
+  import { firstAppLoad, firstPageLoad } from "$lib/firstPageLoad";
+  import { onMount, tick } from "svelte";
 
   export let currentRoute: string;
+  let ready = false;
   const visitedKeys = new Set<string>();
 
-  function checkFirstPageLoad(key: string) {
-    if (visitedKeys.has(key)) {
+  onMount(async () => {
+    const regularDelay = transitions.in.delay;
+    transitions.in.delay = 0;
+    ready = true;
+    await tick();
+    transitions.in.delay = regularDelay;
+    firstAppLoad.set(false);
+    checkFirstPageLoad(currentRoute);
+  });
+
+  function checkFirstPageLoad(route: string) {
+    if (!ready) {
+      return;
+    }
+
+    if (visitedKeys.has(route)) {
       firstPageLoad.set(false);
     } else {
-      visitedKeys.add(key);
+      visitedKeys.add(route);
       firstPageLoad.set(true);
     }
   }
@@ -77,13 +93,15 @@
 </script>
 
 {#key currentRoute}
-  <div
-    class="transition-container"
-    in:fly={transitions.in}
-    out:fly={transitions.out}
-  >
-    <slot />
-  </div>
+  {#if ready}
+    <div
+      class="transition-container"
+      in:fly|global={transitions.in}
+      out:fly|global={transitions.out}
+    >
+      <slot />
+    </div>
+  {/if}
 {/key}
 
 <style>

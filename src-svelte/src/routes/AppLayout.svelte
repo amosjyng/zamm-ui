@@ -97,5 +97,7 @@
   main {
     position: relative;
     z-index: 1;
+    max-width: 70rem;
+    margin: 0 auto;
   }
 </style>

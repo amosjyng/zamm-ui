@@ -18,5 +18,10 @@
   .subheading {
     width: 100%;
     text-align: center;
+    margin: 0.5rem 0;
+  }
+
+  .content :global(p:first-child) {
+    margin-top: 0;
   }
 </style>

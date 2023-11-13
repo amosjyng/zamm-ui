@@ -5,7 +5,7 @@
   let api_keys = getApiKeys();
 </script>
 
-<InfoBox title="API Keys">
+<InfoBox title="API Keys" {...$$restProps}>
   <table>
     <tr>
       <td>OpenAI</td>
