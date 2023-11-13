@@ -449,6 +449,7 @@
     borderBox: BorderBoxTiming;
     title: TitleTiming;
     infoBox: TransitionTimingMs;
+    overallFadeIn: TransitionTimingMs;
   }
 
   class InfoBoxTimingCollection extends TimingGroupAsCollection {
@@ -464,6 +465,10 @@
       return this.children[2];
     }
 
+    overallFadeIn(): TransitionTimingMs {
+      return this.children[3];
+    }
+
     delayByMs(delayMs: number): InfoBoxTimingCollection {
       return new InfoBoxTimingCollection(super.delayByMs(delayMs).children);
     }
@@ -477,6 +482,7 @@
         borderBox: this.borderBox().asIndividual(),
         title: this.title().asIndividual(),
         infoBox: this.infoBox(),
+        overallFadeIn: this.overallFadeIn(),
       };
     }
   }
@@ -485,12 +491,19 @@
     borderBox,
     title,
     infoBox,
+    overallFadeIn,
   }: {
     borderBox: BorderBoxTimingCollection;
     title: TitleTimingCollection;
     infoBox: TransitionTimingMs;
+    overallFadeIn: TransitionTimingMs;
   }) {
-    return new InfoBoxTimingCollection([borderBox, title, infoBox]);
+    return new InfoBoxTimingCollection([
+      borderBox,
+      title,
+      infoBox,
+      overallFadeIn,
+    ]);
   }
 
   export function getAnimationTiming(
@@ -526,15 +539,26 @@
       durationMs: 260,
     });
     const title = newTitleTimingCollection({ typewriter, cursorFade });
-    const infoBoxTimingCollection = newInfoBoxTimingCollection({
+
+    const effectsGroup = new TimingGroupAsCollection([
       borderBox,
       title,
       infoBox,
+    ]).delayByMs(overallDelayMs);
+    const [delayedBorder, delayedTitle, delayedInfo] = effectsGroup.children;
+
+    const overallFadeIn = new PrimitiveTimingMs({
+      startMs: Math.max(0, effectsGroup.startMs() - 50),
+      endMs: effectsGroup.startMs(),
     });
-    return infoBoxTimingCollection
-      .delayByMs(overallDelayMs)
-      .scaleBy(timingScaleFactor)
-      .finalize();
+
+    const infoBoxTimingCollection = newInfoBoxTimingCollection({
+      borderBox: delayedBorder as BorderBoxTimingCollection,
+      title: delayedTitle as TitleTimingCollection,
+      infoBox: delayedInfo,
+      overallFadeIn,
+    });
+    return infoBoxTimingCollection.scaleBy(timingScaleFactor).finalize();
   }
 
   class SubAnimation<T> {
@@ -569,7 +593,7 @@
   import getComponentId from "./label-id";
   import { cubicInOut, cubicOut, linear } from "svelte/easing";
   import { animationSpeed, animationsOn } from "./preferences";
-  import type { TransitionConfig } from "svelte/transition";
+  import { fade, type TransitionConfig } from "svelte/transition";
   import { firstAppLoad, firstPageLoad } from "./firstPageLoad";
 
   export let title = "";
@@ -792,12 +816,17 @@
   $: shouldAnimate = $animationsOn && $firstPageLoad;
   $: timingScaleFactor = shouldAnimate ? 1 / $animationSpeed : 0;
   $: timing = getAnimationTiming(totalDelay, timingScaleFactor);
+  $: overallFadeInArgs = {
+    delay: timing.overallFadeIn.delayMs(),
+    duration: timing.overallFadeIn.durationMs(),
+  };
 </script>
 
 <section
   class="container"
   aria-labelledby={infoboxId}
   style="max-width: {maxWidth};"
+  in:fade|global={overallFadeInArgs}
 >
   <svg
     style="visibility: hidden; position: absolute;"
