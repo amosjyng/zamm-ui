@@ -49,7 +49,7 @@
   };
 </script>
 
-<InfoBox title="Settings" maxWidth="70rem">
+<InfoBox title="Settings">
   <div class="container">
     <SubInfoBox subheading="Animation">
       <SettingsSwitch

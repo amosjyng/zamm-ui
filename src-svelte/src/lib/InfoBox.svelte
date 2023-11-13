@@ -599,7 +599,8 @@
   export let title = "";
   export let childNumber = 0;
   export let preDelay = $firstAppLoad ? 0 : 100;
-  export let maxWidth = "50rem";
+  export let maxWidth: string | undefined = undefined;
+  let maxWidthStyle = maxWidth === undefined ? "" : `max-width: ${maxWidth};`;
   const infoboxId = getComponentId("infobox");
   let titleElement: HTMLElement | undefined;
   const perChildStagger = 100;
@@ -825,7 +826,7 @@
 <section
   class="container"
   aria-labelledby={infoboxId}
-  style="max-width: {maxWidth};"
+  style={maxWidthStyle}
   in:fade|global={overallFadeInArgs}
 >
   <svg

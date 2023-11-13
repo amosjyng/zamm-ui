@@ -17,12 +17,14 @@ const Template = ({ ...args }) => ({
 export const Regular: StoryObj = Template.bind({}) as any;
 Regular.args = {
   title: "Simulation",
+  maxWidth: "50rem",
 };
 
 export const MountTransition: StoryObj = Template.bind({}) as any;
 MountTransition.args = {
   title: "Simulation",
   preDelay: 0,
+  maxWidth: "50rem",
 };
 MountTransition.decorators = [
   SvelteStoresDecorator,
@@ -38,6 +40,7 @@ export const SlowMotion: StoryObj = Template.bind({}) as any;
 SlowMotion.args = {
   title: "Simulation",
   preDelay: 0,
+  maxWidth: "50rem",
 };
 SlowMotion.parameters = {
   preferences: {
@@ -57,6 +60,7 @@ SlowMotion.decorators = [
 export const Motionless: StoryObj = Template.bind({}) as any;
 Motionless.args = {
   title: "Simulation",
+  maxWidth: "50rem",
 };
 Motionless.parameters = {
   preferences: {
