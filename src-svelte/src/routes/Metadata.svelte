@@ -2,7 +2,7 @@
   import InfoBox from "$lib/InfoBox.svelte";
 </script>
 
-<InfoBox title="System Information" {...$$restProps}>
+<InfoBox title="System Info" {...$$restProps}>
   <table>
     <tr>
       <th colspan="2">ZAMM</th>
