@@ -27,6 +27,5 @@ export const Motionless: StoryObj = Template.bind({}) as any;
 Motionless.parameters = {
   preferences: {
     animationsOn: false,
-    animationSpeed: 0.1,
   },
 };
