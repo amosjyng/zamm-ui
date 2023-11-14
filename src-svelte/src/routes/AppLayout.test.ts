@@ -47,7 +47,7 @@ describe("AppLayout", () => {
     );
     playback.addCalls(getPreferencesCall);
 
-    render(AppLayout, {});
+    render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).toBeCalledTimes(1);
@@ -63,7 +63,7 @@ describe("AppLayout", () => {
     );
     playback.addCalls(getPreferencesCall);
 
-    render(AppLayout, {});
+    render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(soundOn)).toBe(false);
     expect(tauriInvokeMock).toBeCalledTimes(1);
@@ -79,7 +79,7 @@ describe("AppLayout", () => {
     );
     playback.addCalls(getPreferencesCall);
 
-    render(AppLayout, {});
+    render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(volume)).toBe(0.8);
     expect(tauriInvokeMock).toBeCalledTimes(1);
@@ -95,7 +95,7 @@ describe("AppLayout", () => {
     );
     playback.addCalls(getPreferencesCall);
 
-    render(AppLayout, {});
+    render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(animationsOn)).toBe(true);
     expect(tauriInvokeMock).toBeCalledTimes(1);
@@ -113,7 +113,7 @@ describe("AppLayout", () => {
     );
     playback.addCalls(getPreferencesCall);
 
-    render(AppLayout, {});
+    render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(animationsOn)).toBe(false);
     expect(tauriInvokeMock).toBeCalledTimes(1);
@@ -131,7 +131,7 @@ describe("AppLayout", () => {
     );
     playback.addCalls(getPreferencesCall);
 
-    render(AppLayout, {});
+    render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(animationSpeed)).toBe(0.9);
     expect(tauriInvokeMock).toBeCalledTimes(1);

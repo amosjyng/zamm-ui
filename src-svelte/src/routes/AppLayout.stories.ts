@@ -15,6 +15,9 @@ const Template = ({ ...args }) => ({
 });
 
 export const Dynamic: StoryObj = Template.bind({}) as any;
+Dynamic.args = {
+  currentRoute: "/",
+};
 Dynamic.parameters = {
   preferences: {
     unceasingAnimations: true,
@@ -22,6 +25,9 @@ Dynamic.parameters = {
 };
 
 export const Static: StoryObj = Template.bind({}) as any;
+Static.args = {
+  currentRoute: "/",
+};
 Static.parameters = {
   preferences: {
     unceasingAnimations: false,
