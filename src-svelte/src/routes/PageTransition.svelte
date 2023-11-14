@@ -78,12 +78,8 @@
       return;
     }
 
-    if (visitedKeys.has(route)) {
-      firstPageLoad.set(false);
-    } else {
-      visitedKeys.add(route);
-      firstPageLoad.set(true);
-    }
+    firstPageLoad.set(!visitedKeys.has(route));
+    visitedKeys.add(route);
   }
 
   // twice the speed of sidebar UI slider

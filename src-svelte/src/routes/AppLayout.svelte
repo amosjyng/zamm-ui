@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
   import Sidebar from "./Sidebar.svelte";
   import Background from "./Background.svelte";
   import "./styles.css";
   import { onMount } from "svelte";
+  import PageTransition from "./PageTransition.svelte";
   import { getPreferences } from "$lib/bindings";
   import {
     soundOn,
@@ -11,6 +12,9 @@
     volume,
     animationsOn,
   } from "$lib/preferences";
+
+  export let currentRoute: string;
+  let ready = false;
 
   onMount(async () => {
     const prefs = await getPreferences();
@@ -35,6 +39,8 @@
     if (prefs.animation_speed !== null) {
       animationSpeed.set(prefs.animation_speed);
     }
+
+    ready = true;
   });
 </script>
 
@@ -50,7 +56,11 @@
       <Background />
     </div>
     <main>
-      <slot />
+      {#if ready}
+        <PageTransition {currentRoute}>
+          <slot />
+        </PageTransition>
+      {/if}
     </main>
   </div>
 </div>
