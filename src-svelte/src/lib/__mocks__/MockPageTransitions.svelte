@@ -17,5 +17,7 @@
 <style>
   .storybook-wrapper {
     --base-animation-speed: 0.1;
+    max-width: 50rem;
+    position: relative;
   }
 </style>
