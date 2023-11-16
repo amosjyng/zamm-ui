@@ -1,4 +1,4 @@
-import ApiKeysDisplay from "./ApiKeysDisplay.svelte";
+import ApiKeysDisplay from "./Display.svelte";
 import type { ApiKeys } from "$lib/bindings";
 import type { StoryObj } from "@storybook/svelte";
 import TauriInvokeDecorator from "$lib/__mocks__/invoke";

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ApiKeysDisplay from "./ApiKeysDisplay.svelte";
+  import ApiKeysDisplay from "./components/api-keys/Display.svelte";
   import Metadata from "./Metadata.svelte";
 </script>
 
