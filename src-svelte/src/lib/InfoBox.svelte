@@ -423,7 +423,6 @@
     const perElementRevealFraction = 1 - actualTotalKickoffFraction;
     const { height: infoBoxHeight, top: infoBoxTop } =
       node.getBoundingClientRect();
-    const revealAnimations: RevealContent[] = [];
 
     const getChildKickoffFraction = (child: Element) => {
       const childRect = child.getBoundingClientRect();
@@ -443,7 +442,7 @@
       });
     };
 
-    const addNodeAnimations = (currentNode: Element) => {
+    const getNodeAnimations = (currentNode: Element): RevealContent[] => {
       // if there are text-only elements that are not part of any node, we fade-in the
       // whole parent at once to avoid the text appearing before anything else -- e.g.
       // if there's something like "some text in <em>some tag</em>", the "some text in"
@@ -452,20 +451,33 @@
         currentNode.children.length === 0 ||
         currentNode.children.length === currentNode.childNodes.length
       ) {
-        revealAnimations.push(
+        return [
           new RevealContent({
             node: currentNode,
             timing: getChildKickoffFraction(currentNode),
           }),
-        );
+        ];
       } else {
+        const revealAnimations: RevealContent[] = [];
         for (const child of currentNode.children) {
-          addNodeAnimations(child);
+          revealAnimations.push(...getNodeAnimations(child));
         }
+        return revealAnimations;
       }
     };
 
-    addNodeAnimations(node);
+    let revealAnimations = getNodeAnimations(node);
+
+    const config = { childList: true, subtree: true };
+    const mutationCallback: MutationCallback = () => {
+      revealAnimations = getNodeAnimations(node);
+      // hide all new nodes immediately
+      revealAnimations.forEach((anim) => {
+        anim.tickForGlobalTime(0);
+      });
+    };
+    const observer = new MutationObserver(mutationCallback);
+    observer.observe(node, config);
 
     return {
       delay: timing.infoBox.delayMs(),
@@ -478,6 +490,10 @@
         revealAnimations.forEach((anim) => {
           anim.tickForGlobalTime(tGlobalFraction);
         });
+
+        if (tGlobalFraction === 1) {
+          observer.disconnect();
+        }
       },
     };
   }
