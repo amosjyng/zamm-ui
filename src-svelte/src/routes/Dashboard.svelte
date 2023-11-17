@@ -20,10 +20,8 @@
     flex-direction: row;
     margin-bottom: 1rem;
     justify-content: space-evenly;
-  }
-
-  .metadata-container {
-    margin-left: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   img {
