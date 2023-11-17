@@ -3,6 +3,7 @@
   import InfoBox from "$lib/InfoBox.svelte";
   import Service from "./Service.svelte";
 
+  export let editDemo = false;
   let api_keys = getApiKeys();
 </script>
 
@@ -11,7 +12,7 @@
     <span class="loading">...loading</span>
   {:then keys}
     <div class="api-keys">
-      <Service name="OpenAI" apiKey={keys.openai?.value} />
+      <Service name="OpenAI" apiKey={keys.openai?.value} editing={editDemo} />
     </div>
   {:catch error}
     error: {error}

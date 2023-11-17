@@ -50,3 +50,14 @@ Known.parameters = {
     defaultViewport: "mobile2",
   },
 };
+
+export const Editing: StoryObj = Template.bind({}) as any;
+Editing.args = {
+  editDemo: true,
+};
+Editing.parameters = {
+  resolution: knownKeys,
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};
