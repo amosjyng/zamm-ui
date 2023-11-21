@@ -238,23 +238,6 @@
     });
     return infoBoxTimingCollection.scaleBy(timingScaleFactor).finalize();
   }
-
-  class SubAnimation<T> {
-    timing: TransitionTimingFraction;
-    tick: (tLocalFraction: number) => T;
-
-    constructor(anim: {
-      timing: TransitionTimingFraction;
-      tick: (tLocalFraction: number) => T;
-    }) {
-      this.timing = anim.timing;
-      this.tick = anim.tick;
-    }
-
-    tickForGlobalTime(tGlobalFraction: number): T {
-      return this.tick(this.timing.localize(tGlobalFraction));
-    }
-  }
 </script>
 
 <script lang="ts">
@@ -263,6 +246,7 @@
   import { animationSpeed, animationsOn } from "./preferences";
   import { fade, type TransitionConfig } from "svelte/transition";
   import { firstAppLoad, firstPageLoad } from "./firstPageLoad";
+  import { SubAnimation, PropertyAnimation } from "$lib/animation-timing";
 
   export let title = "";
   export let childNumber = 0;
@@ -273,26 +257,6 @@
   let titleElement: HTMLElement | undefined;
   const perChildStagger = 100;
   const totalDelay = preDelay + childNumber * perChildStagger;
-
-  class ProperyAnimation extends SubAnimation<string> {
-    constructor(anim: {
-      timing: TransitionTimingFraction;
-      property: string;
-      min: number;
-      max: number;
-      unit: string;
-      easingFunction?: (t: number) => number;
-    }) {
-      const growth = anim.max - anim.min;
-      const easingFunction = anim.easingFunction ?? cubicInOut;
-      const css = (t: number) => {
-        const easing = easingFunction(t);
-        const value = anim.min + growth * easing;
-        return `${anim.property}: ${value}${anim.unit};`;
-      };
-      super({ timing: anim.timing, tick: css });
-    }
-  }
 
   function revealOutline(
     node: Element,
@@ -307,7 +271,7 @@
     const minHeight = titleHeight + heightPerTitleLinePx; // add a little for padding
     const minWidth = 3.5 * heightPerTitleLinePx;
 
-    const growWidth = new ProperyAnimation({
+    const growWidth = new PropertyAnimation({
       timing: timing.growX(),
       property: "width",
       min: minWidth,
@@ -316,7 +280,7 @@
       easingFunction: titleIsMultiline ? cubicOut : linear,
     });
 
-    const growHeight = new ProperyAnimation({
+    const growHeight = new PropertyAnimation({
       timing: timing.growY(),
       property: "height",
       min: minHeight,
