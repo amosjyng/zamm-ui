@@ -8,51 +8,65 @@
   let saveKey = true;
 
   function growY(node: HTMLElement) {
+    const rem = 18;
+    const totalFinalPadding = 1 * rem;
+
     const height = node.offsetHeight;
     const duration = $animationsOn ? 100 / $animationSpeed : 0;
     return {
       duration,
       easing: cubicInOut,
       css: (t: number) => {
-        const value = height * t;
-        return `height: ${value}px;`;
+        const totalHeight = height * t;
+        const totalCurrentPadding = Math.min(totalFinalPadding, totalHeight);
+        const contentHeight = totalHeight - totalCurrentPadding;
+        return `
+          --vertical-padding: ${totalCurrentPadding / 2}px;
+          --form-height: ${contentHeight}px;
+        `;
       },
     };
   }
 </script>
 
 <div class="container" transition:growY>
-  <form>
-    <div class="form-row">
-      <label for="apiKey">API key:</label>
-      <TextInput name="apiKey" value={apiKey} />
-    </div>
+  <div class="inset-container">
+    <form>
+      <div class="form-row">
+        <label for="apiKey">API key:</label>
+        <TextInput name="apiKey" value={apiKey} />
+      </div>
 
-    <div class="form-row">
-      <input type="checkbox" id="saveKey" name="saveKey" checked={saveKey} />
-      <label for="saveKeyLocation">Save key to:</label>
-      <TextInput name="saveKeyLocation" value={saveKeyLocation} />
-    </div>
+      <div class="form-row">
+        <input type="checkbox" id="saveKey" name="saveKey" checked={saveKey} />
+        <label for="saveKeyLocation">Save key to:</label>
+        <TextInput name="saveKeyLocation" value={saveKeyLocation} />
+      </div>
 
-    <input type="submit" value="Save" />
-  </form>
+      <input type="submit" value="Save" />
+    </form>
+  </div>
 </div>
 
 <style>
   .container {
+    --form-height: 100%;
+    --vertical-padding: 0.5rem;
     --horizontal-overshoot: 1rem;
     overflow: hidden;
-    box-sizing: border-box;
     margin: 0 calc(-1 * var(--horizontal-overshoot));
+    padding: var(--vertical-padding) 0;
+  }
+
+  .inset-container {
+    height: var(--form-height);
+    overflow: hidden;
+    box-shadow: inset 0.05em 0.05em 0.3em rgba(0, 0, 0, 0.4);
+    background-color: var(--color-background);
   }
 
   form {
-    box-shadow: inset 0.05em 0.05em 0.3em rgba(0, 0, 0, 0.4);
-    margin: 0.5rem 0;
     padding: 0.5rem var(--horizontal-overshoot);
-    background-color: var(--color-background);
-    margin-bottom: 0.5rem;
-
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
