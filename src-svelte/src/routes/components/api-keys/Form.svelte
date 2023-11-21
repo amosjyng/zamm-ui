@@ -1,8 +1,10 @@
 <script lang="ts">
   import { cubicInOut } from "svelte/easing";
   import { animationSpeed, animationsOn } from "$lib/preferences";
+  import TextInput from "$lib/controls/TextInput.svelte";
 
   export let apiKey = "";
+  export let saveKeyLocation = "";
   let saveKey = true;
 
   function growY(node: HTMLElement) {
@@ -23,13 +25,13 @@
   <form>
     <div class="form-row">
       <label for="apiKey">API key:</label>
-      <input type="text" id="apiKey" name="apiKey" value={apiKey} />
+      <TextInput name="apiKey" value={apiKey} />
     </div>
 
     <div class="form-row">
       <input type="checkbox" id="saveKey" name="saveKey" checked={saveKey} />
-      <label for="saveKey">Save key to:</label>
-      <input type="text" id="saveKeyInput" name="saveKeyInput" />
+      <label for="saveKeyLocation">Save key to:</label>
+      <TextInput name="saveKeyLocation" value={saveKeyLocation} />
     </div>
 
     <input type="submit" value="Save" />
@@ -66,23 +68,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  input[type="text"] {
-    flex: 1;
-    min-width: 1rem;
-    border: none;
-    border-bottom: 1px solid var(--color-border);
-    background-color: var(--color-background);
-    font-family: var(--font-mono);
-    font-weight: bold;
-    font-size: 1rem;
-    transition: border-bottom calc(0.05s / var(--base-animation-speed)) linear;
-  }
-
-  input[type="text"]:focus {
-    outline: none;
-    border-bottom: 1px solid blue;
   }
 
   input[type="submit"] {
