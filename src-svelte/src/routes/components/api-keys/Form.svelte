@@ -13,18 +13,19 @@
     const totalFinalPadding = 1 * rem;
 
     const height = node.offsetHeight;
-    const duration = $animationsOn ? 100 / $animationSpeed : 0;
+    const duration = $animationsOn ? 200 / $animationSpeed : 0;
     return {
       duration,
       easing: cubicInOut,
-      css: (t: number) => {
+      tick: (t: number) => {
         const totalHeight = height * t;
         const totalCurrentPadding = Math.min(totalFinalPadding, totalHeight);
         const contentHeight = totalHeight - totalCurrentPadding;
-        return `
-          --vertical-padding: ${totalCurrentPadding / 2}px;
-          --form-height: ${contentHeight}px;
-        `;
+        node.style.setProperty(
+          "--vertical-padding",
+          `${totalCurrentPadding / 2}px`,
+        );
+        node.style.setProperty("--form-height", `${contentHeight}px`);
       },
     };
   }
