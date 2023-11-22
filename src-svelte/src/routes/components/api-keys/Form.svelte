@@ -2,6 +2,7 @@
   import { cubicInOut } from "svelte/easing";
   import { animationSpeed, animationsOn } from "$lib/preferences";
   import TextInput from "$lib/controls/TextInput.svelte";
+  import Button from "$lib/controls/Button.svelte";
 
   export let apiKey = "";
   export let saveKeyLocation = "";
@@ -43,7 +44,9 @@
         <TextInput name="saveKeyLocation" value={saveKeyLocation} />
       </div>
 
-      <input type="submit" value="Save" />
+      <div class="save-button">
+        <Button text="Save" />
+      </div>
     </form>
   </div>
 </div>
@@ -84,7 +87,7 @@
     gap: 0.5rem;
   }
 
-  input[type="submit"] {
+  .save-button {
     align-self: flex-start;
   }
 </style>
