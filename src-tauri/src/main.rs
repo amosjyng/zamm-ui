@@ -20,7 +20,9 @@ mod python_api;
 mod sample_call;
 mod schema;
 mod setup;
-use commands::{get_api_keys, get_preferences, greet, play_sound, set_preferences};
+use commands::{
+    get_api_keys, get_preferences, get_system_info, greet, play_sound, set_preferences,
+};
 
 pub struct ZammDatabase(Mutex<Option<SqliteConnection>>);
 pub struct ZammApiKeys(Mutex<ApiKeys>);
@@ -33,7 +35,8 @@ fn main() {
             get_api_keys,
             play_sound,
             get_preferences,
-            set_preferences
+            set_preferences,
+            get_system_info
         ],
         "../src-svelte/src/lib/bindings.ts",
     )
@@ -49,7 +52,8 @@ fn main() {
             get_api_keys,
             play_sound,
             get_preferences,
-            set_preferences
+            set_preferences,
+            get_system_info
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

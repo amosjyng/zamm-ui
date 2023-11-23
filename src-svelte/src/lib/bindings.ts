@@ -30,8 +30,14 @@ export function setPreferences(preferences: Preferences) {
     return invoke()<null>("set_preferences", { preferences })
 }
 
+export function getSystemInfo() {
+    return invoke()<SystemInfo>("get_system_info")
+}
+
 export type ApiKey = { value: string; source: Source }
 export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
 export type Source = "Environment"
+export type SystemInfo = { shell: Shell | null; shell_init_file: string | null }
 export type Sound = "Switch" | "Whoosh"
+export type Shell = "Bash" | "Zsh"
 export type ApiKeys = { openai: ApiKey | null }
