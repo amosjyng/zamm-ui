@@ -85,6 +85,7 @@ mod tests {
         let shell = Shell::Zsh;
         let shell_init_file = get_shell_init_file(&shell);
         println!("Shell init file is {}", shell_init_file);
+        assert!(shell_init_file.starts_with('/'));
         assert!(shell_init_file.ends_with("/.zshrc"));
     }
 
