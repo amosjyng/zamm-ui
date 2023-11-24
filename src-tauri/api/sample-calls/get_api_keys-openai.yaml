@@ -1,8 +1,5 @@
 request: ["get_api_keys"]
 response: >
   {
-    "openai": {
-      "value": "0p3n41-4p1-k3y",
-      "source": "Environment"
-    }
+    "openai": "0p3n41-4p1-k3y"
   }

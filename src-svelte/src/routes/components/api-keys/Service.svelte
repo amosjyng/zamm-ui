@@ -2,14 +2,14 @@
   import Form from "./Form.svelte";
 
   export let name: string;
-  export let apiKey: string | undefined;
+  export let apiKey: string | null;
   export let editing = false;
 
   function toggleEditing() {
     editing = !editing;
   }
 
-  $: active = apiKey !== undefined;
+  $: active = apiKey !== null;
   $: label = active ? "Active" : "Inactive";
 </script>
 
@@ -26,7 +26,7 @@
   </div>
 
   {#if editing}
-    <Form {apiKey} />
+    <Form apiKey={apiKey ?? ""} />
   {/if}
 </div>
 

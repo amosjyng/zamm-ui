@@ -18,14 +18,9 @@ pub fn get_api_keys(api_keys: State<ZammApiKeys>) -> ApiKeys {
 mod tests {
     use super::*;
     use crate::sample_call::SampleCall;
-    use crate::setup::api_keys::{ApiKey, Source};
     use std::sync::Mutex;
 
     use std::fs;
-
-    fn parse_api_keys(response_str: &str) -> ApiKeys {
-        serde_json::from_str(response_str).unwrap()
-    }
 
     fn read_sample(filename: &str) -> SampleCall {
         let sample_str = fs::read_to_string(filename)
@@ -37,9 +32,10 @@ mod tests {
         let greet_sample = read_sample(file_prefix);
         assert_eq!(greet_sample.request, vec!["get_api_keys"]);
 
-        let actual_keys = get_api_keys_helper(rust_input);
-        let expected_keys = parse_api_keys(&greet_sample.response);
-        assert_eq!(actual_keys, expected_keys);
+        let actual_result = get_api_keys_helper(rust_input);
+        let actual_json = serde_json::to_string_pretty(&actual_result).unwrap();
+        let expected_json = greet_sample.response.trim();
+        assert_eq!(actual_json, expected_json);
     }
 
     #[test]
@@ -55,10 +51,7 @@ mod tests {
     #[test]
     fn test_get_openai_key() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys {
-            openai: Some(ApiKey {
-                value: "0p3n41-4p1-k3y".to_string(),
-                source: Source::Environment,
-            }),
+            openai: Some("0p3n41-4p1-k3y".to_string()),
         }));
 
         check_get_api_keys_sample(

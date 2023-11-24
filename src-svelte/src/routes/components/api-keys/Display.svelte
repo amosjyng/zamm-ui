@@ -11,8 +11,8 @@
   {#await api_keys}
     <span class="loading" role="status">...loading</span>
   {:then keys}
-    <div class="api-keys">
-      <Service name="OpenAI" apiKey={keys.openai?.value} editing={editDemo} />
+    <div class="api-keys" role="table">
+      <Service name="OpenAI" apiKey={keys.openai} editing={editDemo} />
     </div>
   {:catch error}
     <span role="status">error: {error}</span>

@@ -20,10 +20,7 @@ const unknownKeys: ApiKeys = {
 };
 
 const knownKeys: ApiKeys = {
-  openai: {
-    value: "sk-1234567890",
-    source: "Environment",
-  },
+  openai: "sk-1234567890",
 };
 
 export const Loading: StoryObj = Template.bind({}) as any;
