@@ -21,8 +21,8 @@
     role="row"
     tabindex="0"
   >
-    <div class="service">{name}</div>
-    <div class="api-key" class:active>{label}</div>
+    <div class="service" role="cell">{name}</div>
+    <div class="api-key" class:active role="cell">{label}</div>
   </div>
 
   {#if editing}

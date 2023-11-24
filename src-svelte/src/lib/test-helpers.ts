@@ -1,5 +1,6 @@
 import { spawn, ChildProcess } from "child_process";
 import fetch from "node-fetch";
+import { tick } from "svelte";
 
 async function startStorybook(): Promise<ChildProcess> {
   return new Promise((resolve) => {
@@ -49,4 +50,10 @@ export async function killStorybook(process?: ChildProcess) {
   }
 
   process.kill();
+}
+
+export async function tickFor(ticks: number) {
+  for (let i = 0; i < ticks; i++) {
+    await tick();
+  }
 }

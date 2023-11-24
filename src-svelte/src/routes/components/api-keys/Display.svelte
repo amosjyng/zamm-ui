@@ -9,13 +9,13 @@
 
 <InfoBox title="API Keys" {...$$restProps}>
   {#await api_keys}
-    <span class="loading">...loading</span>
+    <span class="loading" role="status">...loading</span>
   {:then keys}
     <div class="api-keys">
       <Service name="OpenAI" apiKey={keys.openai?.value} editing={editDemo} />
     </div>
   {:catch error}
-    error: {error}
+    <span role="status">error: {error}</span>
   {/await}
 </InfoBox>
 
