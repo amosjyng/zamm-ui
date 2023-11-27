@@ -20,6 +20,8 @@ mod python_api;
 mod sample_call;
 mod schema;
 mod setup;
+#[cfg(test)]
+mod test_helpers;
 use commands::{
     get_api_keys, get_preferences, get_system_info, greet, play_sound, set_preferences,
 };

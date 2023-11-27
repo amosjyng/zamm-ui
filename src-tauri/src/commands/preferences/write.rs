@@ -73,9 +73,9 @@ pub fn set_preferences(
 mod tests {
     use super::*;
     use crate::sample_call::SampleCall;
+    use crate::test_helpers::get_temp_test_dir;
     use serde::{Deserialize, Serialize};
 
-    use std::env;
     use std::fs;
 
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -102,13 +102,13 @@ mod tests {
         assert_eq!(sample.request.len(), 2);
         assert_eq!(sample.request[0], "set_preferences");
 
-        let mut test_preferences_dir = env::temp_dir();
-        test_preferences_dir.push("zamm/tests");
-        test_preferences_dir.push(PathBuf::from(file_prefix).file_stem().unwrap());
-        if test_preferences_dir.exists() {
-            fs::remove_dir_all(&test_preferences_dir)
-                .expect("Can't reset test preferences dir");
-        }
+        let test_preferences_dir = get_temp_test_dir(
+            PathBuf::from(file_prefix)
+                .file_stem()
+                .unwrap()
+                .to_str()
+                .unwrap(),
+        );
         let test_preferences_file: PathBuf =
             get_preferences_file(Some(&test_preferences_dir)).unwrap();
         println!(
