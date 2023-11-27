@@ -117,7 +117,6 @@ mod tests {
         );
 
         if let Some(existing_preferences) = existing_preferences_file {
-            fs::create_dir_all(test_preferences_dir.as_path()).unwrap();
             let test_preferences_path = test_preferences_file.as_path();
             fs::copy(existing_preferences, test_preferences_path).unwrap_or_else(|e| {
                 panic!(

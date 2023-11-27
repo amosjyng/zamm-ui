@@ -23,7 +23,8 @@ mod setup;
 #[cfg(test)]
 mod test_helpers;
 use commands::{
-    get_api_keys, get_preferences, get_system_info, greet, play_sound, set_preferences,
+    get_api_keys, get_preferences, get_system_info, greet, play_sound, set_api_key,
+    set_preferences,
 };
 
 pub struct ZammDatabase(Mutex<Option<SqliteConnection>>);
@@ -35,6 +36,7 @@ fn main() {
         collect_types![
             greet,
             get_api_keys,
+            set_api_key,
             play_sound,
             get_preferences,
             set_preferences,
@@ -52,6 +54,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             greet,
             get_api_keys,
+            set_api_key,
             play_sound,
             get_preferences,
             set_preferences,

@@ -7,7 +7,8 @@ pub fn get_temp_test_dir(test_name: &str) -> PathBuf {
     test_dir.push("zamm/tests");
     test_dir.push(test_name);
     if test_dir.exists() {
-        fs::remove_dir_all(&test_dir).expect("Can't reset test preferences dir");
+        fs::remove_dir_all(&test_dir).expect("Can't reset temp test dir");
     }
+    fs::create_dir_all(&test_dir).expect("Can't create temp test dir");
     test_dir
 }

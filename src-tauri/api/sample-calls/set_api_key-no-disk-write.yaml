@@ -1,0 +1,9 @@
+request:
+  - set_api_key
+  - >
+    {
+      "filename": null,
+      "service": "OpenAI",
+      "api_key": "0p3n41-4p1-k3y"
+    }
+response: "null"

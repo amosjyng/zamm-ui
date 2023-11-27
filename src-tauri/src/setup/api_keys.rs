@@ -2,9 +2,22 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::env;
 
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
+pub enum Service {
+    OpenAI,
+}
+
 #[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub struct ApiKeys {
     pub openai: Option<String>,
+}
+
+impl ApiKeys {
+    pub fn update(&mut self, service: &Service, key: String) {
+        match service {
+            Service::OpenAI => self.openai = Some(key),
+        }
+    }
 }
 
 pub fn setup_api_keys() -> ApiKeys {
