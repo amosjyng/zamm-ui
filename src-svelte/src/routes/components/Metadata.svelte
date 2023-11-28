@@ -1,39 +1,49 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
+  import Loading from "$lib/Loading.svelte";
+  import { getSystemInfo } from "$lib/bindings";
+
+  let systemInfoCall = getSystemInfo();
 </script>
 
 <InfoBox title="System Info" {...$$restProps}>
-  <table>
-    <tr>
-      <th colspan="2">ZAMM</th>
-    </tr>
-    <tr>
-      <td>Version</td>
-      <td class="version-value">0.0.0</td>
-    </tr>
-    <tr>
-      <td>Stability</td>
-      <td class="stability-value">Unstable (Alpha)</td>
-    </tr>
-    <tr>
-      <td>Fork</td>
-      <td>Original</td>
-    </tr>
-  </table>
+  {#await systemInfoCall}
+    <Loading />
+  {:then systemInfo}
+    <table>
+      <tr>
+        <th colspan="2">ZAMM</th>
+      </tr>
+      <tr>
+        <td>Version</td>
+        <td class="version-value">0.0.0</td>
+      </tr>
+      <tr>
+        <td>Stability</td>
+        <td class="stability-value">Unstable (Alpha)</td>
+      </tr>
+      <tr>
+        <td>Fork</td>
+        <td>Original</td>
+      </tr>
+    </table>
 
-  <table class="less-space">
-    <tr>
-      <th colspan="2">Computer</th>
-    </tr>
-    <tr>
-      <td>OS</td>
-      <td>Linux</td>
-    </tr>
-    <tr>
-      <td>Release</td>
-      <td>Ubuntu 18.04</td>
-    </tr>
-  </table>
+    <table class="less-space">
+      <tr>
+        <th colspan="2">Computer</th>
+      </tr>
+      <tr>
+        <td>OS</td>
+        <td>Linux</td>
+      </tr>
+      <tr>
+        <td>Shell</td>
+        <td>{systemInfo.shell}</td>
+      </tr>
+    </table>
+  {:catch error}
+    <span role="status">error: {error}</span>
+  {/await}
 </InfoBox>
 
 <style>

@@ -89,7 +89,7 @@ const components: ComponentTestConfig[] = [
   },
   {
     path: ["screens", "dashboard", "metadata"],
-    variants: ["metadata"],
+    variants: ["loading", "loaded"],
     screenshotEntireBody: true,
   },
   {
