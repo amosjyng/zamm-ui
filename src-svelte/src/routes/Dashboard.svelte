@@ -1,6 +1,6 @@
 <script lang="ts">
   import ApiKeysDisplay from "./components/api-keys/Display.svelte";
-  import Metadata from "./Metadata.svelte";
+  import Metadata from "./components/Metadata.svelte";
 </script>
 
 <section class="homepage-banner">
