@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 
 import { render, screen } from "@testing-library/svelte";
 import ApiKeysDisplay from "./Display.svelte";
-import type { ApiKeys } from "$lib/bindings";
 import { within, waitFor } from "@testing-library/dom";
 import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
 import { tickFor } from "$lib/test-helpers";
@@ -39,12 +38,11 @@ describe("API Keys Display", () => {
   }
 
   test("loading by default", async () => {
-    const spy = vi.spyOn(window, "__TAURI_INVOKE__");
-    expect(spy).not.toHaveBeenCalled();
-    const mockApiKeys: ApiKeys = {
-      openai: null,
-    };
-    tauriInvokeMock.mockResolvedValueOnce(mockApiKeys);
+    const getApiKeysCall = parseSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
+      false,
+    );
+    playback.addCalls(getApiKeysCall);
 
     render(ApiKeysDisplay, {});
 
