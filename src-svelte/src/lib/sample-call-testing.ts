@@ -53,4 +53,9 @@ export class TauriInvokePlayback {
   addCalls(...calls: ParsedCall[]): void {
     this.unmatchedCalls.push(...calls);
   }
+
+  addSamples(...sampleFiles: string[]): void {
+    const calls = sampleFiles.map((filename) => parseSampleCall(filename));
+    this.addCalls(...calls);
+  }
 }

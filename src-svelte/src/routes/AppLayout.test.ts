@@ -9,7 +9,7 @@ import {
   animationsOn,
   animationSpeed,
 } from "$lib/preferences";
-import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
+import { TauriInvokePlayback } from "$lib/sample-call-testing";
 import { tickFor } from "$lib/test-helpers";
 
 const tauriInvokeMock = vi.fn();
@@ -34,10 +34,9 @@ describe("AppLayout", () => {
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const getPreferencesCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
     );
-    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
@@ -49,10 +48,9 @@ describe("AppLayout", () => {
     expect(get(soundOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const getPreferencesCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_preferences-sound-override.yaml",
     );
-    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
@@ -64,10 +62,9 @@ describe("AppLayout", () => {
     expect(get(volume)).toBe(1);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const getPreferencesCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_preferences-volume-override.yaml",
     );
-    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
@@ -79,10 +76,9 @@ describe("AppLayout", () => {
     expect(get(animationsOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const getPreferencesCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
     );
-    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
@@ -96,10 +92,9 @@ describe("AppLayout", () => {
     expect(get(animationsOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const getPreferencesCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_preferences-animations-override.yaml",
     );
-    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
@@ -113,10 +108,9 @@ describe("AppLayout", () => {
     expect(get(animationSpeed)).toBe(1);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
-    const getPreferencesCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_preferences-animation-speed-override.yaml",
     );
-    playback.addCalls(getPreferencesCall);
 
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);

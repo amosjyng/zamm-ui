@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/svelte";
 import ApiKeysDisplay from "./Display.svelte";
 import { within, waitFor } from "@testing-library/dom";
-import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
+import { TauriInvokePlayback } from "$lib/sample-call-testing";
 import { tickFor } from "$lib/test-helpers";
 
 describe("API Keys Display", () => {
@@ -23,8 +23,7 @@ describe("API Keys Display", () => {
 
   async function checkSampleCall(filename: string, expected_display: string) {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
-    const getApiKeysCall = parseSampleCall(filename);
-    playback.addCalls(getApiKeysCall);
+    playback.addSamples(filename);
 
     render(ApiKeysDisplay, {});
     await tickFor(3);
@@ -38,10 +37,9 @@ describe("API Keys Display", () => {
   }
 
   test("loading by default", async () => {
-    const getApiKeysCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
     );
-    playback.addCalls(getApiKeysCall);
 
     render(ApiKeysDisplay, {});
 

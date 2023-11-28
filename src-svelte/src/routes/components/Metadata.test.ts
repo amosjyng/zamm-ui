@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/svelte";
 import Metadata from "./Metadata.svelte";
 import { within, waitFor } from "@testing-library/dom";
-import { parseSampleCall, TauriInvokePlayback } from "$lib/sample-call-testing";
+import { TauriInvokePlayback } from "$lib/sample-call-testing";
 import { tickFor } from "$lib/test-helpers";
 
 describe("Metadata", () => {
@@ -22,10 +22,9 @@ describe("Metadata", () => {
   });
 
   test("loading by default", async () => {
-    const getSystemInfoCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_system_info-linux.yaml",
     );
-    playback.addCalls(getSystemInfoCall);
 
     render(Metadata, {});
 
@@ -35,10 +34,9 @@ describe("Metadata", () => {
 
   test("linux system info returned", async () => {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
-    const getSystemInfoCall = parseSampleCall(
+    playback.addSamples(
       "../src-tauri/api/sample-calls/get_system_info-linux.yaml",
     );
-    playback.addCalls(getSystemInfoCall);
 
     render(Metadata, {});
     await tickFor(3);
