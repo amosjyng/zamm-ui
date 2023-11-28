@@ -24,7 +24,6 @@ describe("Metadata", () => {
   test("loading by default", async () => {
     const getSystemInfoCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_system_info-linux.yaml",
-      false,
     );
     playback.addCalls(getSystemInfoCall);
 
@@ -38,7 +37,6 @@ describe("Metadata", () => {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
     const getSystemInfoCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_system_info-linux.yaml",
-      false,
     );
     playback.addCalls(getSystemInfoCall);
 

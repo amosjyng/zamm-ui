@@ -36,7 +36,6 @@ describe("AppLayout", () => {
 
     const getPreferencesCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
-      false,
     );
     playback.addCalls(getPreferencesCall);
 
@@ -52,7 +51,6 @@ describe("AppLayout", () => {
 
     const getPreferencesCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_preferences-sound-override.yaml",
-      false,
     );
     playback.addCalls(getPreferencesCall);
 
@@ -68,7 +66,6 @@ describe("AppLayout", () => {
 
     const getPreferencesCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_preferences-volume-override.yaml",
-      false,
     );
     playback.addCalls(getPreferencesCall);
 
@@ -84,7 +81,6 @@ describe("AppLayout", () => {
 
     const getPreferencesCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
-      false,
     );
     playback.addCalls(getPreferencesCall);
 
@@ -102,7 +98,6 @@ describe("AppLayout", () => {
 
     const getPreferencesCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_preferences-animations-override.yaml",
-      false,
     );
     playback.addCalls(getPreferencesCall);
 
@@ -120,7 +115,6 @@ describe("AppLayout", () => {
 
     const getPreferencesCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_preferences-animation-speed-override.yaml",
-      false,
     );
     playback.addCalls(getPreferencesCall);
 

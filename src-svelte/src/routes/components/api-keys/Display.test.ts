@@ -23,7 +23,7 @@ describe("API Keys Display", () => {
 
   async function checkSampleCall(filename: string, expected_display: string) {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
-    const getApiKeysCall = parseSampleCall(filename, false);
+    const getApiKeysCall = parseSampleCall(filename);
     playback.addCalls(getApiKeysCall);
 
     render(ApiKeysDisplay, {});
@@ -40,7 +40,6 @@ describe("API Keys Display", () => {
   test("loading by default", async () => {
     const getApiKeysCall = parseSampleCall(
       "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
-      false,
     );
     playback.addCalls(getApiKeysCall);
 
