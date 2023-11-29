@@ -1,5 +1,4 @@
 import ApiKeysDisplay from "./Display.svelte";
-import type { ApiKeys } from "$lib/bindings";
 import type { StoryObj } from "@storybook/svelte";
 import TauriInvokeDecorator from "$lib/__mocks__/invoke";
 
@@ -15,17 +14,12 @@ const Template = ({ ...args }) => ({
   props: args,
 });
 
-const unknownKeys: ApiKeys = {
-  openai: null,
-};
+const unknownKeys = ["/api/sample-calls/get_api_keys-empty.yaml"];
 
-const knownKeys: ApiKeys = {
-  openai: "sk-1234567890",
-};
+const knownKeys = ["/api/sample-calls/get_api_keys-openai.yaml"];
 
 export const Loading: StoryObj = Template.bind({}) as any;
 Loading.parameters = {
-  resolution: unknownKeys,
   shouldWait: true,
   viewport: {
     defaultViewport: "mobile2",
@@ -34,7 +28,7 @@ Loading.parameters = {
 
 export const Unknown: StoryObj = Template.bind({}) as any;
 Unknown.parameters = {
-  resolution: unknownKeys,
+  sampleCallFiles: unknownKeys,
   viewport: {
     defaultViewport: "mobile2",
   },
@@ -42,7 +36,7 @@ Unknown.parameters = {
 
 export const Known: StoryObj = Template.bind({}) as any;
 Known.parameters = {
-  resolution: knownKeys,
+  sampleCallFiles: knownKeys,
   viewport: {
     defaultViewport: "mobile2",
   },
@@ -53,7 +47,7 @@ Editing.args = {
   editDemo: true,
 };
 Editing.parameters = {
-  resolution: knownKeys,
+  sampleCallFiles: knownKeys,
   viewport: {
     defaultViewport: "mobile2",
   },

@@ -1,19 +1,34 @@
-import { assert } from "vitest";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Convert } from "./sample-call";
+
+function customAssert(condition: boolean, message?: string): void {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
 
 export interface ParsedCall {
   request: (string | Record<string, string>)[];
   response: Record<string, string>;
 }
 
+function loadYamlFromNetwork(url: string): string {
+  const request = new XMLHttpRequest();
+  request.open("GET", url, false);
+  request.send(null);
+  return request.responseText;
+}
+
 export function parseSampleCall(sampleFile: string): ParsedCall {
-  const sample_call_yaml = fs.readFileSync(sampleFile, "utf-8");
+  const sample_call_yaml =
+    typeof process === "object"
+      ? fs.readFileSync(sampleFile, "utf-8")
+      : loadYamlFromNetwork(sampleFile);
   const sample_call_json = JSON.stringify(yaml.load(sample_call_yaml));
   const rawSample = Convert.toSampleCall(sample_call_json);
 
-  assert(rawSample.request.length <= 2);
+  customAssert(rawSample.request.length <= 2);
   const parsedRequest =
     rawSample.request.length === 2
       ? [rawSample.request[0], JSON.parse(rawSample.request[1])]
@@ -39,12 +54,19 @@ export class TauriInvokePlayback {
     const matchingCallIndex = this.unmatchedCalls.findIndex(
       (call) => JSON.stringify(call.request) === jsonArgs,
     );
-    assert(
-      matchingCallIndex !== -1,
-      `No matching call found for ${jsonArgs}.\nCandidates are ${this.unmatchedCalls
+    if (matchingCallIndex === -1) {
+      const candidates = this.unmatchedCalls
         .map((call) => JSON.stringify(call.request))
-        .join("\n")}`,
-    );
+        .join("\n");
+      const errorMessage =
+        `No matching call found for ${jsonArgs}.\n` +
+        `Candidates are ${candidates}`;
+      if (typeof process === "object") {
+        throw new Error(errorMessage);
+      } else {
+        return Promise.reject(errorMessage);
+      }
+    }
     const matchingCall = this.unmatchedCalls[matchingCallIndex].response;
     this.unmatchedCalls.splice(matchingCallIndex, 1);
     return Promise.resolve(matchingCall);

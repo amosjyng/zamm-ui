@@ -25,7 +25,8 @@ const Template = ({ ...args }) => ({
 
 export const FullPage: StoryObj = Template.bind({}) as any;
 FullPage.parameters = {
-  resolution: {
-    openai: null,
-  },
+  sampleCallFiles: [
+    "/api/sample-calls/get_api_keys-empty.yaml",
+    "/api/sample-calls/get_system_info-linux.yaml",
+  ],
 };
