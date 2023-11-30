@@ -360,6 +360,8 @@ export class SubAnimation<T> {
 }
 
 export class PropertyAnimation extends SubAnimation<string> {
+  max: number;
+
   constructor(anim: {
     timing: TransitionTimingFraction;
     property: string;
@@ -368,13 +370,15 @@ export class PropertyAnimation extends SubAnimation<string> {
     unit: string;
     easingFunction?: (t: number) => number;
   }) {
-    const growth = anim.max - anim.min;
     const easingFunction = anim.easingFunction ?? cubicInOut;
     const css = (t: number) => {
       const easing = easingFunction(t);
+      const growth = this.max - anim.min;
       const value = anim.min + growth * easing;
       return `${anim.property}: ${value}${anim.unit};`;
     };
     super({ timing: anim.timing, tick: css });
+
+    this.max = anim.max;
   }
 }

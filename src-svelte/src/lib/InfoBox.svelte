@@ -262,8 +262,9 @@
     node: Element,
     timing: BorderBoxTiming,
   ): TransitionConfig {
-    const actualWidth = node.clientWidth;
-    const actualHeight = node.clientHeight;
+    const parentNode = node.parentNode as Element;
+    const actualWidth = parentNode.clientWidth;
+    const actualHeight = parentNode.clientHeight;
     const heightPerTitleLinePx = 26;
     const titleHeight = (titleElement as HTMLElement).clientHeight;
     // multiply by 1.3 to account for small pixel differences between browsers
@@ -289,13 +290,24 @@
       easingFunction: cubicInOut,
     });
 
+    const contentNode = parentNode.querySelector(".info-content") as Element;
+    const observer = new MutationObserver(() => {
+      growWidth.max = parentNode.clientWidth;
+      growHeight.max = parentNode.clientHeight;
+    });
+    observer.observe(contentNode, { childList: true, subtree: true });
+
     return {
       delay: timing.overall.delayMs(),
       duration: timing.overall.durationMs(),
-      css: (tFraction: number) => {
-        const width = growWidth.tickForGlobalTime(tFraction);
-        const height = growHeight.tickForGlobalTime(tFraction);
-        return width + height;
+      tick: (tGlobalFraction: number) => {
+        const width = growWidth.tickForGlobalTime(tGlobalFraction);
+        const height = growHeight.tickForGlobalTime(tGlobalFraction);
+        node.setAttribute("style", width + height);
+
+        if (tGlobalFraction === 1) {
+          observer.disconnect();
+        }
       },
     };
   }
@@ -385,15 +397,13 @@
     const actualTotalKickoffFraction =
       theoreticalTotalKickoffFraction * revealCutoffFraction;
     const perElementRevealFraction = 1 - actualTotalKickoffFraction;
-    const { height: infoBoxHeight, top: infoBoxTop } =
-      node.getBoundingClientRect();
 
-    const getChildKickoffFraction = (child: Element) => {
+    const getChildKickoffFraction = (child: Element, border: DOMRect) => {
       const childRect = child.getBoundingClientRect();
       const childBottomYRelativeToInfoBox =
-        childRect.top + childRect.height - infoBoxTop;
+        childRect.top + childRect.height - border.top;
       const equivalentYProgress = inverseCubicInOut(
-        childBottomYRelativeToInfoBox / infoBoxHeight,
+        childBottomYRelativeToInfoBox / border.height,
       );
       const adjustedYProgress = Math.min(
         revealCutoffFraction,
@@ -406,7 +416,14 @@
       });
     };
 
-    const getNodeAnimations = (currentNode: Element): RevealContent[] => {
+    const getNodeAnimations = (
+      currentNode: Element,
+      root?: DOMRect,
+    ): RevealContent[] => {
+      if (root === undefined) {
+        root = currentNode.getBoundingClientRect();
+      }
+
       // if there are text-only elements that are not part of any node, we fade-in the
       // whole parent at once to avoid the text appearing before anything else -- e.g.
       // if there's something like "some text in <em>some tag</em>", the "some text in"
@@ -418,13 +435,13 @@
         return [
           new RevealContent({
             node: currentNode,
-            timing: getChildKickoffFraction(currentNode),
+            timing: getChildKickoffFraction(currentNode, root),
           }),
         ];
       } else {
         const revealAnimations: RevealContent[] = [];
         for (const child of currentNode.children) {
-          revealAnimations.push(...getNodeAnimations(child));
+          revealAnimations.push(...getNodeAnimations(child, root));
         }
         return revealAnimations;
       }
