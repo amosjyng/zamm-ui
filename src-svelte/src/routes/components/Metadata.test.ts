@@ -5,6 +5,8 @@ import { render, screen } from "@testing-library/svelte";
 import Metadata from "./Metadata.svelte";
 import { within, waitFor } from "@testing-library/dom";
 import { TauriInvokePlayback } from "$lib/sample-call-testing";
+import { systemInfo } from "$lib/system-info";
+import { get } from "svelte/store";
 import { tickFor } from "$lib/test-helpers";
 
 describe("Metadata", () => {
@@ -45,6 +47,7 @@ describe("Metadata", () => {
     const shellRow = screen.getByRole("row", { name: /Shell/ });
     const shellValueCell = within(shellRow).getAllByRole("cell")[1];
     await waitFor(() => expect(shellValueCell).toHaveTextContent("Zsh"));
+    expect(get(systemInfo)?.shell_init_file).toEqual("/root/.zshrc");
   });
 
   test("API key error", async () => {

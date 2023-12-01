@@ -2,8 +2,16 @@
   import InfoBox from "$lib/InfoBox.svelte";
   import Loading from "$lib/Loading.svelte";
   import { getSystemInfo } from "$lib/bindings";
+  import { systemInfo } from "$lib/system-info";
 
   let systemInfoCall = getSystemInfo();
+  systemInfoCall
+    .then((result) => {
+      systemInfo.set(result);
+    })
+    .catch((error) => {
+      console.error(`Could not retrieve system info: ${error}`);
+    });
 </script>
 
 <InfoBox title="System Info" {...$$restProps}>
