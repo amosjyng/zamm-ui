@@ -4,6 +4,8 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/svelte";
 import ApiKeysDisplay from "./Display.svelte";
 import { within, waitFor } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
+import { systemInfo } from "$lib/system-info";
 import { TauriInvokePlayback } from "$lib/sample-call-testing";
 import { tickFor } from "$lib/test-helpers";
 
@@ -55,10 +57,21 @@ describe("API Keys Display", () => {
   });
 
   test("some API key set", async () => {
+    systemInfo.set({
+      shell: "Zsh",
+      shell_init_file: "/home/rando/.zshrc",
+    });
     await checkSampleCall(
       "../src-tauri/api/sample-calls/get_api_keys-openai.yaml",
       "Active",
     );
+
+    const openAiCell = screen.getByRole("cell", { name: "OpenAI" });
+    await userEvent.click(openAiCell);
+    const apiKeyInput = screen.getByLabelText("API key:");
+    expect(apiKeyInput).toHaveValue("0p3n41-4p1-k3y");
+    const saveFileInput = screen.getByLabelText("Save key to:");
+    expect(saveFileInput).toHaveValue("/home/rando/.zshrc");
   });
 
   test("API key error", async () => {

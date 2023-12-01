@@ -1,11 +1,12 @@
 <script lang="ts">
   import { cubicInOut } from "svelte/easing";
   import { animationSpeed, animationsOn } from "$lib/preferences";
+  import { systemInfo } from "$lib/system-info";
   import TextInput from "$lib/controls/TextInput.svelte";
   import Button from "$lib/controls/Button.svelte";
 
   export let apiKey = "";
-  export let saveKeyLocation = "";
+  export let saveKeyLocation = $systemInfo?.shell_init_file ?? "";
   let saveKey = true;
 
   function growY(node: HTMLElement) {
