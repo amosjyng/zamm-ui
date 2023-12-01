@@ -290,23 +290,18 @@
       easingFunction: cubicInOut,
     });
 
-    const contentNode = parentNode.querySelector(".info-content") as Element;
-    const observer = new MutationObserver(() => {
-      growWidth.max = parentNode.clientWidth;
-      growHeight.max = parentNode.clientHeight;
-    });
-    observer.observe(contentNode, { childList: true, subtree: true });
-
     return {
       delay: timing.overall.delayMs(),
       duration: timing.overall.durationMs(),
       tick: (tGlobalFraction: number) => {
+        growWidth.max = parentNode.clientWidth;
+        growHeight.max = parentNode.clientHeight;
         const width = growWidth.tickForGlobalTime(tGlobalFraction);
         const height = growHeight.tickForGlobalTime(tGlobalFraction);
         node.setAttribute("style", width + height);
 
         if (tGlobalFraction === 1) {
-          observer.disconnect();
+          node.removeAttribute("style");
         }
       },
     };
