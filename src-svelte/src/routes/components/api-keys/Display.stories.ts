@@ -14,9 +14,9 @@ const Template = ({ ...args }) => ({
   props: args,
 });
 
-const unknownKeys = ["/api/sample-calls/get_api_keys-empty.yaml"];
-
-const knownKeys = ["/api/sample-calls/get_api_keys-openai.yaml"];
+const writeToFile = "/api/sample-calls/set_api_key-existing-no-newline.yaml";
+const unknownKeys = "/api/sample-calls/get_api_keys-empty.yaml";
+const knownKeys = "/api/sample-calls/get_api_keys-openai.yaml";
 
 export const Loading: StoryObj = Template.bind({}) as any;
 Loading.parameters = {
@@ -28,7 +28,7 @@ Loading.parameters = {
 
 export const Unknown: StoryObj = Template.bind({}) as any;
 Unknown.parameters = {
-  sampleCallFiles: unknownKeys,
+  sampleCallFiles: [unknownKeys],
   viewport: {
     defaultViewport: "mobile2",
   },
@@ -36,7 +36,7 @@ Unknown.parameters = {
 
 export const Known: StoryObj = Template.bind({}) as any;
 Known.parameters = {
-  sampleCallFiles: knownKeys,
+  sampleCallFiles: [knownKeys],
   viewport: {
     defaultViewport: "mobile2",
   },
@@ -47,7 +47,7 @@ Editing.args = {
   editDemo: true,
 };
 Editing.parameters = {
-  sampleCallFiles: knownKeys,
+  sampleCallFiles: [knownKeys, writeToFile],
   viewport: {
     defaultViewport: "mobile2",
   },
