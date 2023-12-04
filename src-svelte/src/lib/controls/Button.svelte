@@ -2,7 +2,7 @@
   export let text: string;
 </script>
 
-<button class="outer">
+<button class="outer" type="submit">
   <div class="inner">{text}</div>
 </button>
 

@@ -87,4 +87,75 @@ describe("API Keys Display", () => {
       expect(status).toHaveTextContent(/^error: testing$/);
     });
   });
+
+  test("can edit API key", async () => {
+    systemInfo.set({
+      shell: "Zsh",
+      shell_init_file: "no-newline/.bashrc",
+    });
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
+      "Inactive",
+    );
+    tauriInvokeMock.mockClear();
+    playback.addSamples(
+      "../src-tauri/api/sample-calls/set_api_key-existing-no-newline.yaml",
+    );
+
+    const openAiCell = screen.getByRole("cell", { name: "OpenAI" });
+    await userEvent.click(openAiCell);
+    const apiKeyInput = screen.getByLabelText("API key:");
+    expect(apiKeyInput).toHaveValue("");
+    await userEvent.type(apiKeyInput, "0p3n41-4p1-k3y");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+  });
+
+  test("can submit with custom file", async () => {
+    const defaultInitFile = "/home/rando/.bashrc";
+    systemInfo.set({
+      shell: "Zsh",
+      shell_init_file: defaultInitFile,
+    });
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
+      "Inactive",
+    );
+    tauriInvokeMock.mockClear();
+    playback.addSamples(
+      "../src-tauri/api/sample-calls/set_api_key-existing-no-newline.yaml",
+    );
+
+    await userEvent.click(screen.getByRole("cell", { name: "OpenAI" }));
+    const fileInput = screen.getByLabelText("Save key to:");
+    defaultInitFile
+      .split("")
+      .forEach(() => userEvent.type(fileInput, "{backspace}"));
+    await userEvent.type(fileInput, "no-newline/.bashrc");
+    await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+  });
+
+  test("can submit with no file", async () => {
+    const defaultInitFile = "/home/rando/.bashrc";
+    systemInfo.set({
+      shell: "Zsh",
+      shell_init_file: defaultInitFile,
+    });
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
+      "Inactive",
+    );
+    tauriInvokeMock.mockClear();
+    playback.addSamples(
+      "../src-tauri/api/sample-calls/set_api_key-no-disk-write.yaml",
+    );
+
+    await userEvent.click(screen.getByRole("cell", { name: "OpenAI" }));
+    await userEvent.click(screen.getByLabelText("Save key to disk?"));
+    await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(tauriInvokeMock).toBeCalledTimes(1);
+  });
 });

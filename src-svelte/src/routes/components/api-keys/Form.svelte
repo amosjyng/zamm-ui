@@ -1,10 +1,12 @@
 <script lang="ts">
   import { cubicInOut } from "svelte/easing";
+  import { setApiKey, type Service } from "$lib/bindings";
   import { animationSpeed, animationsOn } from "$lib/preferences";
   import { systemInfo } from "$lib/system-info";
   import TextInput from "$lib/controls/TextInput.svelte";
   import Button from "$lib/controls/Button.svelte";
 
+  export let service: Service;
   export let apiKey = "";
   export let saveKeyLocation = $systemInfo?.shell_init_file ?? "";
   let saveKey = true;
@@ -30,20 +32,31 @@
       },
     };
   }
+
+  function submitApiKey() {
+    setApiKey(saveKey ? saveKeyLocation : null, service, apiKey);
+  }
 </script>
 
 <div class="container" transition:growY>
   <div class="inset-container">
-    <form>
+    <form on:submit|preventDefault={submitApiKey}>
       <div class="form-row">
         <label for="apiKey">API key:</label>
-        <TextInput name="apiKey" value={apiKey} />
+        <TextInput name="apiKey" bind:value={apiKey} />
       </div>
 
       <div class="form-row">
-        <input type="checkbox" id="saveKey" name="saveKey" checked={saveKey} />
+        <label for="saveKey" class="accessibility-only">Save key to disk?</label
+        >
+        <input
+          type="checkbox"
+          id="saveKey"
+          name="saveKey"
+          bind:checked={saveKey}
+        />
         <label for="saveKeyLocation">Save key to:</label>
-        <TextInput name="saveKeyLocation" value={saveKeyLocation} />
+        <TextInput name="saveKeyLocation" bind:value={saveKeyLocation} />
       </div>
 
       <div class="save-button">
@@ -87,6 +100,17 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .accessibility-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
   }
 
   .save-button {

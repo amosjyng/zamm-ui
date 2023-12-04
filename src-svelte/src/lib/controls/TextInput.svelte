@@ -4,7 +4,7 @@
 </script>
 
 <div class="fancy-input">
-  <input type="text" id={name} {name} {value} />
+  <input type="text" id={name} {name} bind:value />
   <span class="focus-border"></span>
 </div>
 

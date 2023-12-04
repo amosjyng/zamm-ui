@@ -1,7 +1,8 @@
 <script lang="ts">
   import Form from "./Form.svelte";
+  import type { Service } from "$lib/bindings";
 
-  export let name: string;
+  export let name: Service;
   export let apiKey: string | null;
   export let editing = false;
 
@@ -26,7 +27,7 @@
   </div>
 
   {#if editing}
-    <Form apiKey={apiKey ?? ""} />
+    <Form service={name} apiKey={apiKey ?? ""} />
   {/if}
 </div>
 

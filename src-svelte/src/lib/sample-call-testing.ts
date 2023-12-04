@@ -1,6 +1,7 @@
 import fs from "fs";
 import yaml from "js-yaml";
 import { Convert } from "./sample-call";
+import { camelCase } from "lodash";
 
 function customAssert(condition: boolean, message?: string): void {
   if (!condition) {
@@ -20,6 +21,18 @@ function loadYamlFromNetwork(url: string): string {
   return request.responseText;
 }
 
+function parseJsonRequest(request: string): Record<string, string> {
+  const jsonRequest = JSON.parse(request);
+  for (const key in jsonRequest) {
+    const camelKey = camelCase(key);
+    if (camelKey !== key) {
+      jsonRequest[camelKey] = jsonRequest[key];
+      delete jsonRequest[key];
+    }
+  }
+  return jsonRequest;
+}
+
 export function parseSampleCall(sampleFile: string): ParsedCall {
   const sample_call_yaml =
     typeof process === "object"
@@ -31,7 +44,7 @@ export function parseSampleCall(sampleFile: string): ParsedCall {
   customAssert(rawSample.request.length <= 2);
   const parsedRequest =
     rawSample.request.length === 2
-      ? [rawSample.request[0], JSON.parse(rawSample.request[1])]
+      ? [rawSample.request[0], parseJsonRequest(rawSample.request[1])]
       : rawSample.request;
   const parsedSample: ParsedCall = {
     request: parsedRequest,
