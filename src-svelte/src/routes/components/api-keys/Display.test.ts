@@ -38,6 +38,11 @@ describe("API Keys Display", () => {
     );
   }
 
+  async function toggleOpenAIForm() {
+    const openAiCell = screen.getByRole("cell", { name: "OpenAI" });
+    await userEvent.click(openAiCell);
+  }
+
   test("loading by default", async () => {
     playback.addSamples(
       "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
@@ -66,8 +71,7 @@ describe("API Keys Display", () => {
       "Active",
     );
 
-    const openAiCell = screen.getByRole("cell", { name: "OpenAI" });
-    await userEvent.click(openAiCell);
+    await toggleOpenAIForm();
     const apiKeyInput = screen.getByLabelText("API key:");
     expect(apiKeyInput).toHaveValue("0p3n41-4p1-k3y");
     const saveFileInput = screen.getByLabelText("Save key to:");
@@ -102,8 +106,7 @@ describe("API Keys Display", () => {
       "../src-tauri/api/sample-calls/set_api_key-existing-no-newline.yaml",
     );
 
-    const openAiCell = screen.getByRole("cell", { name: "OpenAI" });
-    await userEvent.click(openAiCell);
+    await toggleOpenAIForm();
     const apiKeyInput = screen.getByLabelText("API key:");
     expect(apiKeyInput).toHaveValue("");
     await userEvent.type(apiKeyInput, "0p3n41-4p1-k3y");
@@ -126,7 +129,7 @@ describe("API Keys Display", () => {
       "../src-tauri/api/sample-calls/set_api_key-existing-no-newline.yaml",
     );
 
-    await userEvent.click(screen.getByRole("cell", { name: "OpenAI" }));
+    await toggleOpenAIForm();
     const fileInput = screen.getByLabelText("Save key to:");
     defaultInitFile
       .split("")
@@ -152,7 +155,7 @@ describe("API Keys Display", () => {
       "../src-tauri/api/sample-calls/set_api_key-no-disk-write.yaml",
     );
 
-    await userEvent.click(screen.getByRole("cell", { name: "OpenAI" }));
+    await toggleOpenAIForm();
     await userEvent.click(screen.getByLabelText("Save key to disk?"));
     await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
