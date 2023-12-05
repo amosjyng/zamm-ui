@@ -21,6 +21,14 @@ describe("API Keys Display", () => {
       (...args: (string | Record<string, string>)[]) =>
         playback.mockCall(...args),
     );
+
+    vi.stubGlobal("requestAnimationFrame", (fn: FrameRequestCallback) => {
+      return window.setTimeout(() => fn(Date.now()), 16);
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   async function checkSampleCall(filename: string, expected_display: string) {
@@ -90,6 +98,25 @@ describe("API Keys Display", () => {
       const status = screen.getByRole("status");
       expect(status).toHaveTextContent(/^error: testing$/);
     });
+  });
+
+  test("can open and close form", async () => {
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-openai.yaml",
+      "Active",
+    );
+
+    // closed by default
+    const formExistenceCheck = () => screen.getByLabelText("API key:");
+    expect(formExistenceCheck).toThrow();
+
+    // opens on click
+    await toggleOpenAIForm();
+    expect(formExistenceCheck).not.toThrow();
+
+    // closes again on click
+    await toggleOpenAIForm();
+    await waitFor(() => expect(formExistenceCheck).toThrow());
   });
 
   test("can edit API key", async () => {
