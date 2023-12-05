@@ -9,6 +9,7 @@
   export let service: Service;
   export let apiKey = "";
   export let saveKeyLocation = $systemInfo?.shell_init_file ?? "";
+  export let formClose: () => void = () => undefined;
   let saveKey = true;
 
   function growY(node: HTMLElement) {
@@ -34,7 +35,9 @@
   }
 
   function submitApiKey() {
-    setApiKey(saveKey ? saveKeyLocation : null, service, apiKey);
+    setApiKey(saveKey ? saveKeyLocation : null, service, apiKey).finally(() => {
+      formClose();
+    });
   }
 </script>
 

@@ -139,6 +139,7 @@ describe("API Keys Display", () => {
     await userEvent.type(apiKeyInput, "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(tauriInvokeMock).toBeCalledTimes(1);
+    await waitFor(() => expect(apiKeyInput).not.toBeInTheDocument());
   });
 
   test("can submit with custom file", async () => {

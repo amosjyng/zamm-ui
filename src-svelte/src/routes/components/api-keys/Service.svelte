@@ -10,6 +10,10 @@
     editing = !editing;
   }
 
+  function formClose() {
+    editing = false;
+  }
+
   $: active = apiKey !== null;
   $: label = active ? "Active" : "Inactive";
 </script>
@@ -27,7 +31,7 @@
   </div>
 
   {#if editing}
-    <Form service={name} apiKey={apiKey ?? ""} />
+    <Form {formClose} service={name} apiKey={apiKey ?? ""} />
   {/if}
 </div>
 
