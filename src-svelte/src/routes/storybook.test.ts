@@ -83,6 +83,10 @@ const components: ComponentTestConfig[] = [
     variants: ["dashboard-selected", "settings-selected"],
   },
   {
+    path: ["layout", "snackbar"],
+    variants: ["message"],
+  },
+  {
     path: ["screens", "dashboard", "api-keys-display"],
     variants: ["loading", "unknown", "known", "editing"],
     screenshotEntireBody: true,
