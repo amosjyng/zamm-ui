@@ -11,13 +11,18 @@
 
   export const snackbars: Writable<SnackbarMessage[]> = writable([]);
   export let durationMs = 5_000;
-  let animateDurationMs = 1_000;
+  let baseAnimationDurationMs = 100;
+  let animateDurationMs = baseAnimationDurationMs;
+
+  function setBaseAnimationDurationMs(newDurationMs: number) {
+    baseAnimationDurationMs = newDurationMs;
+  }
 
   let nextId = 0;
 
   // Function to show a new snackbar message
   export function snackbarError(msg: string) {
-    animateDurationMs = 1_000;
+    animateDurationMs = baseAnimationDurationMs;
     const id = nextId++;
     snackbars.update((current) => [...current, { id, msg }]);
 
@@ -29,19 +34,26 @@
 
   // Function to manually dismiss a snackbar
   function dismiss(id: number) {
-    animateDurationMs = 1_000 * 2;
+    animateDurationMs = 2 * baseAnimationDurationMs;
     snackbars.update((current) =>
       current.filter((snackbar) => snackbar.id !== id),
     );
   }
 </script>
 
+<script lang="ts">
+  import { animationSpeed } from "$lib/preferences";
+
+  $: baseDurationMs = 100 / $animationSpeed;
+  $: setBaseAnimationDurationMs(baseDurationMs);
+</script>
+
 <div class="snackbars">
   {#each $snackbars as snackbar (snackbar.id)}
     <div
       class="snackbar"
-      in:fly|global={{ y: "1rem", duration: 1000 }}
-      out:fade|global={{ duration: 1000 }}
+      in:fly|global={{ y: "1rem", duration: baseDurationMs }}
+      out:fade|global={{ duration: baseDurationMs }}
       animate:flip={{ duration: animateDurationMs }}
     >
       {snackbar.msg}
