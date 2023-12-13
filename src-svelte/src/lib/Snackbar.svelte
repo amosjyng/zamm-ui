@@ -10,7 +10,7 @@
   }
 
   export const snackbars: Writable<SnackbarMessage[]> = writable([]);
-  export let durationMs = 5_000;
+  export let messageDurationMs = 5_000;
   let baseAnimationDurationMs = 100;
   let animateDurationMs = baseAnimationDurationMs;
 
@@ -29,7 +29,7 @@
     // Auto-dismiss after 'duration'
     setTimeout(() => {
       dismiss(id);
-    }, durationMs);
+    }, messageDurationMs);
   }
 
   // Function to manually dismiss a snackbar
