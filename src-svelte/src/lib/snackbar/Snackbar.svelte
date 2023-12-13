@@ -39,12 +39,12 @@
 </script>
 
 <script lang="ts">
-  import { animationSpeed } from "$lib/preferences";
+  import { animationSpeed, animationsOn } from "$lib/preferences";
   import { fly, fade } from "svelte/transition";
   import { flip } from "svelte/animate";
   import Message from "./Message.svelte";
 
-  $: baseDurationMs = 100 / $animationSpeed;
+  $: baseDurationMs = $animationsOn ? 100 / $animationSpeed : 0;
   $: setBaseAnimationDurationMs(baseDurationMs);
 </script>
 
