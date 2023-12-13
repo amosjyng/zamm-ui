@@ -49,6 +49,7 @@
   --color-text: rgba(0, 0, 0, 1);
   --color-header: rgba(255, 0, 0, 1);
   --color-faded: rgba(0, 0, 0, 0.5);
+  --color-error: #FF0000;
   --color-caution: #FF8C00;
   --color-border: #CCC;
   --color-foreground: #FFF;
