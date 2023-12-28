@@ -15,6 +15,10 @@
     baseAnimationDurationMs = newDurationMs;
   }
 
+  export function clearAllMessages() {
+    snackbars.set([]);
+  }
+
   let nextId = 0;
 
   // Function to show a new snackbar message

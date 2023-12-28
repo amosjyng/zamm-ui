@@ -5,9 +5,9 @@
   export let message: string;
 </script>
 
-<div class="snackbar">
+<div class="snackbar" role="alertdialog">
   {message}
-  <button on:click={dismiss}>
+  <button on:click={dismiss} title="Dismiss">
     <IconClose />
   </button>
 </div>
