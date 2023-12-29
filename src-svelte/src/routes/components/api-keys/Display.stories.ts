@@ -1,12 +1,21 @@
 import ApiKeysDisplay from "./Display.svelte";
-import type { StoryObj } from "@storybook/svelte";
+import type { StoryFn, StoryObj } from "@storybook/svelte";
 import TauriInvokeDecorator from "$lib/__mocks__/invoke";
+import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
 
 export default {
   component: ApiKeysDisplay,
   title: "Screens/Dashboard/API Keys Display",
   argTypes: {},
-  decorators: [TauriInvokeDecorator],
+  decorators: [
+    TauriInvokeDecorator,
+    (story: StoryFn) => {
+      return {
+        Component: MockAppLayout,
+        slot: story,
+      };
+    },
+  ],
 };
 
 const Template = ({ ...args }) => ({
@@ -28,7 +37,7 @@ Loading.parameters = {
 
 export const Unknown: StoryObj = Template.bind({}) as any;
 Unknown.parameters = {
-  sampleCallFiles: [unknownKeys],
+  sampleCallFiles: [unknownKeys, writeToFile],
   viewport: {
     defaultViewport: "mobile2",
   },
@@ -36,7 +45,7 @@ Unknown.parameters = {
 
 export const Known: StoryObj = Template.bind({}) as any;
 Known.parameters = {
-  sampleCallFiles: [knownKeys],
+  sampleCallFiles: [knownKeys, writeToFile],
   viewport: {
     defaultViewport: "mobile2",
   },

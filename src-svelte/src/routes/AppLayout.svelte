@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Snackbar from "$lib/snackbar/Snackbar.svelte";
   import Sidebar from "./Sidebar.svelte";
   import Background from "./Background.svelte";
   import "./styles.css";
@@ -55,6 +56,8 @@
     <div class="background-layout">
       <Background />
     </div>
+    <Snackbar />
+
     <main>
       {#if ready}
         <PageTransition {currentRoute}>

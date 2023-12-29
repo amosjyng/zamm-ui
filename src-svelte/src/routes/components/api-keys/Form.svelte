@@ -3,6 +3,7 @@
   import { setApiKey, type Service } from "$lib/bindings";
   import { animationSpeed, animationsOn } from "$lib/preferences";
   import { systemInfo } from "$lib/system-info";
+  import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
   import TextInput from "$lib/controls/TextInput.svelte";
   import Button from "$lib/controls/Button.svelte";
 
@@ -35,9 +36,13 @@
   }
 
   function submitApiKey() {
-    setApiKey(saveKey ? saveKeyLocation : null, service, apiKey).finally(() => {
-      formClose();
-    });
+    setApiKey(saveKey ? saveKeyLocation : null, service, apiKey)
+      .then(() => {
+        formClose();
+      })
+      .catch((err) => {
+        snackbarError(err);
+      });
   }
 </script>
 
