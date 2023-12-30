@@ -142,6 +142,69 @@ describe("API Keys Display", () => {
     await waitFor(() => expect(apiKeyInput).not.toBeInTheDocument());
   });
 
+  test("preserves unsubmitted changes after opening and closing form", async () => {
+    const defaultInitFile = "/home/rando/.bashrc";
+    systemInfo.set({
+      shell: "Zsh",
+      shell_init_file: defaultInitFile,
+    });
+    const customInitFile = "/home/different/.bashrc";
+    const customApiKey = "0p3n41-4p1-k3y";
+
+    // setup largely copied from "can submit with custom file" test
+    systemInfo.set({
+      shell: "Zsh",
+      shell_init_file: defaultInitFile,
+    });
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
+      "Inactive",
+    );
+    tauriInvokeMock.mockClear();
+    playback.addSamples(
+      "../src-tauri/api/sample-calls/set_api_key-existing-no-newline.yaml",
+    );
+
+    // open form and type in API key
+    await toggleOpenAIForm();
+    let apiKeyInput = screen.getByLabelText("API key:");
+    let saveKeyCheckbox = screen.getByLabelText("Save key to disk?");
+    let fileInput = screen.getByLabelText("Save key to:");
+
+    expect(apiKeyInput).toHaveValue("");
+    expect(saveKeyCheckbox).toBeChecked();
+    expect(fileInput).toHaveValue(defaultInitFile);
+
+    await userEvent.type(apiKeyInput, customApiKey);
+    await userEvent.click(saveKeyCheckbox);
+    defaultInitFile
+      .split("")
+      .forEach(() => userEvent.type(fileInput, "{backspace}"));
+    await userEvent.type(fileInput, customInitFile);
+
+    expect(apiKeyInput).toHaveValue(customApiKey);
+    expect(saveKeyCheckbox).not.toBeChecked();
+    expect(fileInput).toHaveValue(customInitFile);
+
+    // close and reopen form
+    await toggleOpenAIForm();
+    await waitFor(() => expect(apiKeyInput).not.toBeInTheDocument());
+    await toggleOpenAIForm();
+    await waitFor(() => {
+      const formExistenceCheck = () => screen.getByLabelText("API key:");
+      expect(formExistenceCheck).not.toThrow();
+    });
+
+    // check that changes to form fields persist
+    // need to obtain references to new form fields
+    apiKeyInput = screen.getByLabelText("API key:");
+    saveKeyCheckbox = screen.getByLabelText("Save key to disk?");
+    fileInput = screen.getByLabelText("Save key to:");
+    expect(apiKeyInput).toHaveValue(customApiKey);
+    expect(saveKeyCheckbox).not.toBeChecked();
+    expect(fileInput).toHaveValue(customInitFile);
+  });
+
   test("can submit with custom file", async () => {
     const defaultInitFile = "/home/rando/.bashrc";
     systemInfo.set({

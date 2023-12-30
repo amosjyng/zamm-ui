@@ -1,17 +1,22 @@
+<script lang="ts" context="module">
+  export interface FormFields {
+    apiKey: string;
+    saveKey: boolean;
+    saveKeyLocation: string;
+  }
+</script>
+
 <script lang="ts">
   import { cubicInOut } from "svelte/easing";
   import { setApiKey, type Service } from "$lib/bindings";
   import { animationSpeed, animationsOn } from "$lib/preferences";
-  import { systemInfo } from "$lib/system-info";
   import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
   import TextInput from "$lib/controls/TextInput.svelte";
   import Button from "$lib/controls/Button.svelte";
 
   export let service: Service;
-  export let apiKey = "";
-  export let saveKeyLocation = $systemInfo?.shell_init_file ?? "";
+  export let fields: FormFields;
   export let formClose: () => void = () => undefined;
-  let saveKey = true;
 
   function growY(node: HTMLElement) {
     const rem = 18;
@@ -36,7 +41,11 @@
   }
 
   function submitApiKey() {
-    setApiKey(saveKey ? saveKeyLocation : null, service, apiKey)
+    setApiKey(
+      fields.saveKey ? fields.saveKeyLocation : null,
+      service,
+      fields.apiKey,
+    )
       .then(() => {
         formClose();
       })
@@ -51,7 +60,7 @@
     <form on:submit|preventDefault={submitApiKey}>
       <div class="form-row">
         <label for="apiKey">API key:</label>
-        <TextInput name="apiKey" bind:value={apiKey} />
+        <TextInput name="apiKey" bind:value={fields.apiKey} />
       </div>
 
       <div class="form-row">
@@ -61,10 +70,10 @@
           type="checkbox"
           id="saveKey"
           name="saveKey"
-          bind:checked={saveKey}
+          bind:checked={fields.saveKey}
         />
         <label for="saveKeyLocation">Save key to:</label>
-        <TextInput name="saveKeyLocation" bind:value={saveKeyLocation} />
+        <TextInput name="saveKeyLocation" bind:value={fields.saveKeyLocation} />
       </div>
 
       <div class="save-button">

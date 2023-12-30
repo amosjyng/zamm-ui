@@ -1,13 +1,26 @@
 <script lang="ts">
-  import Form from "./Form.svelte";
+  import Form, { type FormFields } from "./Form.svelte";
   import type { Service } from "$lib/bindings";
+  import { systemInfo } from "$lib/system-info";
 
   export let name: Service;
   export let apiKey: string | null;
   export let editing = false;
+  let formFields: FormFields = {
+    apiKey: "",
+    saveKey: true,
+    saveKeyLocation: "",
+  };
 
   function toggleEditing() {
     editing = !editing;
+
+    if (formFields.apiKey === "") {
+      formFields.apiKey = apiKey ?? "";
+    }
+    if (formFields.saveKeyLocation === "") {
+      formFields.saveKeyLocation = $systemInfo?.shell_init_file ?? "";
+    }
   }
 
   function formClose() {
@@ -31,7 +44,7 @@
   </div>
 
   {#if editing}
-    <Form {formClose} service={name} apiKey={apiKey ?? ""} />
+    <Form {formClose} service={name} bind:fields={formFields} />
   {/if}
 </div>
 
