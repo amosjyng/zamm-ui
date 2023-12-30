@@ -1,5 +1,5 @@
 use crate::commands::errors::ZammResult;
-use crate::setup::api_keys::{ApiKeys, Service};
+use crate::setup::api_keys::Service;
 use crate::ZammApiKeys;
 use specta::specta;
 use tauri::State;
@@ -9,11 +9,12 @@ use std::io::{Read, Write};
 use std::path::Path;
 
 fn set_api_key_helper(
-    api_keys: &mut ApiKeys,
+    zamm_api_keys: &ZammApiKeys,
     filename: Option<&str>,
     service: &Service,
     api_key: String,
 ) -> ZammResult<()> {
+    let api_keys = &mut zamm_api_keys.0.lock().unwrap();
     // write new API key to disk before we can no longer borrow it
     let init_update_result = || -> ZammResult<()> {
         if let Some(filename) = filename {
@@ -53,16 +54,17 @@ pub fn set_api_key(
     service: Service,
     api_key: String,
 ) -> ZammResult<()> {
-    let mut api_keys = api_keys.0.lock().unwrap();
-    set_api_key_helper(&mut api_keys, filename, &service, api_key)
+    set_api_key_helper(&api_keys, filename, &service, api_key)
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use crate::sample_call::SampleCall;
+    use crate::setup::api_keys::ApiKeys;
     use crate::test_helpers::get_temp_test_dir;
     use serde::{Deserialize, Serialize};
+    use std::sync::Mutex;
 
     use std::fs;
     use std::path::{Path, PathBuf};
@@ -84,7 +86,11 @@ mod tests {
         serde_yaml::from_str(&sample_str).unwrap()
     }
 
-    fn check_set_api_key_sample(sample_file: &str, mut existing_api_keys: ApiKeys) {
+    pub fn check_set_api_key_sample(
+        sample_file: &str,
+        existing_zamm_api_keys: &ZammApiKeys,
+        test_dir_name: &str,
+    ) {
         let sample = read_sample(sample_file);
         assert_eq!(sample.request.len(), 2);
         assert_eq!(sample.request[0], "set_api_key");
@@ -93,7 +99,7 @@ mod tests {
         let request_path = request.filename.map(|f| PathBuf::from(&f));
         let test_init_file = request_path.as_ref().map(|p| {
             let sample_file_directory = p.parent().unwrap().to_str().unwrap();
-            let test_name = format!("set_api_key/{}", sample_file_directory);
+            let test_name = format!("{}/{}", test_dir_name, sample_file_directory);
             let temp_init_dir = get_temp_test_dir(&test_name);
             let init_file = temp_init_dir.join(p.file_name().unwrap());
             println!(
@@ -110,7 +116,7 @@ mod tests {
         });
 
         let actual_result = set_api_key_helper(
-            &mut existing_api_keys,
+            existing_zamm_api_keys,
             test_init_file.as_ref().map(|f| f.to_str().unwrap()),
             &request.service,
             request.api_key.clone(),
@@ -129,6 +135,7 @@ mod tests {
         assert_eq!(actual_json, expected_json);
 
         // check that the API call actually modified the in-memory API keys
+        let existing_api_keys = existing_zamm_api_keys.0.lock().unwrap();
         assert_eq!(existing_api_keys.openai, Some(request.api_key));
 
         // check that the API call successfully wrote the API keys to disk, if asked to
@@ -150,35 +157,46 @@ mod tests {
         }
     }
 
+    fn check_set_api_key_sample_unit(
+        sample_file: &str,
+        existing_zamm_api_keys: &ZammApiKeys,
+    ) {
+        check_set_api_key_sample(sample_file, existing_zamm_api_keys, "set_api_key");
+    }
+
     #[test]
     fn test_write_new_init_file() {
-        check_set_api_key_sample(
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
+        check_set_api_key_sample_unit(
             "api/sample-calls/set_api_key-no-file.yaml",
-            ApiKeys::default(),
+            &api_keys,
         );
     }
 
     #[test]
     fn test_overwrite_existing_init_file_with_newline() {
-        check_set_api_key_sample(
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
+        check_set_api_key_sample_unit(
             "api/sample-calls/set_api_key-existing-with-newline.yaml",
-            ApiKeys::default(),
+            &api_keys,
         );
     }
 
     #[test]
     fn test_overwrite_existing_init_file_no_newline() {
-        check_set_api_key_sample(
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
+        check_set_api_key_sample_unit(
             "api/sample-calls/set_api_key-existing-no-newline.yaml",
-            ApiKeys::default(),
+            &api_keys,
         );
     }
 
     #[test]
     fn test_no_disk_write() {
-        check_set_api_key_sample(
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
+        check_set_api_key_sample_unit(
             "api/sample-calls/set_api_key-no-disk-write.yaml",
-            ApiKeys::default(),
+            &api_keys,
         );
     }
 }

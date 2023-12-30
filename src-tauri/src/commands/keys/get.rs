@@ -15,7 +15,7 @@ pub fn get_api_keys(api_keys: State<ZammApiKeys>) -> ApiKeys {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use crate::sample_call::SampleCall;
     use std::sync::Mutex;
@@ -28,7 +28,7 @@ mod tests {
         serde_yaml::from_str(&sample_str).unwrap()
     }
 
-    fn check_get_api_keys_sample(file_prefix: &str, rust_input: &ZammApiKeys) {
+    pub fn check_get_api_keys_sample(file_prefix: &str, rust_input: &ZammApiKeys) {
         let greet_sample = read_sample(file_prefix);
         assert_eq!(greet_sample.request, vec!["get_api_keys"]);
 
