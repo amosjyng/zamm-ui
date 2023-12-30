@@ -37,7 +37,7 @@ Loading.parameters = {
 
 export const Unknown: StoryObj = Template.bind({}) as any;
 Unknown.parameters = {
-  sampleCallFiles: [unknownKeys, writeToFile],
+  sampleCallFiles: [unknownKeys, writeToFile, knownKeys],
   viewport: {
     defaultViewport: "mobile2",
   },

@@ -8,9 +8,10 @@
 
 <script lang="ts">
   import { cubicInOut } from "svelte/easing";
-  import { setApiKey, type Service } from "$lib/bindings";
+  import { getApiKeys, setApiKey, type Service } from "$lib/bindings";
   import { animationSpeed, animationsOn } from "$lib/preferences";
   import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
+  import { apiKeys } from "$lib/system-info";
   import TextInput from "$lib/controls/TextInput.svelte";
   import Button from "$lib/controls/Button.svelte";
 
@@ -51,6 +52,9 @@
       })
       .catch((err) => {
         snackbarError(err);
+      })
+      .finally(async () => {
+        apiKeys.set(await getApiKeys());
       });
   }
 </script>

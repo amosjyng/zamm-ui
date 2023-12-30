@@ -1,21 +1,37 @@
 <script lang="ts">
   import { getApiKeys } from "$lib/bindings";
+  import { apiKeys as apiKeysStore } from "$lib/system-info";
+  import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
   import InfoBox from "$lib/InfoBox.svelte";
   import Loading from "$lib/Loading.svelte";
   import Service from "./Service.svelte";
+  import { onMount } from "svelte";
 
+  let isLoading = true;
   export let editDemo = false;
-  let apiKeys = getApiKeys();
+
+  onMount(() => {
+    getApiKeys()
+      .then((keys) => {
+        apiKeysStore.set(keys);
+      })
+      .catch((error) => {
+        snackbarError(error);
+      })
+      .finally(() => {
+        isLoading = false;
+      });
+  });
+
+  $: apiKeys = $apiKeysStore;
 </script>
 
 <InfoBox title="API Keys" {...$$restProps}>
-  {#await apiKeys}
+  {#if isLoading}
     <Loading />
-  {:then keys}
+  {:else}
     <div class="api-keys" role="table">
-      <Service name="OpenAI" apiKey={keys.openai} editing={editDemo} />
+      <Service name="OpenAI" apiKey={apiKeys.openai} editing={editDemo} />
     </div>
-  {:catch error}
-    <span role="status">error: {error}</span>
-  {/await}
+  {/if}
 </InfoBox>
