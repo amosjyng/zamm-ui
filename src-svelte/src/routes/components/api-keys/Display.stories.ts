@@ -1,6 +1,7 @@
 import ApiKeysDisplay from "./Display.svelte";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import TauriInvokeDecorator from "$lib/__mocks__/invoke";
+import SvelteStoresDecorator from "$lib/__mocks__/stores";
 import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
 
 export default {
@@ -8,6 +9,7 @@ export default {
   title: "Screens/Dashboard/API Keys Display",
   argTypes: {},
   decorators: [
+    SvelteStoresDecorator,
     TauriInvokeDecorator,
     (story: StoryFn) => {
       return {
@@ -57,6 +59,17 @@ Editing.args = {
 };
 Editing.parameters = {
   sampleCallFiles: [knownKeys, writeToFile],
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};
+
+export const SlowMotion: StoryObj = Template.bind({}) as any;
+SlowMotion.parameters = {
+  sampleCallFiles: [unknownKeys, writeToFile, knownKeys],
+  preferences: {
+    animationSpeed: 0.1,
+  },
   viewport: {
     defaultViewport: "mobile2",
   },

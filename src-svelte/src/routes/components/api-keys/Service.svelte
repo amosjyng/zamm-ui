@@ -71,9 +71,11 @@
     color: white;
     flex: 1;
     border-radius: var(--corner-roundness);
+    transition: all calc(0.1s / var(--base-animation-speed)) ease-in;
   }
 
   .api-key.active {
+    box-shadow: 0 0 var(--shadow-blur) 0 green;
     background-color: green;
   }
 </style>
