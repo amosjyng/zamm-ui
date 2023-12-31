@@ -71,7 +71,9 @@
     color: white;
     flex: 1;
     border-radius: var(--corner-roundness);
-    transition: all calc(0.1s / var(--base-animation-speed)) ease-in;
+    transition-property: background-color, box-shadow;
+    transition-duration: calc(0.1s / var(--base-animation-speed));
+    transition-timing-function: ease-in;
   }
 
   .api-key.active {
