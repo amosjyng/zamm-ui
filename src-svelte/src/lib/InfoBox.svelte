@@ -366,9 +366,9 @@
           const opacity = easingFunction(tLocalFraction);
           anim.node.setAttribute("style", `opacity: ${opacity};`);
 
-          if (tLocalFraction < 0.9) {
+          if (tLocalFraction === 0) {
             anim.node.classList.add("wait-for-infobox");
-          } else {
+          } else if (tLocalFraction >= 0.9) {
             anim.node.classList.remove("wait-for-infobox");
           }
         },
