@@ -365,6 +365,12 @@
         tick: (tLocalFraction: number) => {
           const opacity = easingFunction(tLocalFraction);
           anim.node.setAttribute("style", `opacity: ${opacity};`);
+
+          if (tLocalFraction < 0.9) {
+            anim.node.classList.add("wait-for-infobox");
+          } else {
+            anim.node.classList.remove("wait-for-infobox");
+          }
         },
       });
     }

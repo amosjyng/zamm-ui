@@ -71,10 +71,11 @@
   }
 
   .api-key {
+    --inactive-color: gray;
     text-align: center;
     text-transform: uppercase;
     font-family: var(--font-body);
-    background-color: gray;
+    background-color: var(--inactive-color);
     color: white;
     flex: 1;
     border-radius: var(--corner-roundness);
@@ -86,5 +87,10 @@
   .api-key.active {
     box-shadow: 0 0 var(--shadow-blur) 0 green;
     background-color: green;
+  }
+
+  .container :global(.api-key.active.wait-for-infobox) {
+    background-color: var(--inactive-color);
+    box-shadow: none;
   }
 </style>
