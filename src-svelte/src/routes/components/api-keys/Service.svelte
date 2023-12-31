@@ -14,6 +14,16 @@
 
   function toggleEditing() {
     editing = !editing;
+  }
+
+  function formClose() {
+    editing = false;
+  }
+
+  function updateFormFields(trigger: boolean) {
+    if (!trigger) {
+      return;
+    }
 
     if (formFields.apiKey === "") {
       formFields.apiKey = apiKey ?? "";
@@ -23,12 +33,9 @@
     }
   }
 
-  function formClose() {
-    editing = false;
-  }
-
   $: active = apiKey !== null;
   $: label = active ? "Active" : "Inactive";
+  $: updateFormFields(editing);
 </script>
 
 <div class="container">
