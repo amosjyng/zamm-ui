@@ -1,10 +1,11 @@
 <script lang="ts">
   export let name: string;
+  export let placeholder: string | undefined = undefined;
   export let value: string;
 </script>
 
 <div class="fancy-input">
-  <input type="text" id={name} {name} bind:value />
+  <input type="text" id={name} {name} {placeholder} bind:value />
   <span class="focus-border"></span>
 </div>
 
@@ -27,6 +28,10 @@
 
   input[type="text"]:focus {
     outline: none;
+  }
+
+  input[type="text"]::placeholder {
+    font-style: italic;
   }
 
   input[type="text"] + .focus-border {

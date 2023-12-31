@@ -77,7 +77,11 @@
           bind:checked={fields.saveKey}
         />
         <label for="saveKeyLocation">Save key to:</label>
-        <TextInput name="saveKeyLocation" bind:value={fields.saveKeyLocation} />
+        <TextInput
+          name="saveKeyLocation"
+          placeholder="e.g. /home/user/.bashrc"
+          bind:value={fields.saveKeyLocation}
+        />
       </div>
 
       <div class="save-button">
