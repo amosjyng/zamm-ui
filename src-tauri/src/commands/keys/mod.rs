@@ -20,6 +20,7 @@ mod tests {
         check_set_api_key_sample(
             "api/sample-calls/set_api_key-existing-no-newline.yaml",
             &api_keys,
+            false,
             "api_keys_integration_tests",
         );
 

@@ -17,27 +17,30 @@ fn set_api_key_helper(
     let api_keys = &mut zamm_api_keys.0.lock().unwrap();
     // write new API key to disk before we can no longer borrow it
     let init_update_result = || -> ZammResult<()> {
-        if let Some(filename) = filename {
-            let ends_in_newline = {
-                if Path::new(filename).exists() {
-                    let mut file = OpenOptions::new().read(true).open(filename)?;
-                    let mut contents = String::new();
-                    file.read_to_string(&mut contents)?;
-                    contents.ends_with('\n')
-                } else {
-                    true // no need to start the file with a newline later
-                }
-            };
+        if let Some(untrimmed_filename) = filename {
+            let f = untrimmed_filename.trim();
+            if !f.is_empty() {
+                let ends_in_newline = {
+                    if Path::new(f).exists() {
+                        let mut file = OpenOptions::new().read(true).open(f)?;
+                        let mut contents = String::new();
+                        file.read_to_string(&mut contents)?;
+                        contents.ends_with('\n')
+                    } else {
+                        true // no need to start the file with a newline later
+                    }
+                };
 
-            let mut file = OpenOptions::new()
-                .create(true)
-                .write(true)
-                .append(true)
-                .open(filename)?;
-            if !ends_in_newline {
-                writeln!(file)?;
+                let mut file = OpenOptions::new()
+                    .create(true)
+                    .write(true)
+                    .append(true)
+                    .open(f)?;
+                if !ends_in_newline {
+                    writeln!(file)?;
+                }
+                writeln!(file, "export OPENAI_API_KEY=\"{}\"", api_key)?;
             }
-            writeln!(file, "export OPENAI_API_KEY=\"{}\"", api_key)?;
         }
         Ok(())
     }();
@@ -89,6 +92,7 @@ pub mod tests {
     pub fn check_set_api_key_sample(
         sample_file: &str,
         existing_zamm_api_keys: &ZammApiKeys,
+        should_fail: bool,
         test_dir_name: &str,
     ) {
         let sample = read_sample(sample_file);
@@ -96,8 +100,14 @@ pub mod tests {
         assert_eq!(sample.request[0], "set_api_key");
 
         let request = parse_request(&sample.request[1]);
-        let request_path = request.filename.map(|f| PathBuf::from(&f));
-        let test_init_file = request_path.as_ref().map(|p| {
+        let valid_request_path_specified = request
+            .filename
+            .as_ref()
+            .map(|f| !f.is_empty() && !f.ends_with('/'))
+            .unwrap_or(false);
+        let request_path = request.filename.as_ref().map(|f| PathBuf::from(&f));
+        let test_init_file = if valid_request_path_specified {
+            let p = request_path.as_ref().unwrap();
             let sample_file_directory = p.parent().unwrap().to_str().unwrap();
             let test_name = format!("{}/{}", test_dir_name, sample_file_directory);
             let temp_init_dir = get_temp_test_dir(&test_name);
@@ -112,40 +122,52 @@ pub mod tests {
                 fs::copy(&starting_init_file, &init_file).unwrap();
             }
 
-            init_file
-        });
+            Some(init_file.to_str().unwrap().to_owned())
+        } else {
+            request.filename
+        };
 
         let actual_result = set_api_key_helper(
             existing_zamm_api_keys,
-            test_init_file.as_ref().map(|f| f.to_str().unwrap()),
+            test_init_file.as_deref(),
             &request.service,
             request.api_key.clone(),
         );
-        // check that the API call returns a success signal
-        assert!(
-            actual_result.is_ok(),
-            "API call failed: {:?}",
-            actual_result
-        );
+
+        // check that the API call returns the expected success or failure signal
+        if should_fail {
+            assert!(actual_result.is_err(), "API call should have thrown error");
+        } else {
+            assert!(
+                actual_result.is_ok(),
+                "API call failed: {:?}",
+                actual_result
+            );
+        }
 
         // check that the API call returns the expected JSON
-        let actual_json =
-            serde_json::to_string_pretty(&actual_result.unwrap()).unwrap();
+        let actual_json = match actual_result {
+            Ok(r) => serde_json::to_string_pretty(&r).unwrap(),
+            Err(e) => serde_json::to_string_pretty(&e).unwrap(),
+        };
         let expected_json = sample.response.trim();
         assert_eq!(actual_json, expected_json);
 
-        // check that the API call actually modified the in-memory API keys
+        // check that the API call actually modified the in-memory API keys,
+        // regardless of success or failure
         let existing_api_keys = existing_zamm_api_keys.0.lock().unwrap();
         assert_eq!(existing_api_keys.openai, Some(request.api_key));
 
         // check that the API call successfully wrote the API keys to disk, if asked to
-        if let Some(p) = request_path {
+        if valid_request_path_specified {
+            let p = request_path.unwrap();
             let expected_init_file = Path::new("api/sample-init-files")
                 .join(p)
                 .with_file_name("expected.bashrc");
 
-            let resulting_contents = fs::read_to_string(test_init_file.unwrap())
-                .expect("Test shell init file doesn't exist");
+            let resulting_contents =
+                fs::read_to_string(test_init_file.unwrap().as_str())
+                    .expect("Test shell init file doesn't exist");
             let expected_contents = fs::read_to_string(&expected_init_file)
                 .unwrap_or_else(|_| {
                     panic!(
@@ -161,7 +183,24 @@ pub mod tests {
         sample_file: &str,
         existing_zamm_api_keys: &ZammApiKeys,
     ) {
-        check_set_api_key_sample(sample_file, existing_zamm_api_keys, "set_api_key");
+        check_set_api_key_sample(
+            sample_file,
+            existing_zamm_api_keys,
+            false,
+            "set_api_key",
+        );
+    }
+
+    fn check_set_api_key_sample_unit_fails(
+        sample_file: &str,
+        existing_zamm_api_keys: &ZammApiKeys,
+    ) {
+        check_set_api_key_sample(
+            sample_file,
+            existing_zamm_api_keys,
+            true,
+            "set_api_key",
+        );
     }
 
     #[test]
@@ -196,6 +235,24 @@ pub mod tests {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
             "api/sample-calls/set_api_key-no-disk-write.yaml",
+            &api_keys,
+        );
+    }
+
+    #[test]
+    fn test_empty_filename() {
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
+        check_set_api_key_sample_unit(
+            "api/sample-calls/set_api_key-empty-filename.yaml",
+            &api_keys,
+        );
+    }
+
+    #[test]
+    fn test_invalid_filename() {
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
+        check_set_api_key_sample_unit_fails(
+            "api/sample-calls/set_api_key-invalid-filename.yaml",
             &api_keys,
         );
     }
