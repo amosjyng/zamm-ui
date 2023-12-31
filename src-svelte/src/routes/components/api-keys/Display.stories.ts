@@ -28,6 +28,7 @@ const Template = ({ ...args }) => ({
 const writeToFile = "/api/sample-calls/set_api_key-existing-no-newline.yaml";
 const unknownKeys = "/api/sample-calls/get_api_keys-empty.yaml";
 const knownKeys = "/api/sample-calls/get_api_keys-openai.yaml";
+const unsetKey = "/api/sample-calls/set_api_key-unset.yaml";
 
 export const Loading: StoryObj = Template.bind({}) as any;
 Loading.parameters = {
@@ -59,6 +60,17 @@ Editing.args = {
 };
 Editing.parameters = {
   sampleCallFiles: [knownKeys, writeToFile],
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};
+
+export const Unset: StoryObj = Template.bind({}) as any;
+Unset.parameters = {
+  sampleCallFiles: [knownKeys, unsetKey, unknownKeys],
+  preferences: {
+    animationSpeed: 1,
+  },
   viewport: {
     defaultViewport: "mobile2",
   },

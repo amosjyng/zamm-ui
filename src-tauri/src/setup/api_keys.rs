@@ -18,6 +18,12 @@ impl ApiKeys {
             Service::OpenAI => self.openai = Some(key),
         }
     }
+
+    pub fn remove(&mut self, service: &Service) {
+        match service {
+            Service::OpenAI => self.openai = None,
+        }
+    }
 }
 
 pub fn setup_api_keys() -> ApiKeys {

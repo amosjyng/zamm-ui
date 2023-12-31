@@ -17,6 +17,10 @@ fn set_api_key_helper(
     let api_keys = &mut zamm_api_keys.0.lock().unwrap();
     // write new API key to disk before we can no longer borrow it
     let init_update_result = || -> ZammResult<()> {
+        if api_key.is_empty() {
+            return Ok(());
+        }
+
         if let Some(untrimmed_filename) = filename {
             let f = untrimmed_filename.trim();
             if !f.is_empty() {
@@ -45,7 +49,11 @@ fn set_api_key_helper(
         Ok(())
     }();
     // assign ownership of new API key string to in-memory API keys
-    api_keys.update(service, api_key);
+    if api_key.is_empty() {
+        api_keys.remove(service);
+    } else {
+        api_keys.update(service, api_key);
+    }
     init_update_result
 }
 
@@ -156,7 +164,11 @@ pub mod tests {
         // check that the API call actually modified the in-memory API keys,
         // regardless of success or failure
         let existing_api_keys = existing_zamm_api_keys.0.lock().unwrap();
-        assert_eq!(existing_api_keys.openai, Some(request.api_key));
+        if request.api_key.is_empty() {
+            assert_eq!(existing_api_keys.openai, None);
+        } else {
+            assert_eq!(existing_api_keys.openai, Some(request.api_key));
+        }
 
         // check that the API call successfully wrote the API keys to disk, if asked to
         if valid_request_path_specified {
@@ -237,6 +249,18 @@ pub mod tests {
             "api/sample-calls/set_api_key-no-disk-write.yaml",
             &api_keys,
         );
+    }
+
+    #[test]
+    fn test_unset() {
+        let api_keys = ZammApiKeys(Mutex::new(ApiKeys {
+            openai: Some("0p3n41-4p1-k3y".to_owned()),
+        }));
+        check_set_api_key_sample_unit(
+            "api/sample-calls/set_api_key-unset.yaml",
+            &api_keys,
+        );
+        assert!(api_keys.0.lock().unwrap().openai.is_none());
     }
 
     #[test]
