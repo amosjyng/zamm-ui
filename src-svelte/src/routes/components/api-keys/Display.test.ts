@@ -8,10 +8,15 @@ import { within, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import { systemInfo } from "$lib/system-info";
 import { TauriInvokePlayback } from "$lib/sample-call-testing";
+import { animationSpeed } from "$lib/preferences";
 
 describe("API Keys Display", () => {
   let tauriInvokeMock: Mock;
   let playback: TauriInvokePlayback;
+
+  beforeAll(() => {
+    animationSpeed.set(10);
+  });
 
   beforeEach(() => {
     tauriInvokeMock = vi.fn();
@@ -145,7 +150,7 @@ describe("API Keys Display", () => {
     expect(apiKeyInput).toHaveValue("");
     await userEvent.type(apiKeyInput, "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(tauriInvokeMock).toBeCalledTimes(2);
+    await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));
     await waitFor(() => expect(apiKeyInput).not.toBeInTheDocument());
   });
 
@@ -236,7 +241,7 @@ describe("API Keys Display", () => {
     await userEvent.type(fileInput, "no-newline/.bashrc");
     await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(tauriInvokeMock).toBeCalledTimes(2);
+    await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));
   });
 
   test("can submit with no file", async () => {
@@ -259,6 +264,6 @@ describe("API Keys Display", () => {
     await userEvent.click(screen.getByLabelText("Save key to disk?"));
     await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(tauriInvokeMock).toBeCalledTimes(2);
+    await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));
   });
 });

@@ -9,7 +9,7 @@
 <script lang="ts">
   import { cubicInOut } from "svelte/easing";
   import { getApiKeys, setApiKey, type Service } from "$lib/bindings";
-  import { animationSpeed, animationsOn } from "$lib/preferences";
+  import { standardDuration } from "$lib/preferences";
   import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
   import { apiKeys } from "$lib/system-info";
   import TextInput from "$lib/controls/TextInput.svelte";
@@ -19,14 +19,15 @@
   export let fields: FormFields;
   export let formClose: () => void = () => undefined;
 
+  $: growDuration = 2 * $standardDuration;
+
   function growY(node: HTMLElement) {
     const rem = 18;
     const totalFinalPadding = 1 * rem;
 
     const height = node.offsetHeight;
-    const duration = $animationsOn ? 200 / $animationSpeed : 0;
     return {
-      duration,
+      duration: growDuration,
       easing: cubicInOut,
       tick: (t: number) => {
         const totalHeight = height * t;
@@ -53,8 +54,12 @@
       .catch((err) => {
         snackbarError(err);
       })
-      .finally(async () => {
-        apiKeys.set(await getApiKeys());
+      .finally(() => {
+        setTimeout(async () => {
+          // delay here instead of in CSS transition so that the text updates
+          // simultaneously with the transition
+          apiKeys.set(await getApiKeys());
+        }, 0.75 * growDuration);
       });
   }
 </script>
