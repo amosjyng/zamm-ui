@@ -7,6 +7,6 @@
   class="storybook-wrapper"
   style="--base-animation-speed: {$animationSpeed};"
 >
-  <Snackbar />
   <slot />
+  <Snackbar />
 </div>
