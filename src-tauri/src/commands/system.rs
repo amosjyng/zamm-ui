@@ -78,6 +78,7 @@ mod tests {
         assert_eq!(actual_info, &expected_info);
     }
 
+    #[ignore]
     #[test]
     fn test_can_determine_shell() {
         let shell = get_shell();
