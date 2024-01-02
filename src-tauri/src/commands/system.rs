@@ -29,19 +29,24 @@ fn get_shell() -> Option<Shell> {
     None
 }
 
-fn get_shell_init_file(shell: &Shell) -> String {
-    let relative_file = match shell {
-        Shell::Bash => "~/.bashrc",
-        Shell::Zsh => "~/.zshrc",
-    };
-    shellexpand::tilde(relative_file).to_string()
+fn get_relative_shell_init_file() -> Option<String> {
+    #[cfg(target_os = "linux")]
+    return Some("~/.profile".to_string());
+    #[cfg(target_os = "macos")]
+    return Some("~/.bash_profile".to_string());
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    return None;
+}
+
+fn get_shell_init_file() -> Option<String> {
+    get_relative_shell_init_file().map(|f| shellexpand::tilde(&f).to_string())
 }
 
 #[tauri::command(async)]
 #[specta]
 pub fn get_system_info() -> SystemInfo {
     let shell = get_shell();
-    let shell_init_file = shell.as_ref().map(get_shell_init_file);
+    let shell_init_file = get_shell_init_file();
 
     SystemInfo {
         shell,
@@ -76,24 +81,27 @@ mod tests {
     #[test]
     fn test_can_determine_shell() {
         let shell = get_shell();
-        println!("Determined shell to be {:?}", shell);
+        println!(
+            "Determined shell to be {:?} from env var {:?}",
+            shell,
+            env::var("SHELL")
+        );
         assert!(shell.is_some());
     }
 
     #[test]
     fn test_can_predict_shell_init() {
-        let shell = Shell::Zsh;
-        let shell_init_file = get_shell_init_file(&shell);
+        let shell_init_file = get_shell_init_file().unwrap();
         println!("Shell init file is {}", shell_init_file);
         assert!(shell_init_file.starts_with('/'));
-        assert!(shell_init_file.ends_with("/.zshrc"));
+        assert!(shell_init_file.ends_with("profile"));
     }
 
     #[test]
     fn test_get_linux_system_info() {
         let system_info = SystemInfo {
             shell: Some(Shell::Zsh),
-            shell_init_file: Some("/root/.zshrc".to_string()),
+            shell_init_file: Some("/root/.profile".to_string()),
         };
 
         check_get_system_info_sample(

@@ -4,6 +4,8 @@ import {
   unceasingAnimations,
   animationSpeed,
 } from "$lib/preferences";
+import { systemInfo } from "$lib/system-info";
+import type { SystemInfo } from "$lib/bindings";
 import { firstAppLoad, firstPageLoad } from "$lib/firstPageLoad";
 
 interface Preferences {
@@ -12,8 +14,13 @@ interface Preferences {
   animationSpeed?: number;
 }
 
+interface Stores {
+  systemInfo?: SystemInfo;
+}
+
 interface StoreArgs {
   preferences?: Preferences;
+  stores?: Stores;
   [key: string]: any;
 }
 
@@ -22,7 +29,7 @@ const SvelteStoresDecorator: Decorator = (
   context: StoryContext,
 ) => {
   const { args, parameters } = context;
-  const { preferences } = parameters as StoreArgs;
+  const { preferences, stores } = parameters as StoreArgs;
 
   // set to their defaults on first load
   firstAppLoad.set(true);
@@ -43,6 +50,8 @@ const SvelteStoresDecorator: Decorator = (
   } else {
     animationSpeed.set(preferences.animationSpeed);
   }
+
+  systemInfo.set(stores?.systemInfo);
 
   return story(args, context);
 };

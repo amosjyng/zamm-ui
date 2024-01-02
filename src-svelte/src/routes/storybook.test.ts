@@ -89,7 +89,7 @@ const components: ComponentTestConfig[] = [
   },
   {
     path: ["screens", "dashboard", "api-keys-display"],
-    variants: ["loading", "unknown", "known", "editing"],
+    variants: ["loading", "unknown", "known", "editing", "editing-pre-filled"],
     screenshotEntireBody: true,
   },
   {

@@ -47,7 +47,7 @@ describe("Metadata", () => {
     const shellRow = screen.getByRole("row", { name: /Shell/ });
     const shellValueCell = within(shellRow).getAllByRole("cell")[1];
     await waitFor(() => expect(shellValueCell).toHaveTextContent("Zsh"));
-    expect(get(systemInfo)?.shell_init_file).toEqual("/root/.zshrc");
+    expect(get(systemInfo)?.shell_init_file).toEqual("/root/.profile");
   });
 
   test("API key error", async () => {

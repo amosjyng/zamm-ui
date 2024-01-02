@@ -59,7 +59,23 @@ Editing.args = {
   editDemo: true,
 };
 Editing.parameters = {
+  sampleCallFiles: [unknownKeys, writeToFile],
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};
+
+export const EditingPreFilled: StoryObj = Template.bind({}) as any;
+EditingPreFilled.args = {
+  editDemo: true,
+};
+EditingPreFilled.parameters = {
   sampleCallFiles: [knownKeys, writeToFile],
+  stores: {
+    systemInfo: {
+      shell_init_file: "/root/.profile",
+    },
+  },
   viewport: {
     defaultViewport: "mobile2",
   },
