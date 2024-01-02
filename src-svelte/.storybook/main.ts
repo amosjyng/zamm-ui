@@ -50,7 +50,7 @@ const config: StorybookConfig = {
   core: {
     disableWhatsNewNotifications: true,
   },
-  staticDirs: ["../static"],
+  staticDirs: ["../static", "../../src-tauri"],
   docs: {
     autodocs: "tag",
   },

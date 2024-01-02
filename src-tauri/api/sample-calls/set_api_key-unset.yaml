@@ -1,0 +1,9 @@
+request:
+  - set_api_key
+  - >
+    {
+      "filename": "unset/.bashrc",
+      "service": "OpenAI",
+      "api_key": ""
+    }
+response: "null"

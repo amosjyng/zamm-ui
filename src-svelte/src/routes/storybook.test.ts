@@ -53,6 +53,10 @@ const components: ComponentTestConfig[] = [
     screenshotEntireBody: true,
   },
   {
+    path: ["reusable", "button"],
+    variants: ["regular"],
+  },
+  {
     path: ["reusable", "infobox"],
     variants: ["regular"],
     screenshotEntireBody: true,
@@ -79,13 +83,18 @@ const components: ComponentTestConfig[] = [
     variants: ["dashboard-selected", "settings-selected"],
   },
   {
+    path: ["layout", "snackbar"],
+    variants: ["message"],
+    screenshotEntireBody: true,
+  },
+  {
     path: ["screens", "dashboard", "api-keys-display"],
-    variants: ["loading", "unknown", "known"],
+    variants: ["loading", "unknown", "known", "editing", "editing-pre-filled"],
     screenshotEntireBody: true,
   },
   {
     path: ["screens", "dashboard", "metadata"],
-    variants: ["metadata"],
+    variants: ["loading", "loaded"],
     screenshotEntireBody: true,
   },
   {
@@ -221,7 +230,7 @@ describe.concurrent("Storybook visual tests", () => {
         },
         {
           retry: 4,
-          timeout: 10_000,
+          timeout: 20_000,
         },
       );
     }

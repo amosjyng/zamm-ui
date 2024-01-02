@@ -35,19 +35,15 @@ describe("Switch", () => {
 
     playSwitchSoundCall = parseSampleCall(
       "../src-tauri/api/sample-calls/play_sound-switch.yaml",
-      true,
     );
     setSoundOnCall = parseSampleCall(
       "../src-tauri/api/sample-calls/set_preferences-sound-on.yaml",
-      true,
     );
     setSoundOffCall = parseSampleCall(
       "../src-tauri/api/sample-calls/set_preferences-sound-off.yaml",
-      true,
     );
     setVolumePartialCall = parseSampleCall(
       "../src-tauri/api/sample-calls/set_preferences-volume-partial.yaml",
-      true,
     );
   });
 

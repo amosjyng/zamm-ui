@@ -238,23 +238,6 @@
     });
     return infoBoxTimingCollection.scaleBy(timingScaleFactor).finalize();
   }
-
-  class SubAnimation<T> {
-    timing: TransitionTimingFraction;
-    tick: (tLocalFraction: number) => T;
-
-    constructor(anim: {
-      timing: TransitionTimingFraction;
-      tick: (tLocalFraction: number) => T;
-    }) {
-      this.timing = anim.timing;
-      this.tick = anim.tick;
-    }
-
-    tickForGlobalTime(tGlobalFraction: number): T {
-      return this.tick(this.timing.localize(tGlobalFraction));
-    }
-  }
 </script>
 
 <script lang="ts">
@@ -263,6 +246,7 @@
   import { animationSpeed, animationsOn } from "./preferences";
   import { fade, type TransitionConfig } from "svelte/transition";
   import { firstAppLoad, firstPageLoad } from "./firstPageLoad";
+  import { SubAnimation, PropertyAnimation } from "$lib/animation-timing";
 
   export let title = "";
   export let childNumber = 0;
@@ -274,32 +258,13 @@
   const perChildStagger = 100;
   const totalDelay = preDelay + childNumber * perChildStagger;
 
-  class ProperyAnimation extends SubAnimation<string> {
-    constructor(anim: {
-      timing: TransitionTimingFraction;
-      property: string;
-      min: number;
-      max: number;
-      unit: string;
-      easingFunction?: (t: number) => number;
-    }) {
-      const growth = anim.max - anim.min;
-      const easingFunction = anim.easingFunction ?? cubicInOut;
-      const css = (t: number) => {
-        const easing = easingFunction(t);
-        const value = anim.min + growth * easing;
-        return `${anim.property}: ${value}${anim.unit};`;
-      };
-      super({ timing: anim.timing, tick: css });
-    }
-  }
-
   function revealOutline(
     node: Element,
     timing: BorderBoxTiming,
   ): TransitionConfig {
-    const actualWidth = node.clientWidth;
-    const actualHeight = node.clientHeight;
+    const parentNode = node.parentNode as Element;
+    const actualWidth = parentNode.clientWidth;
+    const actualHeight = parentNode.clientHeight;
     const heightPerTitleLinePx = 26;
     const titleHeight = (titleElement as HTMLElement).clientHeight;
     // multiply by 1.3 to account for small pixel differences between browsers
@@ -307,7 +272,7 @@
     const minHeight = titleHeight + heightPerTitleLinePx; // add a little for padding
     const minWidth = 3.5 * heightPerTitleLinePx;
 
-    const growWidth = new ProperyAnimation({
+    const growWidth = new PropertyAnimation({
       timing: timing.growX(),
       property: "width",
       min: minWidth,
@@ -316,7 +281,7 @@
       easingFunction: titleIsMultiline ? cubicOut : linear,
     });
 
-    const growHeight = new ProperyAnimation({
+    const growHeight = new PropertyAnimation({
       timing: timing.growY(),
       property: "height",
       min: minHeight,
@@ -328,10 +293,16 @@
     return {
       delay: timing.overall.delayMs(),
       duration: timing.overall.durationMs(),
-      css: (tFraction: number) => {
-        const width = growWidth.tickForGlobalTime(tFraction);
-        const height = growHeight.tickForGlobalTime(tFraction);
-        return width + height;
+      tick: (tGlobalFraction: number) => {
+        growWidth.max = parentNode.clientWidth;
+        growHeight.max = parentNode.clientHeight;
+        const width = growWidth.tickForGlobalTime(tGlobalFraction);
+        const height = growHeight.tickForGlobalTime(tGlobalFraction);
+        node.setAttribute("style", width + height);
+
+        if (tGlobalFraction === 1) {
+          node.removeAttribute("style");
+        }
       },
     };
   }
@@ -394,6 +365,12 @@
         tick: (tLocalFraction: number) => {
           const opacity = easingFunction(tLocalFraction);
           anim.node.setAttribute("style", `opacity: ${opacity};`);
+
+          if (tLocalFraction === 0) {
+            anim.node.classList.add("wait-for-infobox");
+          } else if (tLocalFraction >= 0.9) {
+            anim.node.classList.remove("wait-for-infobox");
+          }
         },
       });
     }
@@ -421,16 +398,13 @@
     const actualTotalKickoffFraction =
       theoreticalTotalKickoffFraction * revealCutoffFraction;
     const perElementRevealFraction = 1 - actualTotalKickoffFraction;
-    const { height: infoBoxHeight, top: infoBoxTop } =
-      node.getBoundingClientRect();
-    const revealAnimations: RevealContent[] = [];
 
-    const getChildKickoffFraction = (child: Element) => {
+    const getChildKickoffFraction = (child: Element, border: DOMRect) => {
       const childRect = child.getBoundingClientRect();
       const childBottomYRelativeToInfoBox =
-        childRect.top + childRect.height - infoBoxTop;
+        childRect.top + childRect.height - border.top;
       const equivalentYProgress = inverseCubicInOut(
-        childBottomYRelativeToInfoBox / infoBoxHeight,
+        childBottomYRelativeToInfoBox / border.height,
       );
       const adjustedYProgress = Math.min(
         revealCutoffFraction,
@@ -443,7 +417,14 @@
       });
     };
 
-    const addNodeAnimations = (currentNode: Element) => {
+    const getNodeAnimations = (
+      currentNode: Element,
+      root?: DOMRect,
+    ): RevealContent[] => {
+      if (root === undefined) {
+        root = currentNode.getBoundingClientRect();
+      }
+
       // if there are text-only elements that are not part of any node, we fade-in the
       // whole parent at once to avoid the text appearing before anything else -- e.g.
       // if there's something like "some text in <em>some tag</em>", the "some text in"
@@ -452,20 +433,33 @@
         currentNode.children.length === 0 ||
         currentNode.children.length === currentNode.childNodes.length
       ) {
-        revealAnimations.push(
+        return [
           new RevealContent({
             node: currentNode,
-            timing: getChildKickoffFraction(currentNode),
+            timing: getChildKickoffFraction(currentNode, root),
           }),
-        );
+        ];
       } else {
+        const revealAnimations: RevealContent[] = [];
         for (const child of currentNode.children) {
-          addNodeAnimations(child);
+          revealAnimations.push(...getNodeAnimations(child, root));
         }
+        return revealAnimations;
       }
     };
 
-    addNodeAnimations(node);
+    let revealAnimations = getNodeAnimations(node);
+
+    const config = { childList: true, subtree: true };
+    const mutationCallback: MutationCallback = () => {
+      revealAnimations = getNodeAnimations(node);
+      // hide all new nodes immediately
+      revealAnimations.forEach((anim) => {
+        anim.tickForGlobalTime(0);
+      });
+    };
+    const observer = new MutationObserver(mutationCallback);
+    observer.observe(node, config);
 
     return {
       delay: timing.infoBox.delayMs(),
@@ -478,6 +472,10 @@
         revealAnimations.forEach((anim) => {
           anim.tickForGlobalTime(tGlobalFraction);
         });
+
+        if (tGlobalFraction === 1) {
+          observer.disconnect();
+        }
       },
     };
   }

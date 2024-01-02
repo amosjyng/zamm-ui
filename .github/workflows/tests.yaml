@@ -143,7 +143,9 @@ jobs:
       # end of common dependency setup with downloaded artifacts
 
       - name: Run Python Tests
-        run: poetry run make test
+        run: |
+          poetry install
+          poetry run make test
         working-directory: src-python
   rust:
     name: Run Rust tests

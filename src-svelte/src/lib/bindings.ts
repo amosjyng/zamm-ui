@@ -18,6 +18,10 @@ export function getApiKeys() {
     return invoke()<ApiKeys>("get_api_keys")
 }
 
+export function setApiKey(filename: string | null, service: Service, apiKey: string) {
+    return invoke()<null>("set_api_key", { filename,service,apiKey })
+}
+
 export function playSound(sound: Sound, volume: number, speed: number) {
     return invoke()<null>("play_sound", { sound,volume,speed })
 }
@@ -30,8 +34,13 @@ export function setPreferences(preferences: Preferences) {
     return invoke()<null>("set_preferences", { preferences })
 }
 
-export type ApiKey = { value: string; source: Source }
+export function getSystemInfo() {
+    return invoke()<SystemInfo>("get_system_info")
+}
+
+export type Service = "OpenAI"
+export type ApiKeys = { openai: string | null }
 export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
-export type Source = "Environment"
+export type SystemInfo = { shell: Shell | null; shell_init_file: string | null }
 export type Sound = "Switch" | "Whoosh"
-export type ApiKeys = { openai: ApiKey | null }
+export type Shell = "Bash" | "Zsh"

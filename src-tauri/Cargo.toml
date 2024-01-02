@@ -30,6 +30,7 @@ serde_json = "1.0.105"
 rodio = "0.17.1"
 path-absolutize = "3.1.1"
 toml = "0.8.2"
+shellexpand = "3.1.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

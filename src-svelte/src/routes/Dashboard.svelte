@@ -1,6 +1,6 @@
 <script lang="ts">
-  import ApiKeysDisplay from "./ApiKeysDisplay.svelte";
-  import Metadata from "./Metadata.svelte";
+  import ApiKeysDisplay from "./components/api-keys/Display.svelte";
+  import Metadata from "./components/Metadata.svelte";
 </script>
 
 <section class="homepage-banner">
@@ -19,11 +19,9 @@
     display: flex;
     flex-direction: row;
     margin-bottom: 1rem;
-  }
-
-  .metadata-container {
-    margin-left: 1rem;
-    flex: 1;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   img {

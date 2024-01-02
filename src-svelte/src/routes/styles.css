@@ -49,6 +49,7 @@
   --color-text: rgba(0, 0, 0, 1);
   --color-header: rgba(255, 0, 0, 1);
   --color-faded: rgba(0, 0, 0, 0.5);
+  --color-error: #FF0000;
   --color-caution: #FF8C00;
   --color-border: #CCC;
   --color-foreground: #FFF;
@@ -94,4 +95,15 @@ h3, th {
 
 body {
   background-color: white;
+}
+
+.accessibility-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

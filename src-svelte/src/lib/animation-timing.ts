@@ -1,3 +1,5 @@
+import { cubicInOut } from "svelte/easing";
+
 export interface TransitionTimingMs {
   durationMs(): number;
   delayMs(): number;
@@ -337,5 +339,46 @@ export function inverseCubicInOut(t: number) {
   } else {
     // Solve the cubic equation for t >= 0.5
     return (Math.cbrt(2.0 * (t - 1.0)) + 2.0) / 2.0;
+  }
+}
+
+export class SubAnimation<T> {
+  timing: TransitionTimingFraction;
+  tick: (tLocalFraction: number) => T;
+
+  constructor(anim: {
+    timing: TransitionTimingFraction;
+    tick: (tLocalFraction: number) => T;
+  }) {
+    this.timing = anim.timing;
+    this.tick = anim.tick;
+  }
+
+  tickForGlobalTime(tGlobalFraction: number): T {
+    return this.tick(this.timing.localize(tGlobalFraction));
+  }
+}
+
+export class PropertyAnimation extends SubAnimation<string> {
+  max: number;
+
+  constructor(anim: {
+    timing: TransitionTimingFraction;
+    property: string;
+    min: number;
+    max: number;
+    unit: string;
+    easingFunction?: (t: number) => number;
+  }) {
+    const easingFunction = anim.easingFunction ?? cubicInOut;
+    const css = (t: number) => {
+      const easing = easingFunction(t);
+      const growth = this.max - anim.min;
+      const value = anim.min + growth * easing;
+      return `${anim.property}: ${value}${anim.unit};`;
+    };
+    super({ timing: anim.timing, tick: css });
+
+    this.max = anim.max;
   }
 }
