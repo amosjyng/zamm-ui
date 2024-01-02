@@ -46,7 +46,7 @@
       </tr>
       <tr>
         <td>Shell</td>
-        <td>{systemInfo.shell}</td>
+        <td>{systemInfo.shell ?? "Unknown"}</td>
       </tr>
     </table>
   {:catch error}
