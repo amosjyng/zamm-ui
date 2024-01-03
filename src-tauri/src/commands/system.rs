@@ -18,9 +18,14 @@ pub enum Shell {
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub struct SystemInfo {
+    zamm_version: String,
     os: Option<OS>,
     shell: Option<Shell>,
     shell_init_file: Option<String>,
+}
+
+fn get_zamm_version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
 }
 
 fn get_os() -> Option<OS> {
@@ -62,6 +67,7 @@ fn get_shell_init_file() -> Option<String> {
 #[specta]
 pub fn get_system_info() -> SystemInfo {
     SystemInfo {
+        zamm_version: get_zamm_version(),
         os: get_os(),
         shell: get_shell(),
         shell_init_file: get_shell_init_file(),
@@ -90,6 +96,13 @@ mod tests {
 
         let expected_info = parse_system_info(&system_info_sample.response);
         assert_eq!(actual_info, &expected_info);
+    }
+
+    #[test]
+    fn test_can_determine_zamm_version() {
+        let zamm_version = get_zamm_version();
+        println!("Determined Zamm version to be {}", zamm_version);
+        assert!(!zamm_version.is_empty());
     }
 
     #[test]
@@ -122,6 +135,7 @@ mod tests {
     #[test]
     fn test_get_linux_system_info() {
         let system_info = SystemInfo {
+            zamm_version: "0.0.0".to_string(),
             os: Some(OS::Linux),
             shell: Some(Shell::Zsh),
             shell_init_file: Some("/root/.profile".to_string()),

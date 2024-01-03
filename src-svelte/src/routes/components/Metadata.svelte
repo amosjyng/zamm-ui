@@ -24,7 +24,7 @@
       </tr>
       <tr>
         <td>Version</td>
-        <td class="version-value">0.0.0</td>
+        <td class="version-value">{systemInfo.zamm_version}</td>
       </tr>
       <tr>
         <td>Stability</td>
