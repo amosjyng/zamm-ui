@@ -42,7 +42,7 @@
       </tr>
       <tr>
         <td>OS</td>
-        <td>Linux</td>
+        <td>{systemInfo.os ?? "Unknown"}</td>
       </tr>
       <tr>
         <td>Shell</td>

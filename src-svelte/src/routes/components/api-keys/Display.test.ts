@@ -78,6 +78,7 @@ describe("API Keys Display", () => {
 
   test("some API key set", async () => {
     systemInfo.set({
+      os: null,
       shell: "Zsh",
       shell_init_file: "/home/rando/.zshrc",
     });
@@ -132,6 +133,7 @@ describe("API Keys Display", () => {
 
   test("can edit API key", async () => {
     systemInfo.set({
+      os: null,
       shell: "Zsh",
       shell_init_file: "no-newline/.bashrc",
     });
@@ -157,6 +159,7 @@ describe("API Keys Display", () => {
   test("preserves unsubmitted changes after opening and closing form", async () => {
     const defaultInitFile = "/home/rando/.bashrc";
     systemInfo.set({
+      os: null,
       shell: "Zsh",
       shell_init_file: defaultInitFile,
     });
@@ -165,6 +168,7 @@ describe("API Keys Display", () => {
 
     // setup largely copied from "can submit with custom file" test
     systemInfo.set({
+      os: null,
       shell: "Zsh",
       shell_init_file: defaultInitFile,
     });
@@ -220,6 +224,7 @@ describe("API Keys Display", () => {
   test("can submit with custom file", async () => {
     const defaultInitFile = "/home/rando/.bashrc";
     systemInfo.set({
+      os: null,
       shell: "Zsh",
       shell_init_file: defaultInitFile,
     });
@@ -247,6 +252,7 @@ describe("API Keys Display", () => {
   test("can submit with no file", async () => {
     const defaultInitFile = "/home/rando/.bashrc";
     systemInfo.set({
+      os: null,
       shell: "Zsh",
       shell_init_file: defaultInitFile,
     });

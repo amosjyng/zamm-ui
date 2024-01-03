@@ -1,6 +1,7 @@
 request: ["get_system_info"]
 response: >
   {
+    "os": "Linux",
     "shell": "Zsh",
     "shell_init_file": "/root/.profile"
   }

@@ -5,6 +5,12 @@ use specta::Type;
 use std::env;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
+pub enum OS {
+    MacOS,
+    Linux,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub enum Shell {
     Bash,
     Zsh,
@@ -12,8 +18,18 @@ pub enum Shell {
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub struct SystemInfo {
+    os: Option<OS>,
     shell: Option<Shell>,
     shell_init_file: Option<String>,
+}
+
+fn get_os() -> Option<OS> {
+    #[cfg(target_os = "linux")]
+    return Some(OS::Linux);
+    #[cfg(target_os = "macos")]
+    return Some(OS::MacOS);
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    return None;
 }
 
 fn get_shell() -> Option<Shell> {
@@ -45,12 +61,10 @@ fn get_shell_init_file() -> Option<String> {
 #[tauri::command(async)]
 #[specta]
 pub fn get_system_info() -> SystemInfo {
-    let shell = get_shell();
-    let shell_init_file = get_shell_init_file();
-
     SystemInfo {
-        shell,
-        shell_init_file,
+        os: get_os(),
+        shell: get_shell(),
+        shell_init_file: get_shell_init_file(),
     }
 }
 
@@ -78,6 +92,13 @@ mod tests {
         assert_eq!(actual_info, &expected_info);
     }
 
+    #[test]
+    fn test_can_determine_os() {
+        let os = get_os();
+        println!("Determined OS to be {:?}", os);
+        assert!(os.is_some());
+    }
+
     #[ignore]
     #[test]
     fn test_can_determine_shell() {
@@ -101,6 +122,7 @@ mod tests {
     #[test]
     fn test_get_linux_system_info() {
         let system_info = SystemInfo {
+            os: Some(OS::Linux),
             shell: Some(Shell::Zsh),
             shell_init_file: Some("/root/.profile".to_string()),
         };
