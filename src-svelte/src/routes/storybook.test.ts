@@ -1,6 +1,6 @@
 import {
   type Browser,
-  chromium,
+  webkit,
   type Page,
   type BrowserContext,
 } from "@playwright/test";
@@ -18,6 +18,7 @@ import {
   type MatchImageSnapshotOptions,
 } from "jest-image-snapshot";
 import type { ChildProcess } from "child_process";
+import * as fs from "fs/promises";
 import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 import sizeOf from "image-size";
 
@@ -104,6 +105,30 @@ const components: ComponentTestConfig[] = [
   },
 ];
 
+async function findVariantFiles(
+  directoryPath: string,
+  filePrefix: string,
+): Promise<string[]> {
+  const files = await fs.readdir(directoryPath);
+  return files
+    .filter((file) => {
+      return (
+        file.startsWith(filePrefix) && file.match(/-variant-\d+\.png$/) !== null
+      );
+    })
+    .map((file) => `${directoryPath}/${file}`);
+}
+
+async function checkVariants(variantFiles: string[], screenshot: Buffer) {
+  for (const file of variantFiles) {
+    const fileBuffer = await fs.readFile(file);
+    if (Buffer.compare(fileBuffer, screenshot) === 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 interface StorybookTestContext {
   page: Page;
 }
@@ -114,11 +139,17 @@ describe.concurrent("Storybook visual tests", () => {
   let browserContext: BrowserContext;
 
   beforeAll(async () => {
-    browser = await chromium.launch({ headless: true });
+    browser = await webkit.launch({ headless: false });
     browserContext = await browser.newContext();
     browserContext.setDefaultTimeout(DEFAULT_TIMEOUT);
     storybookProcess = await ensureStorybookRunning();
-  });
+
+    try {
+      await fs.rmdir("screenshots/testing", { recursive: true });
+    } catch (e) {
+      // ignore, it's okay if the folder already doesn't exist
+    }
+  }, 30_000); // webkit takes a little while to start up on headed mode
 
   afterAll(async () => {
     await browserContext.close();
@@ -135,7 +166,9 @@ describe.concurrent("Storybook visual tests", () => {
 
   afterEach<StorybookTestContext>(
     async (context: TestContext & StorybookTestContext) => {
-      await context.page.close();
+      if (context.task.result?.state === "pass") {
+        await context.page.close();
+      }
     },
   );
 
@@ -183,6 +216,7 @@ describe.concurrent("Storybook visual tests", () => {
             `http://localhost:6006/?path=/story/${storybookUrl}${variantPrefix}`,
           );
           await page.locator("button[title='Hide addons [A]']").click();
+          await page.evaluate(() => document.fonts.ready);
 
           const screenshot = await takeScreenshot(
             page,
@@ -202,10 +236,18 @@ describe.concurrent("Storybook visual tests", () => {
             customSnapshotIdentifier: `${storybookPath}/${variantConfig.name}`,
           };
 
+          // don't compare dynamic screenshots against baseline
           if (!variantConfig.assertDynamic) {
-            // don't compare dynamic screenshots against baseline
-            // @ts-ignore
-            expect(screenshot).toMatchImageSnapshot(matchOptions);
+            // look for all files in filesystem with suffix -variant-x.png
+            const variantFiles = await findVariantFiles(
+              `screenshots/baseline/${storybookPath}`,
+              variantConfig.name,
+            );
+            const variantsMatch = await checkVariants(variantFiles, screenshot);
+            if (!variantsMatch) {
+              // @ts-ignore
+              expect(screenshot).toMatchImageSnapshot(matchOptions);
+            }
           }
 
           if (variantConfig.assertDynamic !== undefined) {
@@ -229,7 +271,7 @@ describe.concurrent("Storybook visual tests", () => {
           }
         },
         {
-          retry: 4,
+          retry: 0,
           timeout: 20_000,
         },
       );

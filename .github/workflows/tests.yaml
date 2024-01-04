@@ -212,7 +212,7 @@ jobs:
         run: yarn playwright install
       - name: Run Svelte Tests
         run: |
-          yarn workspace gui test
+          xvfb-run yarn workspace gui test
       - name: Upload final app
         if: always() # run even if tests fail
         uses: actions/upload-artifact@v3
