@@ -145,7 +145,7 @@ describe.concurrent("Storybook visual tests", () => {
     storybookProcess = await ensureStorybookRunning();
 
     try {
-      await fs.rmdir("screenshots/testing", { recursive: true });
+      await fs.rm("screenshots/testing", { recursive: true, force: true });
     } catch (e) {
       // ignore, it's okay if the folder already doesn't exist
     }
