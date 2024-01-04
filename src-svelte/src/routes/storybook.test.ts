@@ -272,7 +272,7 @@ describe.concurrent("Storybook visual tests", () => {
         },
         {
           retry: 0,
-          timeout: 20_000,
+          timeout: DEFAULT_TIMEOUT * 2.2,
         },
       );
     }
