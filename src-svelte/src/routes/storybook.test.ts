@@ -1,6 +1,6 @@
 import {
   type Browser,
-  webkit,
+  firefox,
   type Page,
   type BrowserContext,
 } from "@playwright/test";
@@ -139,7 +139,7 @@ describe.concurrent("Storybook visual tests", () => {
   let browserContext: BrowserContext;
 
   beforeAll(async () => {
-    browser = await webkit.launch({ headless: false });
+    browser = await firefox.launch({ headless: true });
     browserContext = await browser.newContext();
     browserContext.setDefaultTimeout(DEFAULT_TIMEOUT);
     storybookProcess = await ensureStorybookRunning();
@@ -149,7 +149,7 @@ describe.concurrent("Storybook visual tests", () => {
     } catch (e) {
       // ignore, it's okay if the folder already doesn't exist
     }
-  }, 30_000); // webkit takes a little while to start up on headed mode
+  });
 
   afterAll(async () => {
     await browserContext.close();
@@ -271,7 +271,7 @@ describe.concurrent("Storybook visual tests", () => {
           }
         },
         {
-          retry: 0,
+          retry: 1,
           timeout: DEFAULT_TIMEOUT * 2.2,
         },
       );
