@@ -5,9 +5,7 @@
 
 <section class="homepage-banner">
   <img src="/logo.png" alt="Robot typing on keyboard" />
-  <div class="metadata-container">
-    <Metadata childNumber={0} />
-  </div>
+  <Metadata childNumber={0} />
 </section>
 
 <section>
