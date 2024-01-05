@@ -140,6 +140,7 @@ describe.concurrent("Storybook visual tests", () => {
 
   beforeAll(async () => {
     browser = await webkit.launch({ headless: false });
+    console.log(`Running tests with Webkit version ${browser.version()}`);
     browserContext = await browser.newContext();
     browserContext.setDefaultTimeout(DEFAULT_TIMEOUT);
     storybookProcess = await ensureStorybookRunning();
