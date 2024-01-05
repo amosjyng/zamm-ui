@@ -72,7 +72,7 @@ mod tests {
         #[allow(clippy::let_unit_value)]
         let actual_result = play_sound(request.sound, request.volume, request.speed);
         let actual_json = serde_json::to_string(&actual_result).unwrap();
-        let expected_json = greet_sample.response;
+        let expected_json = greet_sample.response.message;
         assert_eq!(actual_json, expected_json);
     }
 

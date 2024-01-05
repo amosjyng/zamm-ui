@@ -6,4 +6,5 @@ request:
       "service": "OpenAI",
       "api_key": ""
     }
-response: "null"
+response:
+  message: "null"

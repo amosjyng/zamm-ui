@@ -6,4 +6,5 @@ request:
       "volume": 0.5,
       "speed": 0.25
     }
-response: "null"
+response:
+  message: "null"

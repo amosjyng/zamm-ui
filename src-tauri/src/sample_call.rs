@@ -17,5 +17,12 @@ use serde::{Deserialize, Serialize};
 pub struct SampleCall {
     pub request: Vec<String>,
 
-    pub response: String,
+    pub response: Response,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Response {
+    pub message: String,
+
+    pub success: Option<bool>,
 }

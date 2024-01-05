@@ -64,7 +64,7 @@ mod tests {
 
                 true
             })
-            .return_once(move |_, _| Ok(greet_sample.response));
+            .return_once(move |_, _| Ok(greet_sample.response.message));
 
         let result = greet_helper(&mock, rust_input).unwrap();
         assert_eq!(result, rust_result);

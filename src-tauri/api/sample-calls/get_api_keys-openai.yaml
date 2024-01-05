@@ -1,5 +1,6 @@
 request: ["get_api_keys"]
-response: >
-  {
-    "openai": "0p3n41-4p1-k3y"
-  }
+response:
+  message: >
+    {
+      "openai": "0p3n41-4p1-k3y"
+    }

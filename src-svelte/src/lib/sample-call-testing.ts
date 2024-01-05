@@ -12,6 +12,7 @@ function customAssert(condition: boolean, message?: string): void {
 export interface ParsedCall {
   request: (string | Record<string, string>)[];
   response: Record<string, string>;
+  succeeded: boolean;
 }
 
 function loadYamlFromNetwork(url: string): string {
@@ -48,7 +49,9 @@ export function parseSampleCall(sampleFile: string): ParsedCall {
       : rawSample.request;
   const parsedSample: ParsedCall = {
     request: parsedRequest,
-    response: JSON.parse(rawSample.response),
+    response: JSON.parse(rawSample.response.message),
+    // if response.success does not exist, then it defaults to true
+    succeeded: rawSample.response.success !== false,
   };
   return parsedSample;
 }
@@ -80,9 +83,14 @@ export class TauriInvokePlayback {
         return Promise.reject(errorMessage);
       }
     }
-    const matchingCall = this.unmatchedCalls[matchingCallIndex].response;
+    const matchingCall = this.unmatchedCalls[matchingCallIndex];
     this.unmatchedCalls.splice(matchingCallIndex, 1);
-    return Promise.resolve(matchingCall);
+
+    if (matchingCall.succeeded) {
+      return Promise.resolve(matchingCall.response);
+    } else {
+      return Promise.reject(matchingCall.response);
+    }
   }
 
   addCalls(...calls: ParsedCall[]): void {
