@@ -23,7 +23,6 @@
 
   // Function to show a new snackbar message
   export function snackbarError(msg: string) {
-    console.log(`Error reported: ${msg}`);
     animateDurationMs = baseAnimationDurationMs;
     const id = nextId++;
     snackbars.update((current) => [...current, { id, msg }]);

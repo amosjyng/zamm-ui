@@ -182,6 +182,10 @@ jobs:
   svelte:
     name: Run Svelte tests
     runs-on: ubuntu-latest
+    container:
+      image: "mcr.microsoft.com/playwright:v1.38.0-jammy"
+    env:
+      PLAYWRIGHT_TIMEOUT: 60000
     needs: build
     steps:
       - uses: actions/checkout@v3
@@ -212,7 +216,7 @@ jobs:
         run: yarn playwright install
       - name: Run Svelte Tests
         run: |
-          yarn workspace gui test
+          xvfb-run yarn workspace gui test
       - name: Upload final app
         if: always() # run even if tests fail
         uses: actions/upload-artifact@v3

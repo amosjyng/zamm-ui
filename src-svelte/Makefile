@@ -9,6 +9,13 @@ forks/neodrag/packages/core/dist: forks/neodrag/packages/core/src/*
 forks/neodrag/packages/svelte/dist: forks/neodrag/packages/core/dist forks/neodrag/packages/svelte/src/*
 	cd forks/neodrag/packages/svelte && pnpm install && pnpm compile
 
+local-screenshots:
+	mkdir -p screenshots/local
+	cp -r screenshots/baseline screenshots/local/baseline
+
+update-local-screenshots:
+	cp -r screenshots/local/testing/actual/* screenshots/local/baseline/
+
 test:
 	yarn test
 
