@@ -13,7 +13,17 @@
           }
         },
         "response": {
-          "type": "string"
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": ["message"]
         }
       },
       "required": ["request", "response"],

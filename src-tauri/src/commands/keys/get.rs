@@ -34,7 +34,7 @@ pub mod tests {
 
         let actual_result = get_api_keys_helper(rust_input);
         let actual_json = serde_json::to_string_pretty(&actual_result).unwrap();
-        let expected_json = greet_sample.response.trim();
+        let expected_json = greet_sample.response.message.trim();
         assert_eq!(actual_json, expected_json);
     }
 

@@ -9,7 +9,12 @@
 
 export interface SampleCall {
   request: string[];
-  response: string;
+  response: Response;
+}
+
+export interface Response {
+  message: string;
+  success?: boolean;
 }
 
 // Converts JSON strings to/from your types
@@ -210,7 +215,14 @@ const typeMap: any = {
   SampleCall: o(
     [
       { json: "request", js: "request", typ: a("") },
-      { json: "response", js: "response", typ: "" },
+      { json: "response", js: "response", typ: r("Response") },
+    ],
+    false,
+  ),
+  Response: o(
+    [
+      { json: "message", js: "message", typ: "" },
+      { json: "success", js: "success", typ: u(undefined, true) },
     ],
     false,
   ),

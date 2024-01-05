@@ -1,41 +1,34 @@
-import { expect, test, vi, type SpyInstance } from "vitest";
+import { expect, test, vi, type Mock } from "vitest";
 import "@testing-library/jest-dom";
 
 import { act, render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
+import { TauriInvokePlayback } from "$lib/sample-call-testing";
 import SidebarUI from "./SidebarUI.svelte";
 import { soundOn, volume, animationSpeed } from "$lib/preferences";
-import fs from "fs";
-import yaml from "js-yaml";
-import { Convert, type SampleCall } from "$lib/sample-call";
 
 const tauriInvokeMock = vi.fn();
 
 vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
 
 describe("Sidebar", () => {
-  let whooshCall: SampleCall;
-  let whooshRequest: (string | Record<string, string>)[];
-  let spy: SpyInstance;
+  let tauriInvokeMock: Mock;
+  let playback: TauriInvokePlayback;
   let homeLink: HTMLElement;
   let settingsLink: HTMLElement;
 
   beforeAll(() => {
-    const sample_call_yaml = fs.readFileSync(
-      "../src-tauri/api/sample-calls/play_sound-whoosh.yaml",
-      "utf-8",
+    tauriInvokeMock = vi.fn();
+    vi.stubGlobal("__TAURI_INVOKE__", tauriInvokeMock);
+    playback = new TauriInvokePlayback();
+    tauriInvokeMock.mockImplementation(
+      (...args: (string | Record<string, string>)[]) =>
+        playback.mockCall(...args),
     );
-    const sample_call_json = JSON.stringify(yaml.load(sample_call_yaml));
-    whooshCall = Convert.toSampleCall(sample_call_json);
-    whooshRequest = whooshCall.request;
-    whooshRequest[1] = JSON.parse(whooshCall.request[1]);
+    playback.addSamples("../src-tauri/api/sample-calls/play_sound-whoosh.yaml");
   });
 
   beforeEach(() => {
-    spy = vi.spyOn(window, "__TAURI_INVOKE__");
-    const response = JSON.parse(whooshCall.response);
-    tauriInvokeMock.mockResolvedValueOnce(response);
-
     render(SidebarUI, {
       currentRoute: "/",
       dummyLinks: true,
@@ -44,7 +37,7 @@ describe("Sidebar", () => {
     settingsLink = screen.getByTitle("Settings");
     expect(homeLink).toHaveAttribute("aria-current", "page");
     expect(settingsLink).not.toHaveAttribute("aria-current", "page");
-    expect(spy).not.toHaveBeenCalled();
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
   });
 
   afterEach(() => {
@@ -64,7 +57,7 @@ describe("Sidebar", () => {
     volume.update(() => 0.125);
     animationSpeed.update(() => 0.25);
     await act(() => userEvent.click(settingsLink));
-    expect(spy).toHaveBeenLastCalledWith(...whooshRequest);
+    expect(tauriInvokeMock).toBeCalledTimes(1);
   });
 
   test("does not play whoosh sound when sound off", async () => {
@@ -73,13 +66,13 @@ describe("Sidebar", () => {
     await act(() => userEvent.click(settingsLink));
     expect(homeLink).not.toHaveAttribute("aria-current", "page");
     expect(settingsLink).toHaveAttribute("aria-current", "page");
-    expect(spy).not.toHaveBeenCalled();
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
   });
 
   test("does not play whoosh sound when path unchanged", async () => {
     await act(() => userEvent.click(homeLink));
     expect(homeLink).toHaveAttribute("aria-current", "page");
     expect(settingsLink).not.toHaveAttribute("aria-current", "page");
-    expect(spy).not.toHaveBeenCalled();
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
   });
 });

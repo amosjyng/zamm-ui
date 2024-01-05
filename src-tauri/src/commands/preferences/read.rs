@@ -58,7 +58,7 @@ mod tests {
 
         let actual_result = get_preferences_helper(&Some(preferences_dir.into()));
         let actual_json = serde_json::to_string_pretty(&actual_result).unwrap();
-        let expected_json = sample.response.trim();
+        let expected_json = sample.response.message.trim();
         assert_eq!(actual_json, expected_json);
     }
 

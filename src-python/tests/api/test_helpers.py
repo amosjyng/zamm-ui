@@ -13,4 +13,4 @@ def compare_io(filename: str) -> None:
     """Compare input and output for generic commands."""
     sample_call = SampleCall.from_dict(yaml.safe_load(Path(filename).read_text()))
     response = handle_commandline_args(*sample_call.request)
-    assert json.loads(response) == json.loads(sample_call.response)
+    assert json.loads(response) == json.loads(sample_call.response.message)

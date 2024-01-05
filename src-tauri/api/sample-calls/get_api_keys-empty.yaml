@@ -1,5 +1,6 @@
 request: ["get_api_keys"]
-response: >
-  {
-    "openai": null
-  }
+response:
+  message: >
+    {
+      "openai": null
+    }

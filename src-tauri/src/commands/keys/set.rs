@@ -100,7 +100,6 @@ pub mod tests {
     pub fn check_set_api_key_sample(
         sample_file: &str,
         existing_zamm_api_keys: &ZammApiKeys,
-        should_fail: bool,
         test_dir_name: &str,
     ) {
         let sample = read_sample(sample_file);
@@ -143,7 +142,7 @@ pub mod tests {
         );
 
         // check that the API call returns the expected success or failure signal
-        if should_fail {
+        if sample.response.success == Some(false) {
             assert!(actual_result.is_err(), "API call should have thrown error");
         } else {
             assert!(
@@ -158,7 +157,7 @@ pub mod tests {
             Ok(r) => serde_json::to_string_pretty(&r).unwrap(),
             Err(e) => serde_json::to_string_pretty(&e).unwrap(),
         };
-        let expected_json = sample.response.trim();
+        let expected_json = sample.response.message.trim();
         assert_eq!(actual_json, expected_json);
 
         // check that the API call actually modified the in-memory API keys,
@@ -195,24 +194,7 @@ pub mod tests {
         sample_file: &str,
         existing_zamm_api_keys: &ZammApiKeys,
     ) {
-        check_set_api_key_sample(
-            sample_file,
-            existing_zamm_api_keys,
-            false,
-            "set_api_key",
-        );
-    }
-
-    fn check_set_api_key_sample_unit_fails(
-        sample_file: &str,
-        existing_zamm_api_keys: &ZammApiKeys,
-    ) {
-        check_set_api_key_sample(
-            sample_file,
-            existing_zamm_api_keys,
-            true,
-            "set_api_key",
-        );
+        check_set_api_key_sample(sample_file, existing_zamm_api_keys, "set_api_key");
     }
 
     #[test]
@@ -275,7 +257,7 @@ pub mod tests {
     #[test]
     fn test_invalid_filename() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
-        check_set_api_key_sample_unit_fails(
+        check_set_api_key_sample_unit(
             "api/sample-calls/set_api_key-invalid-filename.yaml",
             &api_keys,
         );

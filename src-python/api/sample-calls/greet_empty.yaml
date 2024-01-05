@@ -4,7 +4,8 @@ request:
     {
       "name": ""
     }
-response: >
-  {
-    "greeting": "Hello, ! You have been greeted from Python"
-  }
+response:
+  message: >
+    {
+      "greeting": "Hello, ! You have been greeted from Python"
+    }

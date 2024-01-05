@@ -136,7 +136,7 @@ mod tests {
         assert!(actual_result.is_ok());
         let actual_json =
             serde_json::to_string_pretty(&actual_result.unwrap()).unwrap();
-        let expected_json = sample.response.trim();
+        let expected_json = sample.response.message.trim();
         assert_eq!(actual_json, expected_json);
 
         let resulting_contents = fs::read_to_string(test_preferences_file)

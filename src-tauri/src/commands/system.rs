@@ -94,7 +94,7 @@ mod tests {
         let system_info_sample = read_sample(file_prefix);
         assert_eq!(system_info_sample.request, vec!["get_system_info"]);
 
-        let expected_info = parse_system_info(&system_info_sample.response);
+        let expected_info = parse_system_info(&system_info_sample.response.message);
         assert_eq!(actual_info, &expected_info);
     }
 
