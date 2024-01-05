@@ -27,6 +27,11 @@ const DEFAULT_TIMEOUT =
     ? 9_000
     : parseInt(process.env.PLAYWRIGHT_TIMEOUT);
 
+const SCREENSHOTS_BASE_DIR =
+  process.env.SCREENSHOTS_BASE_DIR === undefined
+    ? "screenshots"
+    : process.env.SCREENSHOTS_BASE_DIR;
+
 interface ComponentTestConfig {
   path: string[]; // Represents the Storybook hierarchy path
   variants: string[] | VariantConfig[];
@@ -139,18 +144,21 @@ describe.concurrent("Storybook visual tests", () => {
   let browserContext: BrowserContext;
 
   beforeAll(async () => {
-    browser = await webkit.launch({ headless: false });
+    browser = await webkit.launch({ headless: true });
     console.log(`Running tests with Webkit version ${browser.version()}`);
     browserContext = await browser.newContext();
     browserContext.setDefaultTimeout(DEFAULT_TIMEOUT);
     storybookProcess = await ensureStorybookRunning();
 
     try {
-      await fs.rm("screenshots/testing", { recursive: true, force: true });
+      await fs.rm(`${SCREENSHOTS_BASE_DIR}/testing`, {
+        recursive: true,
+        force: true,
+      });
     } catch (e) {
       // ignore, it's okay if the folder already doesn't exist
     }
-  }, 30_000); // webkit takes a little while to start up on headed mode
+  });
 
   afterAll(async () => {
     await browserContext.close();
@@ -191,9 +199,9 @@ describe.concurrent("Storybook visual tests", () => {
   const baseMatchOptions: MatchImageSnapshotOptions = {
     allowSizeMismatch: true,
     storeReceivedOnFailure: true,
-    customSnapshotsDir: "screenshots/baseline",
-    customDiffDir: "screenshots/testing/diff",
-    customReceivedDir: "screenshots/testing/actual",
+    customSnapshotsDir: `${SCREENSHOTS_BASE_DIR}/baseline`,
+    customDiffDir: `${SCREENSHOTS_BASE_DIR}/testing/diff`,
+    customReceivedDir: `${SCREENSHOTS_BASE_DIR}/testing/actual`,
     customReceivedPostfix: "",
   };
 
@@ -241,7 +249,7 @@ describe.concurrent("Storybook visual tests", () => {
           if (!variantConfig.assertDynamic) {
             // look for all files in filesystem with suffix -variant-x.png
             const variantFiles = await findVariantFiles(
-              `screenshots/baseline/${storybookPath}`,
+              `${SCREENSHOTS_BASE_DIR}/baseline/${storybookPath}`,
               variantConfig.name,
             );
             const variantsMatch = await checkVariants(variantFiles, screenshot);
