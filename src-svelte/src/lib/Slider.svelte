@@ -12,9 +12,7 @@
   );
   const sliderId = getComponentId("slider");
   const transitionAnimation =
-    `transition: transform ` +
-    `calc(0.1s / var(--base-animation-speed)) ` +
-    `ease-out;`;
+    `transition: ` + `transform var(--standard-duration) ease-out;`;
   const overshoot = 0.4 * rootFontSize; // how much overshoot to allow per-side
 
   export let label: string | undefined = undefined;

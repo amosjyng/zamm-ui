@@ -41,7 +41,7 @@
     width: 0;
     height: 2px;
     background-color: blue;
-    transition: width calc(0.05s / var(--base-animation-speed)) ease-out;
+    transition: width calc(0.5 * var(--standard-duration)) ease-out;
   }
 
   input[type="text"]:focus + .focus-border {

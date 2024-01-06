@@ -21,7 +21,7 @@
     z-index: -100;
     overflow: hidden;
     --position: 55%;
-    --base-duration: calc(15s / var(--base-animation-speed));
+    --base-duration: calc(150 * var(--standard-duration));
     --max-left: -15%;
     --max-right: +10%;
     --animation-state: paused;

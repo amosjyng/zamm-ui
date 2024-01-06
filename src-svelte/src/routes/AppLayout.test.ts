@@ -72,23 +72,7 @@ describe("AppLayout", () => {
     expect(tauriInvokeMock).toBeCalledTimes(1);
   });
 
-  test("will enable animations by default", async () => {
-    expect(get(animationsOn)).toBe(true);
-    expect(tauriInvokeMock).not.toHaveBeenCalled();
-
-    playback.addSamples(
-      "../src-tauri/api/sample-calls/get_preferences-no-file.yaml",
-    );
-
-    render(AppLayout, { currentRoute: "/" });
-    await tickFor(3);
-    expect(get(animationsOn)).toBe(true);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
-    const app = document.querySelector("#app") as Element;
-    expect(app.classList).not.toContainEqual("animations-disabled");
-  });
-
-  test("will disable animations if preference overridden", async () => {
+  test("will set animation if animation preference overridden", async () => {
     expect(get(animationsOn)).toBe(true);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
@@ -100,11 +84,9 @@ describe("AppLayout", () => {
     await tickFor(3);
     expect(get(animationsOn)).toBe(false);
     expect(tauriInvokeMock).toBeCalledTimes(1);
-    const app = document.querySelector("#app") as Element;
-    expect(app.classList).toContainEqual("animations-disabled");
   });
 
-  test("will slow down animations if preference overridden", async () => {
+  test("will set animation speed if speed preference overridden", async () => {
     expect(get(animationSpeed)).toBe(1);
     expect(tauriInvokeMock).not.toHaveBeenCalled();
 
@@ -116,7 +98,5 @@ describe("AppLayout", () => {
     await tickFor(3);
     expect(get(animationSpeed)).toBe(0.9);
     expect(tauriInvokeMock).toBeCalledTimes(1);
-    const app = document.querySelector("#app") as Element;
-    expect(app.getAttribute("style")).toEqual("--base-animation-speed: 0.9;");
   });
 });

@@ -5,6 +5,7 @@
   import "./styles.css";
   import { onMount } from "svelte";
   import PageTransition from "./PageTransition.svelte";
+  import AnimationControl from "./AnimationControl.svelte";
   import { getPreferences } from "$lib/bindings";
   import {
     soundOn,
@@ -45,27 +46,25 @@
   });
 </script>
 
-<div
-  id="app"
-  class:animations-disabled={!$animationsOn}
-  style="--base-animation-speed: {$animationSpeed};"
->
-  <Sidebar />
+<div id="app">
+  <AnimationControl>
+    <Sidebar />
 
-  <div class="main-container">
-    <div class="background-layout">
-      <Background />
+    <div class="main-container">
+      <div class="background-layout">
+        <Background />
+      </div>
+      <Snackbar />
+
+      <main>
+        {#if ready}
+          <PageTransition {currentRoute}>
+            <slot />
+          </PageTransition>
+        {/if}
+      </main>
     </div>
-    <Snackbar />
-
-    <main>
-      {#if ready}
-        <PageTransition {currentRoute}>
-          <slot />
-        </PageTransition>
-      {/if}
-    </main>
-  </div>
+  </AnimationControl>
 </div>
 
 <style>
@@ -78,11 +77,6 @@
     left: 0;
     background-color: var(--color-background);
     --main-corners: var(--corner-roundness) 0 0 var(--corner-roundness);
-  }
-
-  #app.animations-disabled :global(*) {
-    animation-play-state: paused !important;
-    transition: none !important;
   }
 
   .main-container {

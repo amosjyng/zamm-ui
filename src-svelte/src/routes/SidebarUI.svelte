@@ -107,7 +107,7 @@
 
 <style>
   header {
-    --animation-duration: calc(0.2s / var(--base-animation-speed));
+    --animation-duration: calc(2 * var(--standard-duration));
     --icons-top-offset: calc(2 * var(--corner-roundness));
     --sidebar-left-padding: 0.5rem;
     --sidebar-icon-size: calc(

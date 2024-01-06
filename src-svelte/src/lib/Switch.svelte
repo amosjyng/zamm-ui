@@ -26,7 +26,7 @@
   const offLeft = -labelWidth;
   const onLeft = 0;
   const transitionAnimation = `
-    transition: transform calc(0.1s / var(--base-animation-speed));
+    transition: transform var(--standard-duration);
     transition-timing-function: cubic-bezier(0, 0, 0, 1.3);
   `;
   const switchId = getComponentId("switch");

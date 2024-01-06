@@ -43,20 +43,19 @@
 </script>
 
 <script lang="ts">
-  import { animationSpeed, animationsOn } from "$lib/preferences";
+  import { standardDuration } from "$lib/preferences";
   import { fly, fade } from "svelte/transition";
   import { flip } from "svelte/animate";
   import Message from "./Message.svelte";
 
-  $: baseDurationMs = $animationsOn ? 100 / $animationSpeed : 0;
-  $: setBaseAnimationDurationMs(baseDurationMs);
+  $: setBaseAnimationDurationMs($standardDuration);
 </script>
 
 <div class="snackbars">
   {#each $snackbars as snackbar (snackbar.id)}
     <div
-      in:fly|global={{ y: "1rem", duration: baseDurationMs }}
-      out:fade|global={{ duration: baseDurationMs }}
+      in:fly|global={{ y: "1rem", duration: $standardDuration }}
+      out:fade|global={{ duration: $standardDuration }}
       animate:flip={{ duration: animateDurationMs }}
     >
       <Message dismiss={() => dismiss(snackbar.id)} message={snackbar.msg} />
