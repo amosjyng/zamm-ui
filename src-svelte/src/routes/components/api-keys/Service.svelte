@@ -80,8 +80,7 @@
     flex: 1;
     border-radius: var(--corner-roundness);
     transition-property: background-color, box-shadow;
-    transition-duration: calc(0.1s / var(--base-animation-speed));
-    transition-timing-function: ease-in;
+    transition: var(--standard-duration) ease-in;
   }
 
   .api-key.active {

@@ -43,7 +43,8 @@
       linear-gradient(135deg, transparent 0 var(--cut), #fff 0) top left;
     mask-size: 51% 100%;
     mask-repeat: no-repeat;
-    transition: all calc(0.05s / var(--base-animation-speed)) ease-out;
+    transition-property: filter, transform;
+    transition: calc(0.5 * var(--standard-duration)) ease-out;
   }
 
   .inner {

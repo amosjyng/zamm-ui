@@ -1,8 +1,8 @@
 <script lang="ts">
+  import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
   import InfoBox from "$lib/InfoBox.svelte";
   import SubInfoBox from "$lib/SubInfoBox.svelte";
   import PageTransition from "./PageTransition.svelte";
-  import { animationsOn } from "$lib/preferences";
 
   let routeA = true;
 
@@ -13,7 +13,7 @@
   $: currentRoute = routeA ? "/a.html" : "/b.html";
 </script>
 
-<div class="storybook-wrapper" class:animations-disabled={!$animationsOn}>
+<MockAppLayout>
   <button class="route-toggle" on:click={toggleRoute}>Toggle route</button>
   <PageTransition {currentRoute} {...$$restProps}>
     {#if routeA}
@@ -48,21 +48,9 @@
       </InfoBox>
     {/if}
   </PageTransition>
-</div>
+</MockAppLayout>
 
 <style>
-  .storybook-wrapper {
-    width: 100%;
-    max-width: 50rem;
-    box-sizing: border-box;
-    position: relative;
-  }
-
-  .animations-disabled :global(*) {
-    animation-play-state: paused !important;
-    transition: none !important;
-  }
-
   .route-toggle {
     margin-bottom: 1rem;
   }

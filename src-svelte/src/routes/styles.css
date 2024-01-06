@@ -59,6 +59,7 @@
   --shadow-blur: 8px;
   --corner-roundness: 0.375rem;
   --base-animation-speed: 1;
+  --standard-duration: 100ms;
   font-family: var(--font-body);
   color: var(--color-text);
   font-weight: 400;

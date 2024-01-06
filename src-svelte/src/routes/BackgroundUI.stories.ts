@@ -1,7 +1,7 @@
 import BackgroundComponent from "./BackgroundUI.svelte";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import SvelteStoresDecorator from "$lib/__mocks__/stores";
-import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
+import BackgroundUIView from "./BackgroundUIView.svelte";
 
 export default {
   component: BackgroundComponent,
@@ -11,7 +11,7 @@ export default {
     SvelteStoresDecorator,
     (story: StoryFn) => {
       return {
-        Component: MockAppLayout,
+        Component: BackgroundUIView,
         slot: story,
       };
     },

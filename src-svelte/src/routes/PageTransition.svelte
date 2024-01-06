@@ -55,7 +55,7 @@
 
 <script lang="ts">
   import { fly } from "svelte/transition";
-  import { animationsOn, animationSpeed } from "$lib/preferences";
+  import { standardDuration } from "$lib/preferences";
   import { firstAppLoad, firstPageLoad } from "$lib/firstPageLoad";
   import { onMount, tick } from "svelte";
 
@@ -83,7 +83,7 @@
   }
 
   // twice the speed of sidebar UI slider
-  $: totalDurationMs = $animationsOn ? 200 / $animationSpeed : 0;
+  $: totalDurationMs = 2 * $standardDuration;
   $: transitions = getTransitions(totalDurationMs, 0);
   $: checkFirstPageLoad(currentRoute);
 </script>

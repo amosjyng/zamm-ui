@@ -190,8 +190,8 @@ describe.concurrent("Storybook visual tests", () => {
       ? "body"
       : "#storybook-root > :first-child";
     const elementClass = await frame.locator(locator).getAttribute("class");
-    if (elementClass === "storybook-wrapper") {
-      locator = "#storybook-root > :first-child > :first-child";
+    if (elementClass?.includes("storybook-wrapper")) {
+      locator = ".storybook-wrapper > :first-child > :first-child";
     }
     return await frame.locator(locator).screenshot();
   };

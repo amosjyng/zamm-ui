@@ -1,28 +1,18 @@
 <script lang="ts">
-  let visible = true;
+  import { onMount } from "svelte";
+  import MockAppLayout from "./MockAppLayout.svelte";
 
-  function toggleVisibility() {
-    visible = !visible;
+  let visible = false;
 
+  onMount(() => {
     setTimeout(() => {
-      visible = !visible;
-    }, 100);
-  }
+      visible = true;
+    }, 50);
+  });
 </script>
 
-<div class="storybook-wrapper">
-  <button class="visibility-toggle" on:click={toggleVisibility}>Remount</button>
+<MockAppLayout>
   {#if visible}
     <slot />
   {/if}
-</div>
-
-<style>
-  .storybook-wrapper {
-    --base-animation-speed: 0.1;
-  }
-
-  .visibility-toggle {
-    margin-bottom: 1rem;
-  }
-</style>
+</MockAppLayout>
