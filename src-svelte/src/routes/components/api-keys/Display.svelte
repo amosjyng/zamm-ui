@@ -31,7 +31,12 @@
     <Loading />
   {:else}
     <div class="api-keys" role="table">
-      <Service name="OpenAI" apiKey={apiKeys.openai} editing={editDemo} />
+      <Service
+        name="OpenAI"
+        apiKeyUrl="https://platform.openai.com/api-keys"
+        apiKey={apiKeys.openai}
+        editing={editDemo}
+      />
     </div>
   {/if}
 </InfoBox>

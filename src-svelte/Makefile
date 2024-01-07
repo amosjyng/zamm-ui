@@ -15,6 +15,7 @@ local-screenshots:
 
 update-local-screenshots:
 	cp -r screenshots/local/testing/actual/* screenshots/local/baseline/
+	cp -r screenshots/local/testing/actual/* screenshots/baseline/
 
 test:
 	yarn test
