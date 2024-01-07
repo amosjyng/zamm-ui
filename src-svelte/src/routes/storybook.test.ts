@@ -68,6 +68,10 @@ const components: ComponentTestConfig[] = [
     screenshotEntireBody: true,
   },
   {
+    path: ["reusable", "external-link"],
+    variants: ["external-link"],
+  },
+  {
     path: ["layout", "background"],
     variants: [
       {
@@ -114,6 +118,12 @@ async function findVariantFiles(
   directoryPath: string,
   filePrefix: string,
 ): Promise<string[]> {
+  try {
+    await fs.access(directoryPath);
+  } catch (_) {
+    return [];
+  }
+
   const files = await fs.readdir(directoryPath);
   return files
     .filter((file) => {

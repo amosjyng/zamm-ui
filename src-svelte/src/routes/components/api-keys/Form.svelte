@@ -16,6 +16,7 @@
   import Button from "$lib/controls/Button.svelte";
 
   export let service: Service;
+  export let apiKeyUrl: string | undefined = undefined;
   export let fields: FormFields;
   export let formClose: () => void = () => undefined;
 
@@ -67,6 +68,13 @@
 <div class="container" transition:growY>
   <div class="inset-container">
     <form on:submit|preventDefault={submitApiKey}>
+      {#if apiKeyUrl}
+        <p>
+          Tip: Get your {service} key
+          <a href={apiKeyUrl} target="_blank">here</a>.
+        </p>
+      {/if}
+
       <div class="form-row">
         <label for="apiKey">API key:</label>
         <TextInput name="apiKey" bind:value={fields.apiKey} />
@@ -119,6 +127,12 @@
     flex-direction: column;
     gap: 0.5rem;
     flex-wrap: nowrap;
+  }
+
+  form p {
+    margin: 0 0 0.25rem;
+    color: #666666;
+    text-align: center;
   }
 
   label {

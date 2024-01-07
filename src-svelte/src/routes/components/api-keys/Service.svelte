@@ -4,6 +4,7 @@
   import { systemInfo } from "$lib/system-info";
 
   export let name: Service;
+  export let apiKeyUrl: string | undefined = undefined;
   export let apiKey: string | null;
   export let editing = false;
   let formFields: FormFields = {
@@ -51,7 +52,7 @@
   </div>
 
   {#if editing}
-    <Form {formClose} service={name} bind:fields={formFields} />
+    <Form {formClose} service={name} {apiKeyUrl} bind:fields={formFields} />
   {/if}
 </div>
 

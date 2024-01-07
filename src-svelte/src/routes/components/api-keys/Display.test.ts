@@ -130,6 +130,20 @@ describe("API Keys Display", () => {
     await waitFor(() => expect(formExistenceCheck).toThrow());
   });
 
+  test("shows link to API key", async () => {
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-openai.yaml",
+      "Active",
+    );
+
+    await toggleOpenAIForm();
+    const apiKeyLink = screen.getByRole("link", { name: "here" });
+    expect(apiKeyLink).toHaveAttribute(
+      "href",
+      "https://platform.openai.com/api-keys",
+    );
+  });
+
   test("can edit API key", async () => {
     systemInfo.set({
       ...NullSystemInfo,
