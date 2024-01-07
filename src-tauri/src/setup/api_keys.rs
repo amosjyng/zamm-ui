@@ -1,8 +1,26 @@
+use diesel::deserialize::FromSqlRow;
+use diesel::expression::AsExpression;
+use diesel::sql_types::Text;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::env;
+use strum_macros::{Display, EnumString};
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
+#[derive(
+    Debug,
+    Clone,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    Type,
+    EnumString,
+    Display,
+    AsExpression,
+    FromSqlRow,
+)]
+#[diesel(sql_type = Text)]
+#[strum(serialize_all = "snake_case")]
 pub enum Service {
     OpenAI,
 }
