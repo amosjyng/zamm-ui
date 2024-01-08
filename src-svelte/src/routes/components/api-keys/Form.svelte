@@ -14,11 +14,15 @@
   import { apiKeys } from "$lib/system-info";
   import TextInput from "$lib/controls/TextInput.svelte";
   import Button from "$lib/controls/Button.svelte";
+  import Explanation from "$lib/Explanation.svelte";
 
   export let service: Service;
   export let apiKeyUrl: string | undefined = undefined;
   export let fields: FormFields;
   export let formClose: () => void = () => undefined;
+  const exportExplanation =
+    `Exports this API key for use in other programs on your computer.&#10;&#13;` +
+    `Don't worry about this option if you're not a programmer.`;
 
   $: growDuration = 2 * $standardDuration;
 
@@ -81,7 +85,8 @@
       </div>
 
       <div class="form-row">
-        <label for="saveKey" class="accessibility-only">Save key to disk?</label
+        <label for="saveKey" class="accessibility-only"
+          >Export as environment variable?</label
         >
         <input
           type="checkbox"
@@ -89,7 +94,10 @@
           name="saveKey"
           bind:checked={fields.saveKey}
         />
-        <label for="saveKeyLocation">Save key to:</label>
+        <div>
+          <label for="saveKeyLocation">Export from:</label>
+          <Explanation text={exportExplanation} />
+        </div>
         <TextInput
           name="saveKeyLocation"
           placeholder="e.g. /home/user/.bashrc"
