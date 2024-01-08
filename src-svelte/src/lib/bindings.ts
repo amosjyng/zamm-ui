@@ -38,9 +38,9 @@ export function getSystemInfo() {
     return invoke()<SystemInfo>("get_system_info")
 }
 
-export type Service = "OpenAI"
 export type ApiKeys = { openai: string | null }
 export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
+export type Service = "OpenAI"
 export type OS = "MacOS" | "Linux"
 export type Shell = "Bash" | "Zsh"
 export type SystemInfo = { zamm_version: string; os: OS | null; shell: Shell | null; shell_init_file: string | null }

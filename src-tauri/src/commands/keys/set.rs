@@ -1,6 +1,8 @@
 use crate::commands::errors::ZammResult;
+use crate::schema::api_keys;
 use crate::setup::api_keys::Service;
-use crate::ZammApiKeys;
+use crate::{ZammApiKeys, ZammDatabase};
+use diesel::{ExpressionMethods, RunQueryDsl};
 use specta::specta;
 use tauri::State;
 
@@ -10,11 +12,14 @@ use std::path::Path;
 
 fn set_api_key_helper(
     zamm_api_keys: &ZammApiKeys,
+    zamm_db: &ZammDatabase,
     filename: Option<&str>,
     service: &Service,
     api_key: String,
 ) -> ZammResult<()> {
     let api_keys = &mut zamm_api_keys.0.lock().unwrap();
+    let db = &mut zamm_db.0.lock().unwrap();
+
     // write new API key to disk before we can no longer borrow it
     let init_update_result = || -> ZammResult<()> {
         if api_key.is_empty() {
@@ -48,37 +53,76 @@ fn set_api_key_helper(
         }
         Ok(())
     }();
+
+    // write new API key to database before we can no longer borrow it
+    let db_update_result = || -> ZammResult<()> {
+        if let Some(conn) = db.as_mut() {
+            if api_key.is_empty() {
+                // delete from db
+                diesel::delete(api_keys::table)
+                    .filter(api_keys::service.eq(service))
+                    .execute(conn)?;
+            } else {
+                diesel::replace_into(api_keys::table)
+                    .values(crate::models::NewApiKey {
+                        service: service.clone(),
+                        api_key: &api_key,
+                    })
+                    .execute(conn)?;
+            }
+        }
+        Ok(())
+    }();
+
     // assign ownership of new API key string to in-memory API keys
     if api_key.is_empty() {
         api_keys.remove(service);
     } else {
         api_keys.update(service, api_key);
     }
-    init_update_result
+
+    // if any errors exist, return one of them
+    init_update_result?;
+    db_update_result
 }
 
 #[tauri::command(async)]
 #[specta]
 pub fn set_api_key(
     api_keys: State<ZammApiKeys>,
+    database: State<ZammDatabase>,
     filename: Option<&str>,
     service: Service,
     api_key: String,
 ) -> ZammResult<()> {
-    set_api_key_helper(&api_keys, filename, &service, api_key)
+    set_api_key_helper(&api_keys, &database, filename, &service, api_key)
 }
 
 #[cfg(test)]
 pub mod tests {
     use super::*;
+    use crate::models::NewApiKey;
     use crate::sample_call::SampleCall;
+    use crate::schema;
     use crate::setup::api_keys::ApiKeys;
+    use crate::setup::db::MIGRATIONS;
     use crate::test_helpers::get_temp_test_dir;
+    use diesel::prelude::*;
+    use diesel_migrations::MigrationHarness;
     use serde::{Deserialize, Serialize};
-    use std::sync::Mutex;
-
     use std::fs;
     use std::path::{Path, PathBuf};
+    use std::sync::Mutex;
+
+    fn setup_database() -> SqliteConnection {
+        let mut conn = SqliteConnection::establish(":memory:").unwrap();
+        conn.run_pending_migrations(MIGRATIONS).unwrap();
+        conn
+    }
+
+    pub fn setup_zamm_db() -> ZammDatabase {
+        ZammDatabase(Mutex::new(Some(setup_database())))
+    }
 
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
     struct SetApiKeyRequest {
@@ -97,7 +141,19 @@ pub mod tests {
         serde_yaml::from_str(&sample_str).unwrap()
     }
 
+    fn get_openai_api_key_from_db(db: &ZammDatabase) -> Option<String> {
+        use schema::api_keys::dsl::*;
+        let mut conn_mutex = db.0.lock().unwrap();
+        let conn = conn_mutex.as_mut().unwrap();
+        api_keys
+            .filter(service.eq(Service::OpenAI))
+            .select(api_key)
+            .first::<String>(conn)
+            .ok()
+    }
+
     pub fn check_set_api_key_sample(
+        db: &ZammDatabase,
         sample_file: &str,
         existing_zamm_api_keys: &ZammApiKeys,
         test_dir_name: &str,
@@ -136,6 +192,7 @@ pub mod tests {
 
         let actual_result = set_api_key_helper(
             existing_zamm_api_keys,
+            db,
             test_init_file.as_deref(),
             &request.service,
             request.api_key.clone(),
@@ -165,8 +222,13 @@ pub mod tests {
         let existing_api_keys = existing_zamm_api_keys.0.lock().unwrap();
         if request.api_key.is_empty() {
             assert_eq!(existing_api_keys.openai, None);
+            assert_eq!(get_openai_api_key_from_db(db), None);
         } else {
-            assert_eq!(existing_api_keys.openai, Some(request.api_key));
+            assert_eq!(existing_api_keys.openai, Some(request.api_key.clone()));
+            assert_eq!(
+                get_openai_api_key_from_db(db),
+                Some(request.api_key.clone())
+            );
         }
 
         // check that the API call successfully wrote the API keys to disk, if asked to
@@ -191,16 +253,23 @@ pub mod tests {
     }
 
     fn check_set_api_key_sample_unit(
+        db: &ZammDatabase,
         sample_file: &str,
         existing_zamm_api_keys: &ZammApiKeys,
     ) {
-        check_set_api_key_sample(sample_file, existing_zamm_api_keys, "set_api_key");
+        check_set_api_key_sample(
+            db,
+            sample_file,
+            existing_zamm_api_keys,
+            "set_api_key",
+        );
     }
 
     #[test]
     fn test_write_new_init_file() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-no-file.yaml",
             &api_keys,
         );
@@ -210,6 +279,7 @@ pub mod tests {
     fn test_overwrite_existing_init_file_with_newline() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-existing-with-newline.yaml",
             &api_keys,
         );
@@ -219,6 +289,7 @@ pub mod tests {
     fn test_overwrite_existing_init_file_no_newline() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-existing-no-newline.yaml",
             &api_keys,
         );
@@ -228,6 +299,7 @@ pub mod tests {
     fn test_no_disk_write() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-no-disk-write.yaml",
             &api_keys,
         );
@@ -235,10 +307,21 @@ pub mod tests {
 
     #[test]
     fn test_unset() {
+        let dummy_key = "0p3n41-4p1-k3y";
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys {
-            openai: Some("0p3n41-4p1-k3y".to_owned()),
+            openai: Some(dummy_key.to_string()),
         }));
+        let mut conn = setup_database();
+        diesel::insert_into(api_keys::table)
+            .values(&NewApiKey {
+                service: Service::OpenAI,
+                api_key: dummy_key,
+            })
+            .execute(&mut conn)
+            .unwrap();
+
         check_set_api_key_sample_unit(
+            &ZammDatabase(Mutex::new(Some(conn))),
             "api/sample-calls/set_api_key-unset.yaml",
             &api_keys,
         );
@@ -249,6 +332,7 @@ pub mod tests {
     fn test_empty_filename() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-empty-filename.yaml",
             &api_keys,
         );
@@ -258,6 +342,7 @@ pub mod tests {
     fn test_invalid_filename() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
         check_set_api_key_sample_unit(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-invalid-filename.yaml",
             &api_keys,
         );

@@ -109,7 +109,7 @@ body {
   border: 0;
 }
 
-a {
+a, .link-like {
   color: #3333FF;
   text-decoration: none;
 }

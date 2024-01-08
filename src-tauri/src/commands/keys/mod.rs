@@ -10,7 +10,7 @@ mod tests {
     use crate::setup::api_keys::ApiKeys;
     use crate::ZammApiKeys;
     use get::tests::check_get_api_keys_sample;
-    use set::tests::check_set_api_key_sample;
+    use set::tests::{check_set_api_key_sample, setup_zamm_db};
     use std::sync::Mutex;
 
     #[test]
@@ -18,6 +18,7 @@ mod tests {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
 
         check_set_api_key_sample(
+            &setup_zamm_db(),
             "api/sample-calls/set_api_key-existing-no-newline.yaml",
             &api_keys,
             "api_keys_integration_tests",

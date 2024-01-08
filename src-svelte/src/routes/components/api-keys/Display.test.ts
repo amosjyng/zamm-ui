@@ -89,7 +89,7 @@ describe("API Keys Display", () => {
     await toggleOpenAIForm();
     const apiKeyInput = screen.getByLabelText("API key:");
     expect(apiKeyInput).toHaveValue("0p3n41-4p1-k3y");
-    const saveFileInput = screen.getByLabelText("Save key to:");
+    const saveFileInput = screen.getByLabelText("Export from:");
     expect(saveFileInput).toHaveValue("/home/rando/.zshrc");
   });
 
@@ -194,8 +194,10 @@ describe("API Keys Display", () => {
     // open form and type in API key
     await toggleOpenAIForm();
     let apiKeyInput = screen.getByLabelText("API key:");
-    let saveKeyCheckbox = screen.getByLabelText("Save key to disk?");
-    let fileInput = screen.getByLabelText("Save key to:");
+    let saveKeyCheckbox = screen.getByLabelText(
+      "Export as environment variable?",
+    );
+    let fileInput = screen.getByLabelText("Export from:");
 
     expect(apiKeyInput).toHaveValue("");
     expect(saveKeyCheckbox).toBeChecked();
@@ -224,8 +226,8 @@ describe("API Keys Display", () => {
     // check that changes to form fields persist
     // need to obtain references to new form fields
     apiKeyInput = screen.getByLabelText("API key:");
-    saveKeyCheckbox = screen.getByLabelText("Save key to disk?");
-    fileInput = screen.getByLabelText("Save key to:");
+    saveKeyCheckbox = screen.getByLabelText("Export as environment variable?");
+    fileInput = screen.getByLabelText("Export from:");
     expect(apiKeyInput).toHaveValue(customApiKey);
     expect(saveKeyCheckbox).not.toBeChecked();
     expect(fileInput).toHaveValue(customInitFile);
@@ -248,7 +250,7 @@ describe("API Keys Display", () => {
     );
 
     await toggleOpenAIForm();
-    const fileInput = screen.getByLabelText("Save key to:");
+    const fileInput = screen.getByLabelText("Export from:");
     defaultInitFile
       .split("")
       .forEach(() => userEvent.type(fileInput, "{backspace}"));
@@ -275,7 +277,9 @@ describe("API Keys Display", () => {
     );
 
     await toggleOpenAIForm();
-    await userEvent.click(screen.getByLabelText("Save key to disk?"));
+    await userEvent.click(
+      screen.getByLabelText("Export as environment variable?"),
+    );
     await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));

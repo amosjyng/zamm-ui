@@ -101,6 +101,11 @@ pub enum Error {
         source: RodioError,
     },
     #[error(transparent)]
+    Diesel {
+        #[from]
+        source: diesel::result::Error,
+    },
+    #[error(transparent)]
     Tauri {
         #[from]
         source: tauri::Error,

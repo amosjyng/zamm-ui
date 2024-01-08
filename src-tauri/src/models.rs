@@ -1,57 +1,46 @@
-use crate::schema::executions;
+use crate::schema::api_keys;
+use crate::setup::api_keys::Service;
 use diesel::backend::Backend;
-use diesel::deserialize::FromSqlRow;
 use diesel::deserialize::{self, FromSql};
-use diesel::expression::AsExpression;
 use diesel::prelude::*;
 use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::sql_types::Text;
 use diesel::sqlite::Sqlite;
-use uuid::Uuid;
-
-#[derive(AsExpression, FromSqlRow, Debug, Clone)]
-#[diesel(sql_type = Text)]
-pub struct EntityId {
-    pub uuid: Uuid,
-}
+use std::str::FromStr;
 
 #[derive(Queryable, Selectable, Debug)]
-pub struct Execution {
-    pub id: EntityId,
-    pub raw_io: String,
-    pub command: String,
-    pub output: String,
+pub struct ApiKey {
+    pub service: Service,
+    pub api_key: String,
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = executions)]
-pub struct NewExecution<'a> {
-    pub id: EntityId,
-    pub raw_io: &'a str,
-    pub command: &'a str,
-    pub output: &'a str,
+#[diesel(table_name = api_keys)]
+pub struct NewApiKey<'a> {
+    pub service: Service,
+    pub api_key: &'a str,
 }
 
-impl ToSql<Text, Sqlite> for EntityId
+impl ToSql<Text, Sqlite> for Service
 where
     String: ToSql<Text, Sqlite>,
 {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Sqlite>) -> serialize::Result {
-        let uuid_str = self.uuid.to_string();
-        out.set_value(uuid_str);
+        let service_str = self.to_string();
+        out.set_value(service_str);
         Ok(IsNull::No)
     }
 }
 
-impl<DB> FromSql<Text, DB> for EntityId
+impl<DB> FromSql<Text, DB> for Service
 where
     DB: Backend,
     String: FromSql<Text, DB>,
 {
     fn from_sql(bytes: DB::RawValue<'_>) -> deserialize::Result<Self> {
-        let uuid_str = String::from_sql(bytes)?;
-        let parsed_uuid = Uuid::parse_str(&uuid_str)?;
-        Ok(EntityId { uuid: parsed_uuid })
+        let service_str = String::from_sql(bytes)?;
+        let parsed_service = Service::from_str(&service_str)?;
+        Ok(parsed_service)
     }
 }
 
@@ -71,30 +60,25 @@ mod tests {
     #[test]
     fn test_uuid_serialization_and_deserialization() {
         let mut conn = setup_database();
+        let dummy_api_key = "0p3n41-4p1-k3y";
 
-        let new_execution = NewExecution {
-            id: EntityId {
-                uuid: Uuid::new_v4(),
-            },
-            raw_io: "Test IO",
-            command: "Test Command",
-            output: "Test Output",
+        let openai_api_key = NewApiKey {
+            service: Service::OpenAI,
+            api_key: dummy_api_key,
         };
 
         // Insert
-        diesel::insert_into(executions::table)
-            .values(&new_execution)
+        diesel::insert_into(api_keys::table)
+            .values(&openai_api_key)
             .execute(&mut conn)
             .unwrap();
 
         // Query
-        let results: Vec<Execution> = executions::table.load(&mut conn).unwrap();
+        let results: Vec<ApiKey> = api_keys::table.load(&mut conn).unwrap();
         assert_eq!(results.len(), 1);
 
-        let retrieved_execution = &results[0];
-        assert_eq!(retrieved_execution.id.uuid, new_execution.id.uuid);
-        assert_eq!(retrieved_execution.raw_io, new_execution.raw_io);
-        assert_eq!(retrieved_execution.command, new_execution.command);
-        assert_eq!(retrieved_execution.output, new_execution.output);
+        let retrieved_api_key = &results[0];
+        assert_eq!(retrieved_api_key.service, Service::OpenAI);
+        assert_eq!(retrieved_api_key.api_key.as_str(), dummy_api_key);
     }
 }

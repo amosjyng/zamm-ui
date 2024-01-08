@@ -46,11 +46,12 @@ fn main() {
     )
     .unwrap();
 
-    let possible_db = setup::get_db();
+    let mut possible_db = setup::get_db();
+    let api_keys = setup_api_keys(&mut possible_db);
 
     tauri::Builder::default()
         .manage(ZammDatabase(Mutex::new(possible_db)))
-        .manage(ZammApiKeys(Mutex::new(setup_api_keys())))
+        .manage(ZammApiKeys(Mutex::new(api_keys)))
         .invoke_handler(tauri::generate_handler![
             greet,
             get_api_keys,
