@@ -21,7 +21,7 @@
   export let fields: FormFields;
   export let formClose: () => void = () => undefined;
   const exportExplanation =
-    `Exports this API key for use in other programs on your computer.&#10;&#13;` +
+    `Exports this API key for use in other programs on your computer.\n` +
     `Don't worry about this option if you're not a programmer.`;
 
   $: growDuration = 2 * $standardDuration;

@@ -47,6 +47,13 @@ fn get_shell() -> Option<Shell> {
         }
     }
 
+    if env::var("ZSH_NAME").is_ok() {
+        return Some(Shell::Zsh);
+    }
+    if env::var("BASH").is_ok() {
+        return Some(Shell::Bash);
+    }
+
     None
 }
 
