@@ -20,6 +20,7 @@ lint:
 	black . --check
 
 test: tests
+tests: export ZAMM_DUMMY_API_KEYS = true
 tests:
 	poetry run pytest -v
 

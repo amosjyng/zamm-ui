@@ -1,0 +1,46 @@
+interactions:
+  - request:
+      body:
+        '{"messages": [{"role": "system", "content": "You are the brains of ZAMM,
+        a chat program."}, {"role": "user", "content": "Hello, does this work?"}], "model":
+        "gpt-3.5-turbo-1106", "n": 1, "stream": false, "temperature": 0.65}'
+      headers:
+        host:
+          - api.openai.com
+        x-stainless-async:
+          - "false"
+      method: POST
+      uri: https://api.openai.com/v1/chat/completions
+    response:
+      content:
+        "{\n  \"id\": \"chatcmpl-8eyzRnYdKKJyIPvZeJjYxMcjB3mdr\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1704778257,\n  \"model\": \"gpt-3.5-turbo-1106\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Hello! Yes, it works. How can I assist
+        you today?\"\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 30,\n    \"completion_tokens\":
+        14,\n    \"total_tokens\": 44\n  },\n  \"system_fingerprint\": \"fp_cbe4fa03fe\"\n}\n"
+      headers:
+        CF-Cache-Status:
+          - DYNAMIC
+        CF-RAY:
+          - 842a4a8b0f4a0950-SEA
+        Cache-Control:
+          - no-cache, must-revalidate
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Tue, 09 Jan 2024 05:30:59 GMT
+        Transfer-Encoding:
+          - chunked
+        openai-model:
+          - gpt-3.5-turbo-1106
+        openai-processing-ms:
+          - "1958"
+      http_version: HTTP/1.1
+      status_code: 200
+version: 1

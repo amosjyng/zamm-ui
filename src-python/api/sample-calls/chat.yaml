@@ -1,0 +1,33 @@
+request:
+  - chat
+  - >
+    {
+      "provider": "OpenAI",
+      "api_key": "dummy-key",
+      "llm": "gpt-3.5-turbo-1106",
+      "temperature": 0.65,
+      "prompt": [
+        {
+          "role": "System",
+          "message": "You are the brains of ZAMM, a chat program."
+        },
+        {
+          "role": "Human",
+          "message": "Hello, does this work?"
+        }
+      ]
+    }
+response:
+  message: >
+    {
+      "response": {
+        "role": "AI",
+        "message": "Hello! Yes, it works. How can I assist you today?"
+      },
+      "tokens": {
+        "total": 44,
+        "prompt": 30,
+        "completion": 14,
+        "cost": 0.000058
+      }
+    }

@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "title": "ChatMethod",
+  "properties": {
+    "args": {
+      "$ref": "#/definitions/ChatArgs"
+    },
+    "response": {
+      "$ref": "#/definitions/ChatResponse"
+    }
+  },
+  "required": ["args", "response"],
+  "definitions": {
+    "ChatArgs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "api_key": {
+          "type": "string"
+        },
+        "llm": {
+          "type": "string"
+        },
+        "temperature": {
+          "type": "number"
+        },
+        "prompt": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChatMessage"
+          }
+        }
+      },
+      "required": ["api_key", "llm", "prompt", "provider"],
+      "title": "ChatArgs"
+    },
+    "ChatResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/ChatMessage"
+        },
+        "tokens": {
+          "$ref": "#/definitions/TokenMetadata"
+        }
+      },
+      "required": ["response", "tokens"],
+      "title": "ChatResponse"
+    },
+    "ChatMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": ["message", "role"],
+      "title": "ChatMessage"
+    },
+    "TokenMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "integer"
+        },
+        "prompt": {
+          "type": "integer"
+        },
+        "completion": {
+          "type": "integer"
+        },
+        "cost": {
+          "type": "number"
+        }
+      },
+      "required": ["completion", "cost", "prompt", "total"],
+      "title": "TokenMetadata"
+    }
+  }
+}
