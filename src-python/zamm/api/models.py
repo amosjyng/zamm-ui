@@ -143,22 +143,26 @@ class TokenMetadata:
 
 
 class ChatResponse:
+    llm: str
     response: ChatMessage
     tokens: TokenMetadata
 
-    def __init__(self, response: ChatMessage, tokens: TokenMetadata) -> None:
+    def __init__(self, llm: str, response: ChatMessage, tokens: TokenMetadata) -> None:
+        self.llm = llm
         self.response = response
         self.tokens = tokens
 
     @staticmethod
     def from_dict(obj: Any) -> "ChatResponse":
         assert isinstance(obj, dict)
+        llm = from_str(obj.get("llm"))
         response = ChatMessage.from_dict(obj.get("response"))
         tokens = TokenMetadata.from_dict(obj.get("tokens"))
-        return ChatResponse(response, tokens)
+        return ChatResponse(llm, response, tokens)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["llm"] = from_str(self.llm)
         result["response"] = to_class(ChatMessage, self.response)
         result["tokens"] = to_class(TokenMetadata, self.tokens)
         return result

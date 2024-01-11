@@ -42,6 +42,8 @@ pub struct ChatMessage {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChatResponse {
+    pub llm: String,
+
     pub response: ChatMessage,
 
     pub tokens: TokenMetadata,

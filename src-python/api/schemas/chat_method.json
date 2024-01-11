@@ -48,9 +48,12 @@
         },
         "tokens": {
           "$ref": "#/definitions/TokenMetadata"
+        },
+        "llm": {
+          "type": "string"
         }
       },
-      "required": ["response", "tokens"],
+      "required": ["response", "tokens", "llm"],
       "title": "ChatResponse"
     },
     "ChatMessage": {

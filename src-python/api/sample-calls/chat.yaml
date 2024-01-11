@@ -29,5 +29,6 @@ response:
         "prompt": 30,
         "completion": 14,
         "cost": 0.000058
-      }
+      },
+      "llm": "gpt-3.5-turbo-1106"
     }
