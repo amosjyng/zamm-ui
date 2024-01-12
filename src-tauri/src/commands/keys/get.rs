@@ -1,24 +1,25 @@
+use crate::commands::errors::ZammResult;
 use crate::setup::api_keys::ApiKeys;
 use crate::ZammApiKeys;
 use specta::specta;
 use std::clone::Clone;
 use tauri::State;
 
-fn get_api_keys_helper(zamm_api_keys: &ZammApiKeys) -> ApiKeys {
-    zamm_api_keys.0.lock().unwrap().clone()
+async fn get_api_keys_helper(zamm_api_keys: &ZammApiKeys) -> ApiKeys {
+    zamm_api_keys.0.lock().await.clone()
 }
 
 #[tauri::command(async)]
 #[specta]
-pub fn get_api_keys(api_keys: State<ZammApiKeys>) -> ApiKeys {
-    get_api_keys_helper(&api_keys)
+pub async fn get_api_keys(api_keys: State<'_, ZammApiKeys>) -> ZammResult<ApiKeys> {
+    Ok(get_api_keys_helper(&api_keys).await)
 }
 
 #[cfg(test)]
 pub mod tests {
     use super::*;
     use crate::sample_call::SampleCall;
-    use std::sync::Mutex;
+    use tokio::sync::Mutex;
 
     use std::fs;
 
@@ -28,28 +29,32 @@ pub mod tests {
         serde_yaml::from_str(&sample_str).unwrap()
     }
 
-    pub fn check_get_api_keys_sample(file_prefix: &str, rust_input: &ZammApiKeys) {
+    pub async fn check_get_api_keys_sample(
+        file_prefix: &str,
+        rust_input: &ZammApiKeys,
+    ) {
         let greet_sample = read_sample(file_prefix);
         assert_eq!(greet_sample.request, vec!["get_api_keys"]);
 
-        let actual_result = get_api_keys_helper(rust_input);
+        let actual_result = get_api_keys_helper(rust_input).await;
         let actual_json = serde_json::to_string_pretty(&actual_result).unwrap();
         let expected_json = greet_sample.response.message.trim();
         assert_eq!(actual_json, expected_json);
     }
 
-    #[test]
-    fn test_get_empty_keys() {
+    #[tokio::test]
+    async fn test_get_empty_keys() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
 
         check_get_api_keys_sample(
             "./api/sample-calls/get_api_keys-empty.yaml",
             &api_keys,
-        );
+        )
+        .await;
     }
 
-    #[test]
-    fn test_get_openai_key() {
+    #[tokio::test]
+    async fn test_get_openai_key() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys {
             openai: Some("0p3n41-4p1-k3y".to_string()),
         }));
@@ -57,6 +62,7 @@ pub mod tests {
         check_get_api_keys_sample(
             "./api/sample-calls/get_api_keys-openai.yaml",
             &api_keys,
-        );
+        )
+        .await;
     }
 }

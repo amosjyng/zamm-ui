@@ -33,6 +33,10 @@ toml = "0.8.2"
 shellexpand = "3.1.0"
 strum = "0.25.0"
 strum_macros = "0.25.3"
+async-openai = "0.18.0"
+reqwest = "0.11.23"
+reqwest-middleware = "0.1.6"
+tokio = { version = "1.35.1", features = ["macros"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
@@ -40,5 +44,9 @@ strum_macros = "0.25.3"
 custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
+rvcr = "0.1.5"
 serde_yaml = "0.9.25"
 temp-env = "0.3.4"
+
+[patch.crates-io]
+async-openai = { path = "../forks/async-openai/async-openai" }

@@ -38,6 +38,10 @@ export function getSystemInfo() {
     return invoke()<SystemInfo>("get_system_info")
 }
 
+export function chat() {
+    return invoke()<null>("chat")
+}
+
 export type ApiKeys = { openai: string | null }
 export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
 export type Service = "OpenAI"

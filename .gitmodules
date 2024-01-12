@@ -4,3 +4,6 @@
 [submodule "src-svelte/forks/neodrag"]
 	path = src-svelte/forks/neodrag
 	url = https://github.com/amosjyng/neodrag.git
+[submodule "forks/async-openai"]
+	path = forks/async-openai
+	url = git@github.com:amosjyng/async-openai.git
