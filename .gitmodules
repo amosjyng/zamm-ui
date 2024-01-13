@@ -7,3 +7,6 @@
 [submodule "forks/async-openai"]
 	path = forks/async-openai
 	url = git@github.com:amosjyng/async-openai.git
+[submodule "forks/rvcr"]
+	path = forks/rvcr
+	url = git@github.com:amosjyng/rvcr.git

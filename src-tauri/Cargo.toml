@@ -50,3 +50,4 @@ temp-env = "0.3.4"
 
 [patch.crates-io]
 async-openai = { path = "../forks/async-openai/async-openai" }
+rvcr = { path = "../forks/rvcr" }

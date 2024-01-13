@@ -3288,8 +3288,6 @@ checksum = "7ffc183a10b4478d04cbbbfc96d0873219d962dd5accaff2ffbd4ceb7df837f4"
 [[package]]
 name = "rvcr"
 version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e582aaacfb05f97815c92ab04fea06cb02082520d41e37e5a63c188fc56b279"
 dependencies = [
  "async-trait",
  "base64 0.21.6",

@@ -71,49 +71,49 @@ mod tests {
         let recording_path =
             PathBuf::from("api/sample-call-requests/start-conversation.json");
         let is_recording = !recording_path.exists();
-        let middleware: VCRMiddleware = if is_recording {
-            VCRMiddleware::try_from(recording_path)
-                .unwrap()
-                .with_mode(VCRMode::Record)
-                .with_modify_request(|req| {
-                    let header_blacklist = ["authorization"];
 
-                    // Overwrite query params with filtered ones
-                    req.headers = req
-                        .headers
-                        .clone()
-                        .iter()
-                        .filter_map(|(k, v)| {
-                            if header_blacklist.contains(&k.as_str()) {
-                                None
-                            } else {
-                                Some((k.clone(), v.clone()))
-                            }
-                        })
-                        .collect();
-                })
-                .with_modify_response(|resp| {
-                    let header_blacklist = ["set-cookie", "openai-organization"];
-
-                    // Overwrite query params with filtered ones
-                    resp.headers = resp
-                        .headers
-                        .clone()
-                        .iter()
-                        .filter_map(|(k, v)| {
-                            if header_blacklist.contains(&k.as_str()) {
-                                None
-                            } else {
-                                Some((k.clone(), v.clone()))
-                            }
-                        })
-                        .collect();
-                })
+        let vcr_mode = if is_recording {
+            VCRMode::Record
         } else {
-            VCRMiddleware::try_from(recording_path)
-                .unwrap()
-                .with_mode(VCRMode::Replay)
+            VCRMode::Replay
         };
+        let middleware = VCRMiddleware::try_from(recording_path)
+            .unwrap()
+            .with_mode(vcr_mode)
+            .with_modify_request(|req| {
+                let header_blacklist = ["authorization"];
+
+                // Overwrite query params with filtered ones
+                req.headers = req
+                    .headers
+                    .clone()
+                    .iter()
+                    .filter_map(|(k, v)| {
+                        if header_blacklist.contains(&k.as_str()) {
+                            None
+                        } else {
+                            Some((k.clone(), v.clone()))
+                        }
+                    })
+                    .collect();
+            })
+            .with_modify_response(|resp| {
+                let header_blacklist = ["set-cookie", "openai-organization"];
+
+                // Overwrite query params with filtered ones
+                resp.headers = resp
+                    .headers
+                    .clone()
+                    .iter()
+                    .filter_map(|(k, v)| {
+                        if header_blacklist.contains(&k.as_str()) {
+                            None
+                        } else {
+                            Some((k.clone(), v.clone()))
+                        }
+                    })
+                    .collect();
+            });
 
         let vcr_client: ClientWithMiddleware =
             ClientBuilder::new(reqwest::Client::new())
