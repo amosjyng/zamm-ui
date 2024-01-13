@@ -4,7 +4,7 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"id\": \"chatcmpl-8fsDA6VQfreZpjatOXPffkmyC6HO6\",\n  \"object\": \"chat.completion\",\n  \"created\": 1704990528,\n  \"model\": \"gpt-3.5-turbo-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"Hello! I'm ZAMM, a chat program. I'm here to help and provide information. How can I assist you today?\"\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 32,\n    \"completion_tokens\": 28,\n    \"total_tokens\": 60\n  },\n  \"system_fingerprint\": null\n}\n"
+          "string": "{\n  \"id\": \"chatcmpl-8gNVGDYAPDKL2oZS9g1fdyDlaJdV0\",\n  \"object\": \"chat.completion\",\n  \"created\": 1705110814,\n  \"model\": \"gpt-3.5-turbo-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"Hello! I'm ZAMM, the chat program. I'm here to help you with any questions or problems you might have. How can I assist you today?\"\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 32,\n    \"completion_tokens\": 34,\n    \"total_tokens\": 66\n  },\n  \"system_fingerprint\": null\n}\n"
         },
         "http_version": "1.1",
         "status": {
@@ -12,27 +12,31 @@
           "message": "OK"
         },
         "headers": {
-          "x-request-id": ["f77666796e1630fbf7197f9ff5c960ab"],
-          "x-ratelimit-limit-tokens": ["60000"],
-          "content-type": ["application/json"],
-          "openai-processing-ms": ["1326"],
-          "access-control-allow-origin": ["*"],
-          "openai-version": ["2020-10-01"],
-          "cf-ray": ["843e88f25dc4ef20-PDX"],
-          "x-ratelimit-reset-tokens": ["37ms"],
-          "openai-model": ["gpt-3.5-turbo-0613"],
           "x-ratelimit-reset-requests": ["8.64s"],
-          "connection": ["keep-alive"],
-          "x-ratelimit-limit-requests": ["10000"],
-          "cf-cache-status": ["DYNAMIC"],
-          "alt-svc": ["h3=\":443\"; ma=86400"],
+          "openai-organization": ["<CENSORED>"],
+          "content-length": ["580"],
+          "cf-ray": ["844a019dfb5bef24-PDX"],
+          "content-type": ["application/json"],
+          "access-control-allow-origin": ["*"],
+          "date": ["Sat, 13 Jan 2024 01:53:36 GMT"],
+          "openai-model": ["gpt-3.5-turbo-0613"],
           "x-ratelimit-remaining-tokens": ["59963"],
-          "date": ["Thu, 11 Jan 2024 16:28:49 GMT"],
-          "x-ratelimit-remaining-requests": ["9999"],
-          "strict-transport-security": ["max-age=15724800; includeSubDomains"],
           "cache-control": ["no-cache, must-revalidate"],
+          "set-cookie": [
+            "_cfuvid=W.LRdUcN5gFQ4QJ4_R.ZR7ncMz_rBpzKKnBgIp7ypCc-1705110816023-0-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None"
+          ],
+          "alt-svc": ["h3=\":443\"; ma=86400"],
+          "strict-transport-security": ["max-age=15724800; includeSubDomains"],
           "server": ["cloudflare"],
-          "content-length": ["552"]
+          "x-ratelimit-limit-requests": ["10000"],
+          "openai-version": ["2020-10-01"],
+          "x-request-id": ["9b8a7f00886c5d220903fb3db9ed206e"],
+          "cf-cache-status": ["DYNAMIC"],
+          "connection": ["keep-alive"],
+          "x-ratelimit-remaining-requests": ["9999"],
+          "x-ratelimit-reset-tokens": ["37ms"],
+          "openai-processing-ms": ["1423"],
+          "x-ratelimit-limit-tokens": ["60000"]
         }
       },
       "request": {
@@ -43,11 +47,12 @@
         },
         "method": "post",
         "headers": {
-          "openai-beta": ["assistants=v1"],
-          "content-type": ["application/json"]
+          "authorization": ["<CENSORED>"],
+          "content-type": ["application/json"],
+          "openai-beta": ["assistants=v1"]
         }
       },
-      "recorded_at": "Thu, 11 Jan 2024 16:28:49 +0000"
+      "recorded_at": "Sat, 13 Jan 2024 01:53:36 +0000"
     }
   ],
   "recorded_with": "rVCR 0.1.5"

@@ -47,6 +47,7 @@ custom-protocol = ["tauri/custom-protocol"]
 rvcr = "0.1.5"
 serde_yaml = "0.9.25"
 temp-env = "0.3.4"
+vcr-cassette = "2.0.1"
 
 [patch.crates-io]
 async-openai = { path = "../forks/async-openai/async-openai" }

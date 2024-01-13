@@ -61,6 +61,23 @@ mod tests {
     use std::env;
     use std::path::PathBuf;
     use tokio::sync::Mutex;
+    use vcr_cassette::Headers;
+
+    const CENSORED: &str = "<CENSORED>";
+
+    fn censor_headers(headers: &Headers, blacklisted_keys: &[&str]) -> Headers {
+        return headers
+            .clone()
+            .iter()
+            .map(|(k, v)| {
+                if blacklisted_keys.contains(&k.as_str()) {
+                    (k.clone(), vec![CENSORED.to_string()])
+                } else {
+                    (k.clone(), v.clone())
+                }
+            })
+            .collect();
+    }
 
     #[tokio::test]
     async fn test_start_conversation() {
@@ -81,38 +98,10 @@ mod tests {
             .unwrap()
             .with_mode(vcr_mode)
             .with_modify_request(|req| {
-                let header_blacklist = ["authorization"];
-
-                // Overwrite query params with filtered ones
-                req.headers = req
-                    .headers
-                    .clone()
-                    .iter()
-                    .filter_map(|(k, v)| {
-                        if header_blacklist.contains(&k.as_str()) {
-                            None
-                        } else {
-                            Some((k.clone(), v.clone()))
-                        }
-                    })
-                    .collect();
+                req.headers = censor_headers(&req.headers, &["authorization"]);
             })
             .with_modify_response(|resp| {
-                let header_blacklist = ["set-cookie", "openai-organization"];
-
-                // Overwrite query params with filtered ones
-                resp.headers = resp
-                    .headers
-                    .clone()
-                    .iter()
-                    .filter_map(|(k, v)| {
-                        if header_blacklist.contains(&k.as_str()) {
-                            None
-                        } else {
-                            Some((k.clone(), v.clone()))
-                        }
-                    })
-                    .collect();
+                resp.headers = censor_headers(&resp.headers, &["openai-organization"]);
             });
 
         let vcr_client: ClientWithMiddleware =
