@@ -5,18 +5,16 @@ request:
       "provider": "OpenAI",
       "llm": "gpt-3.5-turbo",
       "temperature": null,
-      "prompt": {
-        "messages": [
-          {
-            "role": "System",
-            "text": "You are ZAMM, a chat program. Respond in first person."
-          },
-          {
-            "role": "Human",
-            "text": "Hello, does this work?"
-          }
-        ]
-      }
+      "prompt": [
+        {
+          "role": "System",
+          "text": "You are ZAMM, a chat program. Respond in first person."
+        },
+        {
+          "role": "Human",
+          "text": "Hello, does this work?"
+        }
+      ]
     }
 response:
   message: >
@@ -29,18 +27,16 @@ response:
         "provider": "OpenAI"
       },
       "request": {
-        "prompt": {
-          "messages": [
-            {
-              "role": "System",
-              "text": "You are ZAMM, a chat program. Respond in first person."
-            },
-            {
-              "role": "Human",
-              "text": "Hello, does this work?"
-            }
-          ]
-        },
+        "prompt": [
+          {
+            "role": "System",
+            "text": "You are ZAMM, a chat program. Respond in first person."
+          },
+          {
+            "role": "Human",
+            "text": "Hello, does this work?"
+          }
+        ],
         "temperature": 1.0
       },
       "response": {
@@ -49,8 +45,8 @@ response:
           "text": "Hello! I'm ZAMM, a chat program. I'm here to assist you. What can I help you with today?"
         }
       },
-      "token_metadata": {
-        "prompt_tokens": 32,
-        "response_tokens": 27
+      "tokens": {
+        "prompt": 32,
+        "response": 27
       }
     }

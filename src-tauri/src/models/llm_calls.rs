@@ -196,14 +196,14 @@ where
 )]
 #[diesel(sql_type = Text)]
 pub struct ChatPrompt {
-    messages: Vec<ChatMessage>,
+    pub prompt: Vec<ChatMessage>,
 }
 
 impl Deref for ChatPrompt {
     type Target = Vec<ChatMessage>;
 
     fn deref(&self) -> &Self::Target {
-        &self.messages
+        &self.prompt
     }
 }
 
@@ -217,13 +217,13 @@ impl TryFrom<Vec<ChatCompletionRequestMessage>> for ChatPrompt {
             .into_iter()
             .map(|message| message.try_into())
             .collect::<Result<Vec<ChatMessage>, Self::Error>>()?;
-        Ok(ChatPrompt { messages })
+        Ok(ChatPrompt { prompt: messages })
     }
 }
 
 impl From<ChatPrompt> for Vec<ChatCompletionRequestMessage> {
     fn from(val: ChatPrompt) -> Self {
-        val.messages
+        val.prompt
             .into_iter()
             .map(|message| message.into())
             .collect()
@@ -262,6 +262,7 @@ pub struct Llm {
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct Request {
+    #[serde(flatten)]
     pub prompt: ChatPrompt,
     pub temperature: f32,
 }
@@ -273,8 +274,8 @@ pub struct Response {
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct TokenMetadata {
-    pub prompt_tokens: Option<i32>,
-    pub response_tokens: Option<i32>,
+    pub prompt: Option<i32>,
+    pub response: Option<i32>,
 }
 
 #[derive(Debug, Queryable, Selectable, Clone)]
@@ -315,7 +316,7 @@ pub struct LlmCall {
     pub llm: Llm,
     pub request: Request,
     pub response: Response,
-    pub token_metadata: TokenMetadata,
+    pub tokens: TokenMetadata,
 }
 
 impl LlmCall {
@@ -327,8 +328,8 @@ impl LlmCall {
             llm_requested: &self.llm.requested,
             llm: &self.llm.name,
             temperature: &self.request.temperature,
-            prompt_tokens: self.token_metadata.prompt_tokens.as_ref(),
-            response_tokens: self.token_metadata.response_tokens.as_ref(),
+            prompt_tokens: self.tokens.prompt.as_ref(),
+            response_tokens: self.tokens.response.as_ref(),
             prompt: &self.request.prompt,
             completion: &self.response.completion,
         }
@@ -352,8 +353,8 @@ impl From<LlmCallRow> for LlmCall {
             completion: row.completion,
         };
         let token_metadata = TokenMetadata {
-            prompt_tokens: row.prompt_tokens,
-            response_tokens: row.response_tokens,
+            prompt: row.prompt_tokens,
+            response: row.response_tokens,
         };
         LlmCall {
             id,
@@ -361,7 +362,7 @@ impl From<LlmCallRow> for LlmCall {
             llm,
             request,
             response,
-            token_metadata,
+            tokens: token_metadata,
         }
     }
 }

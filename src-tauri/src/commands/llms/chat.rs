@@ -1,7 +1,7 @@
 use crate::commands::errors::ZammResult;
 use crate::commands::Error;
 use crate::models::llm_calls::{
-    ChatPrompt, EntityId, Llm, LlmCall, Request, Response, TokenMetadata,
+    ChatMessage, ChatPrompt, EntityId, Llm, LlmCall, Request, Response, TokenMetadata,
 };
 use crate::schema::llm_calls;
 use crate::setup::api_keys::Service;
@@ -21,7 +21,7 @@ async fn chat_helper(
     provider: Service,
     llm: String,
     temperature: Option<f32>,
-    prompt: ChatPrompt,
+    prompt: Vec<ChatMessage>,
     http_client: reqwest_middleware::ClientWithMiddleware,
 ) -> ZammResult<LlmCall> {
     let api_keys = zamm_api_keys.0.lock().await;
@@ -48,7 +48,8 @@ async fn chat_helper(
 
     let openai_client =
         async_openai::Client::with_config(config).with_http_client(http_client);
-    let messages: Vec<ChatCompletionRequestMessage> = prompt.into();
+    let messages: Vec<ChatCompletionRequestMessage> =
+        prompt.clone().into_iter().map(|m| m.into()).collect();
     let request = CreateChatCompletionRequestArgs::default()
         .model(&requested_model)
         .temperature(requested_temperature)
@@ -57,11 +58,11 @@ async fn chat_helper(
     let response = openai_client.chat().create(&request).await?;
 
     let token_metadata = TokenMetadata {
-        prompt_tokens: response
+        prompt: response
             .usage
             .as_ref()
             .map(|usage| usage.prompt_tokens as i32),
-        response_tokens: response
+        response: response
             .usage
             .as_ref()
             .map(|usage| usage.completion_tokens as i32),
@@ -86,12 +87,12 @@ async fn chat_helper(
         },
         request: Request {
             temperature: requested_temperature,
-            prompt: request.messages.try_into()?,
+            prompt: ChatPrompt { prompt },
         },
         response: Response {
             completion: sole_choice.try_into()?,
         },
-        token_metadata,
+        tokens: token_metadata,
     };
 
     if let Some(conn) = db.as_mut() {
@@ -111,7 +112,7 @@ pub async fn chat(
     provider: Service,
     llm: String,
     temperature: Option<f32>,
-    prompt: ChatPrompt,
+    prompt: Vec<ChatMessage>,
 ) -> ZammResult<LlmCall> {
     let http_client = reqwest::ClientBuilder::new().build()?;
     let client_with_middleware =
@@ -188,7 +189,7 @@ mod tests {
         provider: Service,
         llm: String,
         temperature: Option<f32>,
-        prompt: ChatPrompt,
+        prompt: Vec<ChatMessage>,
     }
 
     fn parse_request(request_str: &str) -> ChatRequest {
