@@ -1,15 +1,14 @@
 use crate::commands::errors::ZammResult;
 use crate::commands::Error;
 use crate::models::llm_calls::{
-    EntityId, Llm, LlmCall, Request, Response, TokenMetadata,
+    ChatPrompt, EntityId, Llm, LlmCall, Request, Response, TokenMetadata,
 };
 use crate::schema::llm_calls;
 use crate::setup::api_keys::Service;
 use crate::{ZammApiKeys, ZammDatabase};
 use async_openai::config::OpenAIConfig;
 use async_openai::types::{
-    ChatCompletionRequestSystemMessageArgs, ChatCompletionRequestUserMessageArgs,
-    CreateChatCompletionRequestArgs,
+    ChatCompletionRequestMessage, CreateChatCompletionRequestArgs,
 };
 use diesel::RunQueryDsl;
 use specta::specta;
@@ -19,6 +18,10 @@ use uuid::Uuid;
 async fn chat_helper(
     zamm_api_keys: &ZammApiKeys,
     zamm_db: &ZammDatabase,
+    provider: Service,
+    llm: String,
+    temperature: Option<f32>,
+    prompt: ChatPrompt,
     http_client: reqwest_middleware::ClientWithMiddleware,
 ) -> ZammResult<LlmCall> {
     let api_keys = zamm_api_keys.0.lock().await;
@@ -30,25 +33,26 @@ async fn chat_helper(
 
     let db = &mut zamm_db.0.lock().await;
 
-    let config = OpenAIConfig::new().with_api_key(api_keys.openai.as_ref().unwrap());
-    let requested_model = "gpt-3.5-turbo";
-    let temperature = 1.0;
+    let config = match provider {
+        Service::OpenAI => {
+            let openai_api_key =
+                api_keys.openai.as_ref().ok_or(Error::MissingApiKey {
+                    service: Service::OpenAI,
+                })?;
+            OpenAIConfig::new().with_api_key(openai_api_key)
+        }
+    };
+
+    let requested_model = llm;
+    let requested_temperature = temperature.unwrap_or(1.0);
 
     let openai_client =
         async_openai::Client::with_config(config).with_http_client(http_client);
+    let messages: Vec<ChatCompletionRequestMessage> = prompt.into();
     let request = CreateChatCompletionRequestArgs::default()
-        .model(requested_model)
-        .temperature(temperature)
-        .messages([
-            ChatCompletionRequestSystemMessageArgs::default()
-                .content("You are ZAMM, a chat program. Respond in first person.")
-                .build()?
-                .into(),
-            ChatCompletionRequestUserMessageArgs::default()
-                .content("Hello, does this work?")
-                .build()?
-                .into(),
-        ])
+        .model(&requested_model)
+        .temperature(requested_temperature)
+        .messages(messages)
         .build()?;
     let response = openai_client.chat().create(&request).await?;
 
@@ -81,7 +85,7 @@ async fn chat_helper(
             requested: requested_model.to_owned(),
         },
         request: Request {
-            temperature,
+            temperature: requested_temperature,
             prompt: request.messages.try_into()?,
         },
         response: Response {
@@ -104,24 +108,40 @@ async fn chat_helper(
 pub async fn chat(
     api_keys: State<'_, ZammApiKeys>,
     database: State<'_, ZammDatabase>,
+    provider: Service,
+    llm: String,
+    temperature: Option<f32>,
+    prompt: ChatPrompt,
 ) -> ZammResult<LlmCall> {
     let http_client = reqwest::ClientBuilder::new().build()?;
     let client_with_middleware =
         reqwest_middleware::ClientBuilder::new(http_client).build();
-    chat_helper(&api_keys, &database, client_with_middleware).await
+    chat_helper(
+        &api_keys,
+        &database,
+        provider,
+        llm,
+        temperature,
+        prompt,
+        client_with_middleware,
+    )
+    .await
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::models::llm_calls::{ChatMessage, LlmCallRow};
+    use crate::sample_call::SampleCall;
     use crate::setup::api_keys::ApiKeys;
     use crate::setup::db::MIGRATIONS;
     use diesel::prelude::*;
     use diesel_migrations::MigrationHarness;
     use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
     use rvcr::{VCRMiddleware, VCRMode};
+    use serde::{Deserialize, Serialize};
     use std::env;
+    use std::fs;
     use std::path::PathBuf;
     use tokio::sync::Mutex;
     use vcr_cassette::Headers;
@@ -163,15 +183,42 @@ mod tests {
             .into()
     }
 
+    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    struct ChatRequest {
+        provider: Service,
+        llm: String,
+        temperature: Option<f32>,
+        prompt: ChatPrompt,
+    }
+
+    fn parse_request(request_str: &str) -> ChatRequest {
+        serde_json::from_str(request_str).unwrap()
+    }
+
+    fn parse_response(response_str: &str) -> LlmCall {
+        serde_json::from_str(response_str).unwrap()
+    }
+
+    fn read_sample(filename: &str) -> SampleCall {
+        let sample_str = fs::read_to_string(filename)
+            .unwrap_or_else(|_| panic!("No file found at {filename}"));
+        serde_yaml::from_str(&sample_str).unwrap()
+    }
+
     #[tokio::test]
     async fn test_start_conversation() {
-        let api_keys = ZammApiKeys(Mutex::new(ApiKeys {
-            openai: env::var("OPENAI_API_KEY").ok(),
-        }));
-
         let recording_path =
             PathBuf::from("api/sample-call-requests/start-conversation.json");
         let is_recording = !recording_path.exists();
+        let api_keys = if is_recording {
+            ZammApiKeys(Mutex::new(ApiKeys {
+                openai: env::var("OPENAI_API_KEY").ok(),
+            }))
+        } else {
+            ZammApiKeys(Mutex::new(ApiKeys {
+                openai: Some("dummy".to_string()),
+            }))
+        };
 
         let vcr_mode = if is_recording {
             VCRMode::Record
@@ -194,9 +241,40 @@ mod tests {
                 .build();
 
         let db = setup_zamm_db();
-        let result = chat_helper(&api_keys, &db, vcr_client).await;
+        // end dependencies setup
+
+        let sample = read_sample("api/sample-calls/chat-start-conversation.yaml");
+        assert_eq!(sample.request.len(), 2);
+        assert_eq!(sample.request[0], "chat");
+
+        let request = parse_request(&sample.request[1]);
+
+        let result = chat_helper(
+            &api_keys,
+            &db,
+            request.provider,
+            request.llm,
+            request.temperature,
+            request.prompt,
+            vcr_client,
+        )
+        .await;
         assert!(result.is_ok(), "Error: {:?}", result.err());
         let ok_result = result.unwrap();
+
+        // check that the API call returns the expected JSON
+        let expected_llm_call = parse_response(&sample.response.message);
+        // swap out non-deterministic parts before JSON comparison
+        let deterministic_llm_call = LlmCall {
+            id: expected_llm_call.id,
+            timestamp: expected_llm_call.timestamp,
+            ..ok_result.clone()
+        };
+        let actual_json =
+            serde_json::to_string_pretty(&deterministic_llm_call).unwrap();
+        let expected_json = sample.response.message.trim();
+        assert_eq!(actual_json, expected_json);
+
         assert!(ok_result.request.prompt.len() > 0);
         match &ok_result.response.completion {
             ChatMessage::AI { text } => assert!(!text.is_empty()),

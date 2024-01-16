@@ -2,8 +2,9 @@ use crate::commands::Error;
 use crate::schema::llm_calls;
 use crate::setup::api_keys::Service;
 use async_openai::types::{
-    ChatCompletionRequestMessage, ChatCompletionRequestUserMessageContent,
-    ChatCompletionResponseMessage, Role,
+    ChatCompletionRequestAssistantMessage, ChatCompletionRequestMessage,
+    ChatCompletionRequestSystemMessage, ChatCompletionRequestUserMessage,
+    ChatCompletionRequestUserMessageContent, ChatCompletionResponseMessage, Role,
 };
 use chrono::naive::NaiveDateTime;
 use diesel::backend::Backend;
@@ -132,6 +133,34 @@ impl TryFrom<ChatCompletionResponseMessage> for ChatMessage {
     }
 }
 
+impl From<ChatMessage> for ChatCompletionRequestMessage {
+    fn from(val: ChatMessage) -> Self {
+        match val {
+            ChatMessage::System { text } => ChatCompletionRequestMessage::System(
+                ChatCompletionRequestSystemMessage {
+                    content: text,
+                    role: Role::System,
+                    ..Default::default()
+                },
+            ),
+            ChatMessage::Human { text } => {
+                ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage {
+                    content: ChatCompletionRequestUserMessageContent::Text(text),
+                    role: Role::User,
+                    ..Default::default()
+                })
+            }
+            ChatMessage::AI { text } => ChatCompletionRequestMessage::Assistant(
+                ChatCompletionRequestAssistantMessage {
+                    content: Some(text),
+                    role: Role::Assistant,
+                    ..Default::default()
+                },
+            ),
+        }
+    }
+}
+
 impl ToSql<Text, Sqlite> for ChatMessage
 where
     String: ToSql<Text, Sqlite>,
@@ -192,6 +221,15 @@ impl TryFrom<Vec<ChatCompletionRequestMessage>> for ChatPrompt {
     }
 }
 
+impl From<ChatPrompt> for Vec<ChatCompletionRequestMessage> {
+    fn from(val: ChatPrompt) -> Self {
+        val.messages
+            .into_iter()
+            .map(|message| message.into())
+            .collect()
+    }
+}
+
 impl ToSql<Text, Sqlite> for ChatPrompt
 where
     String: ToSql<Text, Sqlite>,
@@ -222,13 +260,13 @@ pub struct Llm {
     pub provider: Service,
 }
 
-#[derive(Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct Request {
     pub prompt: ChatPrompt,
     pub temperature: f32,
 }
 
-#[derive(Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct Response {
     pub completion: ChatMessage,
 }
@@ -269,7 +307,7 @@ pub struct NewLlmCallRow<'a> {
     pub completion: &'a ChatMessage,
 }
 
-#[derive(Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct LlmCall {
     #[serde(flatten)]
     pub id: EntityId,

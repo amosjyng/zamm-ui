@@ -1,0 +1,56 @@
+request:
+  - chat
+  - >
+    {
+      "provider": "OpenAI",
+      "llm": "gpt-3.5-turbo",
+      "temperature": null,
+      "prompt": {
+        "messages": [
+          {
+            "role": "System",
+            "text": "You are ZAMM, a chat program. Respond in first person."
+          },
+          {
+            "role": "Human",
+            "text": "Hello, does this work?"
+          }
+        ]
+      }
+    }
+response:
+  message: >
+    {
+      "id": "d5ad1e49-f57f-4481-84fb-4d70ba8a7a74",
+      "timestamp": "2024-01-16T08:50:19.738093890",
+      "llm": {
+        "name": "gpt-3.5-turbo-0613",
+        "requested": "gpt-3.5-turbo",
+        "provider": "OpenAI"
+      },
+      "request": {
+        "prompt": {
+          "messages": [
+            {
+              "role": "System",
+              "text": "You are ZAMM, a chat program. Respond in first person."
+            },
+            {
+              "role": "Human",
+              "text": "Hello, does this work?"
+            }
+          ]
+        },
+        "temperature": 1.0
+      },
+      "response": {
+        "completion": {
+          "role": "AI",
+          "text": "Hello! I'm ZAMM, a chat program. I'm here to assist you. What can I help you with today?"
+        }
+      },
+      "token_metadata": {
+        "prompt_tokens": 32,
+        "response_tokens": 27
+      }
+    }
