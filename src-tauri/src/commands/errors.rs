@@ -91,6 +91,8 @@ pub enum Error {
     SidecarCommandErr { line: String },
     #[error("Unexpected sidecar command event")]
     SidecarUnexpectedCommandEvent,
+    #[error("Unexpected JSON: {reason}")]
+    UnexpectedOpenAiResponse { reason: String },
     #[error("Missing API key for {service}")]
     MissingApiKey { service: Service },
     #[error("Lock poisoned")]

@@ -14,11 +14,11 @@ tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
 tauri = { version = "1.4", features = [ "shell-sidecar", "shell-open", "process-command-api" ] }
-diesel = { version = "2.1.0", features = ["sqlite", "uuid"] }
+diesel = { version = "2.1.0", features = ["sqlite", "uuid", "chrono"] }
 directories = "5.0.1"
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
-uuid = { version = "1.4.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
-specta = "1.0.5"
+uuid = { version = "1.4.1", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
+specta = { version = "1.0.5", features = ["uuid", "chrono"] }
 tauri-specta = { version = "1.0.2", features = ["javascript", "typescript"] }
 futures = "0.3.28"
 tauri-utils = "1.4.0"
@@ -37,6 +37,7 @@ async-openai = "0.18.0"
 reqwest = "0.11.23"
 reqwest-middleware = "0.1.6"
 tokio = { version = "1.35.1", features = ["macros"] }
+chrono = "0.4.31"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
