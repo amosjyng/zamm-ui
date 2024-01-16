@@ -1,10 +1,10 @@
 [package]
 name = "zamm"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "Yet another AI chat app"
+authors = ["Amos Ng <me@amos.ng>"]
+license = "GPL-2.0-or-later"
+repository = "https://github.com/amosjyng/zamm"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
