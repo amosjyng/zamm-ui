@@ -49,11 +49,15 @@ describe("Chat conversation", () => {
     tauriInvokeMock.mockClear();
   }
 
-  test("can start a conversation", async () => {
+  test("can start and continue a conversation", async () => {
     render(Chat, {});
     await sendChatMessage(
       "Hello, does this work?",
       "../src-tauri/api/sample-calls/chat-start-conversation.yaml",
+    );
+    await sendChatMessage(
+      "Tell me something funny.",
+      "../src-tauri/api/sample-calls/chat-continue-conversation.yaml",
     );
   });
 });

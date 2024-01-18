@@ -206,10 +206,8 @@ mod tests {
         serde_yaml::from_str(&sample_str).unwrap()
     }
 
-    #[tokio::test]
-    async fn test_start_conversation() {
-        let recording_path =
-            PathBuf::from("api/sample-call-requests/start-conversation.json");
+    async fn test_llm_api_call(recording_path: &str, sample_path: &str) {
+        let recording_path = PathBuf::from(recording_path);
         let is_recording = !recording_path.exists();
         let api_keys = if is_recording {
             ZammApiKeys(Mutex::new(ApiKeys {
@@ -244,7 +242,7 @@ mod tests {
         let db = setup_zamm_db();
         // end dependencies setup
 
-        let sample = read_sample("api/sample-calls/chat-start-conversation.yaml");
+        let sample = read_sample(sample_path);
         assert_eq!(sample.request.len(), 2);
         assert_eq!(sample.request[0], "chat");
 
@@ -289,5 +287,23 @@ mod tests {
             stored_llm_call.response.completion,
             ok_result.response.completion
         );
+    }
+
+    #[tokio::test]
+    async fn test_start_conversation() {
+        test_llm_api_call(
+            "api/sample-call-requests/start-conversation.json",
+            "api/sample-calls/chat-start-conversation.yaml",
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    async fn test_continue_conversation() {
+        test_llm_api_call(
+            "api/sample-call-requests/continue-conversation.json",
+            "api/sample-calls/chat-continue-conversation.yaml",
+        )
+        .await;
     }
 }
