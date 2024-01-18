@@ -78,6 +78,7 @@ export class TauriInvokePlayback {
         `No matching call found for ${jsonArgs}.\n` +
         `Candidates are ${candidates}`;
       if (typeof process === "object") {
+        console.error(errorMessage);
         throw new Error(errorMessage);
       } else {
         return Promise.reject(errorMessage);
