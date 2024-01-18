@@ -57,7 +57,7 @@ describe("Sidebar", () => {
     volume.update(() => 0.125);
     animationSpeed.update(() => 0.25);
     await act(() => userEvent.click(settingsLink));
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
   test("does not play whoosh sound when sound off", async () => {

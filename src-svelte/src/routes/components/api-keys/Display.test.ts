@@ -2,7 +2,7 @@ import { expect, test, vi, type Mock } from "vitest";
 import "@testing-library/jest-dom";
 
 import { render, screen } from "@testing-library/svelte";
-import Snackbar from "$lib/snackbar/Snackbar.svelte";
+import Snackbar, { clearAllMessages } from "$lib/snackbar/Snackbar.svelte";
 import ApiKeysDisplay from "./Display.svelte";
 import { within, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
@@ -30,11 +30,18 @@ describe("API Keys Display", () => {
     vi.stubGlobal("requestAnimationFrame", (fn: FrameRequestCallback) => {
       return window.setTimeout(() => fn(Date.now()), 16);
     });
+    clearAllMessages();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
+
+  function getOpenAiStatus() {
+    const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
+    const openAiKeyCell = within(openAiRow).getAllByRole("cell")[1];
+    return openAiKeyCell.textContent;
+  }
 
   async function checkSampleCall(filename: string, expected_display: string) {
     expect(tauriInvokeMock).not.toHaveBeenCalled();
@@ -44,13 +51,8 @@ describe("API Keys Display", () => {
     await waitFor(() =>
       expect(screen.getByRole("row", { name: /OpenAI/ })).toBeInTheDocument(),
     );
-    expect(tauriInvokeMock).toBeCalledTimes(1);
-
-    const openAiRow = screen.getByRole("row", { name: /OpenAI/ });
-    const openAiKeyCell = within(openAiRow).getAllByRole("cell")[1];
-    await waitFor(() =>
-      expect(openAiKeyCell).toHaveTextContent(expected_display),
-    );
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
+    expect(getOpenAiStatus()).toBe(expected_display);
   }
 
   async function toggleOpenAIForm() {
@@ -164,7 +166,7 @@ describe("API Keys Display", () => {
     expect(apiKeyInput).toHaveValue("");
     await userEvent.type(apiKeyInput, "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));
+    await waitFor(() => expect(tauriInvokeMock).toHaveReturnedTimes(2));
     await waitFor(() => expect(apiKeyInput).not.toBeInTheDocument());
   });
 
@@ -257,7 +259,7 @@ describe("API Keys Display", () => {
     await userEvent.type(fileInput, "no-newline/.bashrc");
     await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));
+    await waitFor(() => expect(tauriInvokeMock).toHaveReturnedTimes(2));
   });
 
   test("can submit with no file", async () => {
@@ -282,6 +284,34 @@ describe("API Keys Display", () => {
     );
     await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    await waitFor(() => expect(tauriInvokeMock).toBeCalledTimes(2));
+    await waitFor(() => expect(tauriInvokeMock).toHaveReturnedTimes(2));
+  });
+
+  test("can submit with invalid file", async () => {
+    systemInfo.set({
+      ...NullSystemInfo,
+    });
+    await checkSampleCall(
+      "../src-tauri/api/sample-calls/get_api_keys-empty.yaml",
+      "Inactive",
+    );
+    tauriInvokeMock.mockClear();
+    playback.addSamples(
+      "../src-tauri/api/sample-calls/set_api_key-invalid-filename.yaml",
+      "../src-tauri/api/sample-calls/get_api_keys-openai.yaml",
+    );
+
+    await toggleOpenAIForm();
+    await userEvent.type(screen.getByLabelText("Export from:"), "/");
+    await userEvent.type(screen.getByLabelText("API key:"), "0p3n41-4p1-k3y");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(tauriInvokeMock).toHaveBeenCalledTimes(2));
+    expect(getOpenAiStatus()).toBe("Active");
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
+
+    render(Snackbar, {});
+    const alerts = screen.queryAllByRole("alertdialog");
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toHaveTextContent("Is a directory (os error 21)");
   });
 });

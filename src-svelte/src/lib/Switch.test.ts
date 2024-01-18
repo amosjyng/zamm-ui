@@ -87,7 +87,7 @@ describe("Switch", () => {
 
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
   test("does not play clicking sound when sound off", async () => {
@@ -125,6 +125,6 @@ describe("Switch", () => {
 
     const onOffSwitch = screen.getByRole("switch");
     await act(() => userEvent.click(onOffSwitch));
-    expect(onToggle).toBeCalledTimes(1);
+    expect(onToggle).toHaveReturnedTimes(1);
   });
 });
