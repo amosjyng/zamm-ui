@@ -34,33 +34,53 @@
 </script>
 
 <InfoBox title="Chat">
-  <div class="conversation" role="list">
-    {#if conversation.length > 1}
-      {#each conversation.slice(1) as message}
-        <div class:message class={message.role.toLowerCase()} role="listitem">
-          <div class="arrow"></div>
-          <div class="text">
-            {message.text}
+  <div class="chat-container">
+    <div class="conversation" role="list">
+      {#if conversation.length > 1}
+        {#each conversation.slice(1) as message}
+          <div class:message class={message.role.toLowerCase()} role="listitem">
+            <div class="arrow"></div>
+            <div class="text">
+              {message.text}
+            </div>
           </div>
-        </div>
-      {/each}
-    {/if}
-  </div>
+        {/each}
+      {:else}
+        <p class="empty-conversation">
+          This conversation is currently empty.<br />Get it started by typing a
+          message below.
+        </p>
+      {/if}
+    </div>
 
-  <form on:submit|preventDefault={sendChat}>
-    <label for="message" class="accessibility-only">Chat with the AI:</label>
-    <TextInput
-      name="message"
-      placeholder="Type your message here..."
-      bind:value={currentMessage}
-    />
-    <Button text="Send" />
-  </form>
+    <form on:submit|preventDefault={sendChat}>
+      <label for="message" class="accessibility-only">Chat with the AI:</label>
+      <TextInput
+        name="message"
+        placeholder="Type your message here..."
+        bind:value={currentMessage}
+      />
+      <Button text="Send" />
+    </form>
+  </div>
 </InfoBox>
 
 <style>
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .conversation {
-    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .empty-conversation {
+    color: var(--color-faded);
+    font-size: 0.85rem;
+    font-style: italic;
+    text-align: center;
   }
 
   .message {
