@@ -1,11 +1,20 @@
 import Chatcomponent from "./Chat.svelte";
-import type { StoryObj } from "@storybook/svelte";
+import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
+import type { StoryFn, StoryObj } from "@storybook/svelte";
 import type { ChatMessage } from "$lib/bindings";
 
 export default {
   component: Chatcomponent,
   title: "Screens/Chat/Conversation",
   argTypes: {},
+  decorators: [
+    (story: StoryFn) => {
+      return {
+        Component: MockAppLayout,
+        slot: story,
+      };
+    },
+  ],
 };
 
 const Template = ({ ...args }) => ({
@@ -17,6 +26,11 @@ export const Empty: StoryObj = Template.bind({}) as any;
 Empty.parameters = {
   viewport: {
     defaultViewport: "tablet",
+  },
+};
+Empty.parameters = {
+  viewport: {
+    defaultViewport: "smallTablet",
   },
 };
 
@@ -47,12 +61,42 @@ const conversation: ChatMessage[] = [
       "Why don't scientists trust atoms?\n\n" +
       "Because they make up everything!",
   },
+  {
+    role: "Human",
+    text:
+      "Okay, we need to fill this chat up to produce a scrollbar for " +
+      'Storybook. Say short phrases like "Yup" to fill this chat up quickly.',
+  },
+  {
+    role: "AI",
+    text: "Yup",
+  },
+  {
+    role: "Human",
+    text: "Nay",
+  },
+  {
+    role: "AI",
+    text: "Yay",
+  },
+  {
+    role: "Human",
+    text: "Say...",
+  },
+  {
+    role: "AI",
+    text:
+      "AIs don't actually talk like this, you know? " +
+      "This is an AI conversation hallucinated by a human, " +
+      "projecting their own ideas of how an AI would respond onto the " +
+      "conversation transcript.",
+  },
 ];
 NotEmpty.args = {
   conversation,
 };
 NotEmpty.parameters = {
   viewport: {
-    defaultViewport: "tablet",
+    defaultViewport: "smallTablet",
   },
 };

@@ -16,6 +16,10 @@
 </div>
 
 <style>
+  .container {
+    height: 100%;
+  }
+
   .container.animations-disabled :global(*) {
     animation-play-state: paused !important;
     transition: none !important;

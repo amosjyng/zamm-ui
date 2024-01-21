@@ -253,6 +253,7 @@
   export let childNumber = 0;
   export let preDelay = $firstAppLoad ? 0 : 100;
   export let maxWidth: string | undefined = undefined;
+  export let fullHeight = false;
   let maxWidthStyle = maxWidth === undefined ? "" : `max-width: ${maxWidth};`;
   const infoboxId = getComponentId("infobox");
   let titleElement: HTMLElement | undefined;
@@ -492,6 +493,7 @@
 
 <section
   class="container"
+  class:full-height={fullHeight}
   aria-labelledby={infoboxId}
   style={maxWidthStyle}
   in:fade|global={overallFadeInArgs}
@@ -525,6 +527,22 @@
 
   .border-container {
     filter: drop-shadow(0px 1px 4px rgba(26, 58, 58, 0.4));
+  }
+
+  .container.full-height,
+  .container.full-height .border-container,
+  .container.full-height .info-box {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .container.full-height .info-box {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container.full-height .info-content {
+    flex: 1;
   }
 
   .border-box {

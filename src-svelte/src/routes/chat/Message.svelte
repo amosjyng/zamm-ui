@@ -32,7 +32,7 @@
     position: absolute;
     width: 0;
     height: 0;
-    bottom: var(--arrow-size);
+    bottom: 0.75rem;
     border: var(--arrow-size) solid transparent;
   }
 
@@ -45,8 +45,8 @@
   }
 
   .message.human .arrow {
-    float: right;
-    right: calc(-1 * var(--arrow-size));
+    right: 0;
+    border-right: none;
     border-left-color: var(--message-color);
   }
 
@@ -59,8 +59,8 @@
   }
 
   .message.ai .arrow {
-    float: left;
-    left: calc(-1 * var(--arrow-size));
+    left: 0;
+    border-left: none;
     border-right-color: var(--message-color);
   }
 </style>

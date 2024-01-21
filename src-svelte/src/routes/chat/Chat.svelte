@@ -5,6 +5,7 @@
   import Message from "./Message.svelte";
   import { type ChatMessage, chat } from "$lib/bindings";
   import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
+  import { onMount } from "svelte";
 
   let currentMessage: string;
   export let conversation: ChatMessage[] = [
@@ -13,6 +14,14 @@
       text: "You are ZAMM, a chat program. Respond in first person.",
     },
   ];
+  let conversationContainer: HTMLDivElement;
+  let conversationView: HTMLDivElement;
+
+  onMount(() => {
+    conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
+    // scroll to last element
+    conversationView.scrollTop = conversationView.scrollHeight;
+  });
 
   async function sendChat() {
     const message = currentMessage.trim();
@@ -34,19 +43,21 @@
   }
 </script>
 
-<InfoBox title="Chat">
+<InfoBox title="Chat" fullHeight>
   <div class="chat-container">
-    <div class="conversation" role="list">
-      {#if conversation.length > 1}
-        {#each conversation.slice(1) as message}
-          <Message {message} />
-        {/each}
-      {:else}
-        <p class="empty-conversation">
-          This conversation is currently empty.<br />Get it started by typing a
-          message below.
-        </p>
-      {/if}
+    <div class="conversation-container" bind:this={conversationContainer}>
+      <div class="conversation" role="list" bind:this={conversationView}>
+        {#if conversation.length > 1}
+          {#each conversation.slice(1) as message}
+            <Message {message} />
+          {/each}
+        {:else}
+          <p class="empty-conversation">
+            This conversation is currently empty.<br />Get it started by typing
+            a message below.
+          </p>
+        {/if}
+      </div>
     </div>
 
     <form on:submit|preventDefault={sendChat}>
@@ -63,13 +74,19 @@
 
 <style>
   .chat-container {
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
 
+  .conversation-container {
+    flex-grow: 1;
+  }
+
   .conversation {
-    flex: 1;
+    max-height: 8rem;
+    overflow-y: scroll;
   }
 
   .empty-conversation {

@@ -12,7 +12,9 @@
 
 <style>
   .storybook-wrapper {
+    height: calc(100vh - 2rem);
     max-width: 50rem;
     position: relative;
+    box-sizing: border-box;
   }
 </style>
