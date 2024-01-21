@@ -14,14 +14,21 @@
       text: "You are ZAMM, a chat program. Respond in first person.",
     },
   ];
-  let conversationContainer: HTMLDivElement;
-  let conversationView: HTMLDivElement;
+  let conversationContainer: HTMLDivElement | undefined = undefined;
+  let conversationView: HTMLDivElement | undefined = undefined;
 
   onMount(() => {
-    conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
-    // scroll to last element
-    conversationView.scrollTop = conversationView.scrollHeight;
+    if (conversationView && conversationContainer) {
+      conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
+    }
+    showChatBottom();
   });
+
+  function showChatBottom() {
+    if (conversationView) {
+      conversationView.scrollTop = conversationView.scrollHeight;
+    }
+  }
 
   async function sendChat() {
     const message = currentMessage.trim();
@@ -32,10 +39,12 @@
       };
       conversation = [...conversation, chatMessage];
       currentMessage = "";
+      setTimeout(showChatBottom, 50);
 
       try {
         let llmCall = await chat("OpenAI", "gpt-3.5-turbo", null, conversation);
         conversation = [...conversation, llmCall.response.completion];
+        setTimeout(showChatBottom, 50);
       } catch (err) {
         snackbarError(err as string);
       }
