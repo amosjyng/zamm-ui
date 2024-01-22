@@ -1,5 +1,5 @@
 import Chatcomponent from "./Chat.svelte";
-import MockAppLayout from "$lib/__mocks__/MockAppLayout.svelte";
+import MockFullPageLayout from "$lib/__mocks__/MockFullPageLayout.svelte";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import type { ChatMessage } from "$lib/bindings";
 
@@ -10,7 +10,7 @@ export default {
   decorators: [
     (story: StoryFn) => {
       return {
-        Component: MockAppLayout,
+        Component: MockFullPageLayout,
         slot: story,
       };
     },

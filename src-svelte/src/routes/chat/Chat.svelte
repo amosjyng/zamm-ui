@@ -18,15 +18,29 @@
   let conversationView: HTMLDivElement | undefined = undefined;
 
   onMount(() => {
-    if (conversationView && conversationContainer) {
-      conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
-    }
-    showChatBottom();
+    resizeConversationView();
+    window.addEventListener("resize", resizeConversationView);
+
+    return () => {
+      window.removeEventListener("resize", resizeConversationView);
+    };
   });
 
   function showChatBottom() {
     if (conversationView) {
       conversationView.scrollTop = conversationView.scrollHeight;
+    }
+  }
+
+  function resizeConversationView() {
+    if (conversationView && conversationContainer) {
+      conversationView.style.maxHeight = "1rem";
+      setTimeout(() => {
+        if (conversationView && conversationContainer) {
+          conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
+          showChatBottom();
+        }
+      }, 10);
     }
   }
 

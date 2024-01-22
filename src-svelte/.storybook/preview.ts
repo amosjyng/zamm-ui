@@ -18,7 +18,7 @@ const preview = {
           name: "Small Tablet",
           styles: {
             width: "834px",
-            height: "800px",
+            height: "650px",
           },
         },
       },

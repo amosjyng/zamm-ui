@@ -116,6 +116,11 @@ const components: ComponentTestConfig[] = [
     path: ["screens", "chat", "message"],
     variants: ["human", "ai", "ai-multiline"],
   },
+  {
+    path: ["screens", "chat", "conversation"],
+    variants: ["empty", "not-empty"],
+    screenshotEntireBody: true,
+  },
 ];
 
 async function findVariantFiles(
