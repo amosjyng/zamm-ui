@@ -83,7 +83,7 @@
       </div>
     </div>
 
-    <form on:submit|preventDefault={sendChat}>
+    <form autocomplete="off" on:submit|preventDefault={sendChat}>
       <label for="message" class="accessibility-only">Chat with the AI:</label>
       <TextInput
         name="message"
