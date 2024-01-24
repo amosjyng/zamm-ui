@@ -9,7 +9,7 @@
 <style>
   .outer,
   .inner {
-    --cut: 7px;
+    --cut: var(--controls-corner-cut);
     --background-color: var(--color-background);
     --border-color: #ccc;
     --border: 0.15rem;
