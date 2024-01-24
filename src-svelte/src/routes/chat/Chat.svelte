@@ -34,7 +34,7 @@
 
   function resizeConversationView() {
     if (conversationView && conversationContainer) {
-      conversationView.style.maxHeight = "1rem";
+      conversationView.style.maxHeight = "8rem";
       setTimeout(() => {
         if (conversationView && conversationContainer) {
           conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
