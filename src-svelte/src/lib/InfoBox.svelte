@@ -525,10 +525,6 @@
     padding: 0;
   }
 
-  .border-container {
-    filter: drop-shadow(0px 1px 4px rgba(26, 58, 58, 0.4));
-  }
-
   .container.full-height,
   .container.full-height .border-container,
   .container.full-height .info-box {
@@ -549,7 +545,7 @@
     width: 100%;
     height: 100%;
     position: absolute;
-    filter: url(#round);
+    filter: url(#round) drop-shadow(0px 1px 4px rgba(26, 58, 58, 0.4));
     z-index: 1;
   }
 
