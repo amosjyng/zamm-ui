@@ -33,14 +33,14 @@
   }
 
   function resizeConversationView() {
-    if (conversationView && conversationContainer) {
+    if (conversationView) {
       conversationView.style.maxHeight = "8rem";
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         if (conversationView && conversationContainer) {
           conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
           showChatBottom();
         }
-      }, 10);
+      });
     }
   }
 
