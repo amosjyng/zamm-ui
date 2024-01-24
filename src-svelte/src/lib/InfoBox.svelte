@@ -581,16 +581,13 @@
   }
 
   .info-box h2 {
+    --cursor-opacity: 0;
+    margin: -0.25rem 0 0.5rem var(--cut);
     text-align: left;
   }
 
   .info-box :global(p:last-child) {
     margin-bottom: 0;
-  }
-
-  .info-box h2 {
-    --cursor-opacity: 0;
-    margin: -0.25rem 0 0.5rem var(--cut);
   }
 
   .info-box h2::after {
