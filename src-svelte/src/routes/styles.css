@@ -92,6 +92,18 @@ h3, th {
   filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.7));
 }
 
+input[type="text"], textarea {
+  border: none;
+}
+
+input[type="text"]:focus, textarea:focus {
+  outline: none;
+}
+
+input[type="text"]::placeholder, textarea::placeholder {
+  font-style: italic;
+}
+
 body {
   background-color: white;
 }
@@ -105,6 +117,51 @@ body {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.cut-corners {
+  --cut-top-left: var(--controls-corner-cut);
+  --cut-bottom-right: var(--controls-corner-cut);
+  --border: 0.15rem;
+  --diagonal-border: calc(var(--border) * 0.8);
+  --border-color: var(--color-border);
+  --background-color: var(--color-background);
+
+  border: var(--border) solid var(--border-color);
+  background:
+    linear-gradient(
+        -45deg,
+        var(--border-color) 0 calc(var(--cut-bottom-right) + var(--diagonal-border)),
+        var(--background-color) 0
+      )
+      bottom right / 50% 100%,
+    linear-gradient(
+        135deg,
+        var(--border-color) 0 calc(var(--cut-top-left) + var(--diagonal-border)),
+        var(--background-color) 0
+      )
+      top left / 50% 100%;
+  background-origin: border-box;
+  background-repeat: no-repeat;
+  -webkit-mask:
+    linear-gradient(-45deg, transparent 0 var(--cut-bottom-right), #fff 0) bottom right,
+    linear-gradient(135deg, transparent 0 var(--cut-top-left), #fff 0) top left;
+  -webkit-mask-size: 51% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask:
+    linear-gradient(-45deg, transparent 0 var(--cut-bottom-right), #fff 0) bottom right,
+    linear-gradient(135deg, transparent 0 var(--cut-top-left), #fff 0) top left;
+  mask-size: 51% 100%;
+  mask-repeat: no-repeat;
+}
+
+.cut-corners.outer {
+  padding: 1px;
+  --background-color: var(--color-background);
+  --border: 2px;
+  --diagonal-border: 2.5px;
+  --cut-top-left: 8px;
+  --cut-bottom-right: 8px;
 }
 
 a, .link-like {
