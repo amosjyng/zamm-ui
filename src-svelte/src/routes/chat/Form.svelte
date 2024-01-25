@@ -5,10 +5,12 @@
 
   export let sendChatMessage: (message: string) => void;
   export let currentMessage = "";
+  export let onTextInputResize: () => void = () => undefined;
   let textareaInput: HTMLTextAreaElement;
 
   onMount(() => {
     autosize(textareaInput);
+    textareaInput.addEventListener("autosize:resized", onTextInputResize);
 
     return () => {
       autosize.destroy(textareaInput);

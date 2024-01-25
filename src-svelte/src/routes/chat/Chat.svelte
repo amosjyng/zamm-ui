@@ -78,7 +78,11 @@
       </div>
     </div>
 
-    <Form {sendChatMessage} currentMessage={initialMessage} />
+    <Form
+      {sendChatMessage}
+      currentMessage={initialMessage}
+      onTextInputResize={resizeConversationView}
+    />
   </div>
 </InfoBox>
 
