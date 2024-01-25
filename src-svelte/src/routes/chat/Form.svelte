@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
 
   export let sendChatMessage: (message: string) => void;
-  let currentMessage = "";
+  export let currentMessage = "";
   let textareaInput: HTMLTextAreaElement;
 
   onMount(() => {
@@ -17,7 +17,7 @@
 
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "Enter" && !event.shiftKey && !event.ctrlKey) {
-      event.preventDefault(); // Prevent newline insertion
+      event.preventDefault();
       submitChat();
     }
   }

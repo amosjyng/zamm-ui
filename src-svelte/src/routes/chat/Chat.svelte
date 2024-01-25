@@ -6,6 +6,7 @@
   import Form from "./Form.svelte";
   import { onMount } from "svelte";
 
+  export let initialMessage = "";
   export let conversation: ChatMessage[] = [
     {
       role: "System",
@@ -77,7 +78,7 @@
       </div>
     </div>
 
-    <Form {sendChatMessage} />
+    <Form {sendChatMessage} currentMessage={initialMessage} />
   </div>
 </InfoBox>
 

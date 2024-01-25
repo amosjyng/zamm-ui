@@ -34,7 +34,6 @@ Empty.parameters = {
   },
 };
 
-export const NotEmpty: StoryObj = Template.bind({}) as any;
 const conversation: ChatMessage[] = [
   {
     role: "System",
@@ -92,10 +91,26 @@ const conversation: ChatMessage[] = [
       "conversation transcript.",
   },
 ];
+
+export const NotEmpty: StoryObj = Template.bind({}) as any;
 NotEmpty.args = {
   conversation,
 };
 NotEmpty.parameters = {
+  viewport: {
+    defaultViewport: "smallTablet",
+  },
+};
+
+export const MultilineChat: StoryObj = Template.bind({}) as any;
+MultilineChat.args = {
+  conversation,
+  initialMessage:
+    "This is what happens when the user types in so much text, " +
+    "it wraps around and turns the text input area into a multiline input. " +
+    "The send button's height should grow in line with the overall text area height.",
+};
+MultilineChat.parameters = {
   viewport: {
     defaultViewport: "smallTablet",
   },
