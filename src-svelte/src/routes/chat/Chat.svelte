@@ -13,6 +13,7 @@
       text: "You are ZAMM, a chat program. Respond in first person.",
     },
   ];
+  export let showMostRecentMessage = true;
   let conversationContainer: HTMLDivElement | undefined = undefined;
   let conversationView: HTMLDivElement | undefined = undefined;
   let topIndicator: HTMLDivElement;
@@ -23,6 +24,7 @@
   onMount(() => {
     resizeConversationView();
     window.addEventListener("resize", resizeConversationView);
+
     let topScrollObserver = new IntersectionObserver(
       intersectionCallback(topShadow),
     );
@@ -62,7 +64,9 @@
       requestAnimationFrame(() => {
         if (conversationView && conversationContainer) {
           conversationView.style.maxHeight = `${conversationContainer.clientHeight}px`;
-          showChatBottom();
+          if (showMostRecentMessage) {
+            showChatBottom();
+          }
         }
       });
     }

@@ -118,7 +118,12 @@ const components: ComponentTestConfig[] = [
   },
   {
     path: ["screens", "chat", "conversation"],
-    variants: ["empty", "not-empty", "multiline-chat"],
+    variants: [
+      "empty",
+      "not-empty",
+      "multiline-chat",
+      "bottom-scroll-indicator",
+    ],
     screenshotEntireBody: true,
   },
 ];

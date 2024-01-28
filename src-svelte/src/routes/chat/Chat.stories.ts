@@ -115,3 +115,14 @@ MultilineChat.parameters = {
     defaultViewport: "smallTablet",
   },
 };
+
+export const BottomScrollIndicator: StoryObj = Template.bind({}) as any;
+BottomScrollIndicator.args = {
+  conversation,
+  showMostRecentMessage: false,
+};
+BottomScrollIndicator.parameters = {
+  viewport: {
+    defaultViewport: "smallTablet",
+  },
+};
