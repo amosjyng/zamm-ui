@@ -21,6 +21,14 @@ describe("Welcome screen", function () {
     ).toBeLessThanOrEqual(maxMismatch);
   });
 
+  it("should allow navigation to the chat page", async function () {
+    findAndClick('a[title="Chat"]');
+    await browser.pause(500); // for CSS transitions to finish
+    expect(
+      await browser.checkFullPageScreen("chat-screen", {}),
+    ).toBeLessThanOrEqual(maxMismatch);
+  });
+
   it("should allow navigation to the settings page", async function () {
     findAndClick('a[title="Settings"]');
     findAndClick("aria/Sounds");
