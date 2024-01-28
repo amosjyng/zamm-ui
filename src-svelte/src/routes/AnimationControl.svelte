@@ -18,6 +18,7 @@
 <style>
   .container {
     height: 100%;
+    position: relative;
   }
 
   .container.animations-disabled :global(*) {

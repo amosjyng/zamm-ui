@@ -81,6 +81,7 @@
 
   .main-container {
     --sidebar-space: calc(var(--sidebar-width) - 0.5px);
+    position: relative;
     height: 100vh;
     box-sizing: border-box;
     margin-left: var(--sidebar-space);
