@@ -15,15 +15,40 @@
   ];
   let conversationContainer: HTMLDivElement | undefined = undefined;
   let conversationView: HTMLDivElement | undefined = undefined;
+  let topIndicator: HTMLDivElement;
+  let bottomIndicator: HTMLDivElement;
+  let topShadow: HTMLDivElement;
+  let bottomShadow: HTMLDivElement;
 
   onMount(() => {
     resizeConversationView();
     window.addEventListener("resize", resizeConversationView);
+    let topScrollObserver = new IntersectionObserver(
+      intersectionCallback(topShadow),
+    );
+    topScrollObserver.observe(topIndicator);
+    let bottomScrollObserver = new IntersectionObserver(
+      intersectionCallback(bottomShadow),
+    );
+    bottomScrollObserver.observe(bottomIndicator);
 
     return () => {
       window.removeEventListener("resize", resizeConversationView);
+      topScrollObserver.disconnect();
+      bottomScrollObserver.disconnect();
     };
   });
+
+  function intersectionCallback(shadow: HTMLDivElement) {
+    return (entries: IntersectionObserverEntry[]) => {
+      let indicator = entries[0];
+      if (indicator.isIntersecting) {
+        shadow.classList.remove("visible");
+      } else {
+        shadow.classList.add("visible");
+      }
+    };
+  }
 
   function showChatBottom() {
     if (conversationView) {
@@ -64,7 +89,9 @@
 <InfoBox title="Chat" fullHeight>
   <div class="chat-container">
     <div class="conversation-container" bind:this={conversationContainer}>
+      <div class="shadow top" bind:this={topShadow}></div>
       <div class="conversation" role="list" bind:this={conversationView}>
+        <div class="indicator top" bind:this={topIndicator}></div>
         {#if conversation.length > 1}
           {#each conversation.slice(1) as message}
             <Message {message} />
@@ -75,7 +102,9 @@
             a message below.
           </p>
         {/if}
+        <div class="indicator bottom" bind:this={bottomIndicator}></div>
       </div>
+      <div class="shadow bottom" bind:this={bottomShadow}></div>
     </div>
 
     <Form
@@ -96,11 +125,13 @@
 
   .conversation-container {
     flex-grow: 1;
+    position: relative;
   }
 
   .conversation {
     max-height: 8rem;
     overflow-y: scroll;
+    position: relative;
   }
 
   .empty-conversation {
@@ -108,5 +139,48 @@
     font-size: 0.85rem;
     font-style: italic;
     text-align: center;
+  }
+
+  .shadow {
+    z-index: 1;
+    height: 0.375rem;
+    width: 100%;
+    position: absolute;
+    display: none;
+  }
+
+  .conversation-container :global(.shadow.visible) {
+    display: block;
+  }
+
+  .shadow.top {
+    top: 0;
+    background-image: radial-gradient(
+      farthest-side at 50% 0%,
+      rgba(150, 150, 150, 0.4) 0%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  .shadow.bottom {
+    bottom: 0;
+    background-image: radial-gradient(
+      farthest-side at 50% 100%,
+      rgba(150, 150, 150, 0.4) 0%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  .indicator {
+    height: 1px;
+    width: 100%;
+  }
+
+  .indicator.top {
+    margin-bottom: -1px;
+  }
+
+  .indicator.bottom {
+    margin-top: -1px;
   }
 </style>

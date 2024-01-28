@@ -28,6 +28,13 @@ describe("Chat conversation", () => {
     vi.stubGlobal("requestAnimationFrame", (fn: FrameRequestCallback) => {
       return window.setTimeout(() => fn(Date.now()), 16);
     });
+    window.IntersectionObserver = vi.fn(() => {
+      return {
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      };
+    }) as unknown as typeof IntersectionObserver;
   });
 
   afterEach(() => {
