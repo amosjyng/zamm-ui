@@ -1,8 +1,8 @@
-const { spawn, spawnSync } = require("child_process");
-const { join } = require("path");
+import { type ChildProcess, spawn, spawnSync } from "child_process";
+import { join } from "path";
 
 // keep track of the `tauri-driver` child process
-let tauriDriver;
+let tauriDriver: ChildProcess;
 
 exports.config = {
   specs: ["./test/specs/**/*.js"],
