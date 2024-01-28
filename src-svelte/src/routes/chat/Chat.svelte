@@ -1,6 +1,7 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
   import Message from "./Message.svelte";
+  import TypingIndicator from "./TypingIndicator.svelte";
   import { type ChatMessage, chat } from "$lib/bindings";
   import { snackbarError } from "$lib/snackbar/Snackbar.svelte";
   import Form from "./Form.svelte";
@@ -13,6 +14,7 @@
       text: "You are ZAMM, a chat program. Respond in first person.",
     },
   ];
+  export let expectingResponse = false;
   export let showMostRecentMessage = true;
   let conversationContainer: HTMLDivElement | undefined = undefined;
   let conversationView: HTMLDivElement | undefined = undefined;
@@ -78,6 +80,7 @@
       text: message,
     };
     conversation = [...conversation, chatMessage];
+    expectingResponse = true;
     setTimeout(showChatBottom, 50);
 
     try {
@@ -86,6 +89,8 @@
       setTimeout(showChatBottom, 50);
     } catch (err) {
       snackbarError(err as string);
+    } finally {
+      expectingResponse = false;
     }
   }
 </script>
@@ -100,6 +105,9 @@
           {#each conversation.slice(1) as message}
             <Message {message} />
           {/each}
+          {#if expectingResponse}
+            <TypingIndicator />
+          {/if}
         {:else}
           <p class="empty-conversation">
             This conversation is currently empty.<br />Get it started by typing

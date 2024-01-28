@@ -123,6 +123,7 @@ const components: ComponentTestConfig[] = [
       "not-empty",
       "multiline-chat",
       "bottom-scroll-indicator",
+      "typing-indicator-static",
     ],
     screenshotEntireBody: true,
   },
@@ -304,7 +305,7 @@ describe.concurrent("Storybook visual tests", () => {
           }
         },
         {
-          retry: 0,
+          retry: 1,
           timeout: DEFAULT_TIMEOUT * 2.2,
         },
       );

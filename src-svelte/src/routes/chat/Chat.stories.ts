@@ -1,5 +1,6 @@
 import Chatcomponent from "./Chat.svelte";
 import MockFullPageLayout from "$lib/__mocks__/MockFullPageLayout.svelte";
+import SvelteStoresDecorator from "$lib/__mocks__/stores";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import type { ChatMessage } from "$lib/bindings";
 
@@ -8,6 +9,7 @@ export default {
   title: "Screens/Chat/Conversation",
   argTypes: {},
   decorators: [
+    SvelteStoresDecorator,
     (story: StoryFn) => {
       return {
         Component: MockFullPageLayout,
@@ -33,6 +35,17 @@ Empty.parameters = {
     defaultViewport: "smallTablet",
   },
 };
+
+const shortConversation: ChatMessage[] = [
+  {
+    role: "System",
+    text: "You are ZAMM, a chat program. Respond in first person.",
+  },
+  {
+    role: "Human",
+    text: "Hello, does this work?",
+  },
+];
 
 const conversation: ChatMessage[] = [
   {
@@ -122,6 +135,31 @@ BottomScrollIndicator.args = {
   showMostRecentMessage: false,
 };
 BottomScrollIndicator.parameters = {
+  viewport: {
+    defaultViewport: "smallTablet",
+  },
+};
+
+export const TypingIndicator: StoryObj = Template.bind({}) as any;
+TypingIndicator.args = {
+  conversation: shortConversation,
+  expectingResponse: true,
+};
+TypingIndicator.parameters = {
+  viewport: {
+    defaultViewport: "smallTablet",
+  },
+};
+
+export const TypingIndicatorStatic: StoryObj = Template.bind({}) as any;
+TypingIndicatorStatic.args = {
+  conversation: shortConversation,
+  expectingResponse: true,
+};
+TypingIndicatorStatic.parameters = {
+  preferences: {
+    animationsOn: false,
+  },
   viewport: {
     defaultViewport: "smallTablet",
   },
