@@ -257,7 +257,12 @@ describe.concurrent("Storybook visual tests", () => {
             config.screenshotEntireBody,
           );
 
-          const screenshotSize = sizeOf(screenshot);
+          const uint8ArrayWorkaround = new Uint8Array(
+            screenshot.buffer,
+            screenshot.byteOffset,
+            screenshot.byteLength,
+          );
+          const screenshotSize = sizeOf(uint8ArrayWorkaround);
           const diffDirection =
             screenshotSize.width &&
             screenshotSize.height &&
