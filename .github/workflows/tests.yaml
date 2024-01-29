@@ -109,7 +109,7 @@ jobs:
         # the dependencies once, and won't update them if the underlying file on disk
         # change
         run: |
-          yarn install
+          yarn install --frozen-lockfile
           cd src-svelte && yarn svelte-kit sync
       # end of common dependency setup with downloaded artifacts
       - name: Install pre-commit
@@ -208,9 +208,9 @@ jobs:
           name: builds
       - name: Install Node dependencies
         run: |
-          yarn install
-          cd src-svelte && yarn install && yarn svelte-kit sync
-          cd ../webdriver && yarn install
+          yarn install --frozen-lockfile
+          cd src-svelte && yarn install --frozen-lockfile && yarn svelte-kit sync
+          cd ../webdriver && yarn install --frozen-lockfile
       # end of common dependency setup with downloaded artifacts
       - name: Update Playwright browsers
         run: yarn playwright install
@@ -260,7 +260,7 @@ jobs:
           node-version: ${{ env.NODEJS_VERSION }}
       - name: Install Node dependencies
         run: |
-          yarn install
+          yarn install --frozen-lockfile
           cd src-svelte && yarn svelte-kit sync
       - name: Install Rust
         uses: actions-rs/toolchain@v1
