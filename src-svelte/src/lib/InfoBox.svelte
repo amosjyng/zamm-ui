@@ -431,10 +431,11 @@
       // whole parent at once to avoid the text appearing before anything else -- e.g.
       // if there's something like "some text in <em>some tag</em>", the "some text in"
       // will appear immediately while "some tag" takes a moment to fade in
-      if (
+      const isAtomicNode =
         currentNode.children.length === 0 ||
-        currentNode.children.length === currentNode.childNodes.length
-      ) {
+        currentNode.children.length === currentNode.childNodes.length ||
+        currentNode.classList.contains("atomic-reveal");
+      if (isAtomicNode) {
         return [
           new RevealContent({
             node: currentNode,

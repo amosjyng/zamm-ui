@@ -138,7 +138,7 @@
     <div class="label" id={sliderId}>{label}</div>
   {/if}
   <div
-    class="slider"
+    class="slider atomic-reveal"
     role="slider"
     tabindex="0"
     aria-valuemin={min}
