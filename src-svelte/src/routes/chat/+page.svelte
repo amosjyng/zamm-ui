@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Chat from "./Chat.svelte";
+  import PersistentChat from "./PersistentChat.svelte";
 </script>
 
-<Chat />
+<PersistentChat />
