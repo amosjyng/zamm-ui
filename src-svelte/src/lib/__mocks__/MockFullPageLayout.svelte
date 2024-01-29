@@ -15,10 +15,6 @@
     max-width: 50rem;
     position: relative;
     /* these are the only two lines that are different from MockAppLayout.svelte */
-    /* height: 100vh;
-    width: 100vw;
-    margin: -1rem;
-    padding: 1rem; */
     height: calc(100vh - 2rem);
     box-sizing: border-box;
   }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import MockAppLayout from "./MockAppLayout.svelte";
+  import MockFullPageLayout from "./MockFullPageLayout.svelte";
   import PageTransition from "../../routes/PageTransition.svelte";
   import { firstAppLoad, firstPageLoad } from "$lib/firstPageLoad";
   import { animationSpeed } from "$lib/preferences";
@@ -9,8 +9,8 @@
   animationSpeed.set(0.1);
 </script>
 
-<MockAppLayout>
+<MockFullPageLayout>
   <PageTransition currentRoute="/storybook-demo">
     <slot />
   </PageTransition>
-</MockAppLayout>
+</MockFullPageLayout>

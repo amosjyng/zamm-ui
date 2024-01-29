@@ -1,6 +1,7 @@
 import Chatcomponent from "./Chat.svelte";
 import MockFullPageLayout from "$lib/__mocks__/MockFullPageLayout.svelte";
 import SvelteStoresDecorator from "$lib/__mocks__/stores";
+import MockPageTransitions from "$lib/__mocks__/MockPageTransitions.svelte";
 import type { StoryFn, StoryObj } from "@storybook/svelte";
 import type { ChatMessage } from "$lib/bindings";
 
@@ -164,3 +165,16 @@ TypingIndicatorStatic.parameters = {
     defaultViewport: "smallTablet",
   },
 };
+
+export const FullPage: StoryObj = Template.bind({}) as any;
+FullPage.args = {
+  conversation,
+};
+FullPage.decorators = [
+  (story: StoryFn) => {
+    return {
+      Component: MockPageTransitions,
+      slot: story,
+    };
+  },
+];

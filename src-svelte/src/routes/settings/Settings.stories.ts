@@ -1,5 +1,6 @@
 import SettingsComponent from "./Settings.svelte";
-import type { StoryObj } from "@storybook/svelte";
+import MockPageTransitions from "$lib/__mocks__/MockPageTransitions.svelte";
+import type { StoryObj, StoryFn } from "@storybook/svelte";
 
 export default {
   component: SettingsComponent,
@@ -32,3 +33,13 @@ Tablet.parameters = {
     defaultViewport: "tablet",
   },
 };
+
+export const FullPage: StoryObj = Template.bind({}) as any;
+FullPage.decorators = [
+  (story: StoryFn) => {
+    return {
+      Component: MockPageTransitions,
+      slot: story,
+    };
+  },
+];
