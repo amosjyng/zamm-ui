@@ -142,7 +142,7 @@
 
   .conversation {
     max-height: 8rem;
-    overflow-y: scroll;
+    overflow-y: auto;
     position: relative;
   }
 
