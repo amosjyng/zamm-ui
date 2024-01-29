@@ -360,13 +360,13 @@
   }
 
   class RevealContent extends SubAnimation<void> {
-    constructor(anim: { node: Element; timing: TransitionTimingFraction }) {
+    constructor(anim: { node: HTMLElement; timing: TransitionTimingFraction }) {
       const easingFunction = linear;
       super({
         timing: anim.timing,
         tick: (tLocalFraction: number) => {
           const opacity = easingFunction(tLocalFraction);
-          anim.node.setAttribute("style", `opacity: ${opacity};`);
+          anim.node.style.opacity = opacity;
 
           if (tLocalFraction === 0) {
             anim.node.classList.add("wait-for-infobox");
@@ -438,7 +438,7 @@
       if (isAtomicNode) {
         return [
           new RevealContent({
-            node: currentNode,
+            node: currentNode as HTMLElement,
             timing: getChildKickoffFraction(currentNode, root),
           }),
         ];
