@@ -63,6 +63,7 @@ response:
       },
       "tokens": {
         "prompt": 72,
-        "response": 24
+        "response": 24,
+        "total": 96
       }
     }

@@ -66,6 +66,10 @@ async fn chat_helper(
             .usage
             .as_ref()
             .map(|usage| usage.completion_tokens as i32),
+        total: response
+            .usage
+            .as_ref()
+            .map(|usage| usage.total_tokens as i32),
     };
     let sole_choice = response
         .choices

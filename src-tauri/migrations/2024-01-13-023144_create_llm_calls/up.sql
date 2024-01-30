@@ -7,6 +7,7 @@ CREATE TABLE llm_calls (
   temperature REAL NOT NULL,
   prompt_tokens INTEGER,
   response_tokens INTEGER,
+  total_tokens INTEGER,
   prompt TEXT NOT NULL,
   completion TEXT NOT NULL
 )

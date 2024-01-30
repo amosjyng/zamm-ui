@@ -17,6 +17,7 @@ diesel::table! {
         temperature -> Float,
         prompt_tokens -> Nullable<Integer>,
         response_tokens -> Nullable<Integer>,
+        total_tokens -> Nullable<Integer>,
         prompt -> Text,
         completion -> Text,
     }

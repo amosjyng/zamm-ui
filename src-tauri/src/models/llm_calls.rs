@@ -276,6 +276,7 @@ pub struct Response {
 pub struct TokenMetadata {
     pub prompt: Option<i32>,
     pub response: Option<i32>,
+    pub total: Option<i32>,
 }
 
 #[derive(Debug, Queryable, Selectable, Clone)]
@@ -289,6 +290,7 @@ pub struct LlmCallRow {
     pub temperature: f32,
     pub prompt_tokens: Option<i32>,
     pub response_tokens: Option<i32>,
+    pub total_tokens: Option<i32>,
     pub prompt: ChatPrompt,
     pub completion: ChatMessage,
 }
@@ -304,6 +306,7 @@ pub struct NewLlmCallRow<'a> {
     pub temperature: &'a f32,
     pub prompt_tokens: Option<&'a i32>,
     pub response_tokens: Option<&'a i32>,
+    pub total_tokens: Option<&'a i32>,
     pub prompt: &'a ChatPrompt,
     pub completion: &'a ChatMessage,
 }
@@ -330,6 +333,7 @@ impl LlmCall {
             temperature: &self.request.temperature,
             prompt_tokens: self.tokens.prompt.as_ref(),
             response_tokens: self.tokens.response.as_ref(),
+            total_tokens: self.tokens.total.as_ref(),
             prompt: &self.request.prompt,
             completion: &self.response.completion,
         }
@@ -355,6 +359,7 @@ impl From<LlmCallRow> for LlmCall {
         let token_metadata = TokenMetadata {
             prompt: row.prompt_tokens,
             response: row.response_tokens,
+            total: row.total_tokens,
         };
         LlmCall {
             id,
