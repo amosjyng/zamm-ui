@@ -7,10 +7,12 @@ build: python svelte rust
 	cargo tauri build $(ARGS)
 
 copy-docker-deps:
-	mv -n /tmp/dependencies/src-svelte/forks/neodrag/packages/svelte/dist ./src-svelte/forks/neodrag/packages/svelte/dist
-	mv -n /tmp/dependencies/node_modules ./node_modules
-	mv -n /tmp/dependencies/src-svelte/node_modules ./src-svelte/node_modules
-	mv -n /tmp/dependencies/target ./src-tauri/target
+	mv -n /tmp/forks/async-openai/* ./forks/async-openai/
+	mv -n /tmp/forks/rvcr/* ./forks/rvcr/
+	mv -n /tmp/dependencies/src-svelte/forks/neodrag/packages/svelte/dist ./src-svelte/forks/neodrag/packages/svelte/
+	mv -n /tmp/dependencies/node_modules ./
+	mv -n /tmp/dependencies/src-svelte/node_modules ./src-svelte/
+	mv -n /tmp/dependencies/target ./src-tauri/
 
 build-docker:
 	docker run --rm -v $(CURRENT_DIR):/zamm -w /zamm $(BUILD_IMAGE) make copy-docker-deps build ARGS=$(ARGS)
