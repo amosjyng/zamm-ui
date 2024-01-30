@@ -10,7 +10,7 @@ env:
   PYTHON_VERSION: "3.11.4"
   NODEJS_VERSION: "20.5.1"
   RUST_VERSION: "1.71.1"
-  PRE_COMMIT_VERSION: "3.3.3"
+  PRE_COMMIT_VERSION: "3.6.0"
 
 jobs:
   build:
