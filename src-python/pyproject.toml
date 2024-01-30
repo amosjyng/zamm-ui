@@ -34,7 +34,6 @@ disallow_untyped_defs = "True"
 [tool.pytest.ini_options]
 filterwarnings = [
     "error",
-    'ignore::pydantic.warnings.PydanticDeprecatedSince20',
 ]
 
 [build-system]
