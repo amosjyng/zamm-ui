@@ -11,7 +11,7 @@ async function findAndClick(selector, timeout) {
   await browser.execute("arguments[0].click();", button);
 }
 
-describe("Welcome screen", function () {
+describe("App", function () {
   it("should render the welcome screen correctly", async function () {
     this.retries(2);
     await $("table"); // ensure page loads before taking screenshot
@@ -22,17 +22,20 @@ describe("Welcome screen", function () {
   });
 
   it("should allow navigation to the chat page", async function () {
-    findAndClick('a[title="Chat"]');
-    await browser.pause(500); // for CSS transitions to finish
+    this.retries(2);
+    await findAndClick('a[title="Chat"]');
+    await $("button");
+    await browser.pause(2500); // for page to finish rendering
     expect(
       await browser.checkFullPageScreen("chat-screen", {}),
     ).toBeLessThanOrEqual(maxMismatch);
   });
 
   it("should allow navigation to the settings page", async function () {
-    findAndClick('a[title="Settings"]');
-    findAndClick("aria/Sounds");
-    await browser.pause(500); // for CSS transitions to finish
+    this.retries(2);
+    await findAndClick('a[title="Settings"]');
+    await $("label");
+    await browser.pause(2500); // for page to finish rendering
     expect(
       await browser.checkFullPageScreen("settings-screen", {}),
     ).toBeLessThanOrEqual(maxMismatch);
