@@ -7,7 +7,6 @@ on:
 
 env:
   POETRY_VERSION: "1.5.1"
-  PYTHON_VERSION: "3.11.4"
   NODEJS_VERSION: "20.5.1"
   RUST_VERSION: "1.71.1"
   PRE_COMMIT_VERSION: "3.6.0"
@@ -90,14 +89,6 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           override: true
           components: rustfmt, clippy
-      - name: Install poetry
-        run: |
-          pipx install poetry==$POETRY_VERSION
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: poetry
       - uses: actions/download-artifact@v3
         with:
           name: builds
