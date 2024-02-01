@@ -15,7 +15,6 @@ use std::env;
 use tokio::sync::Mutex;
 mod commands;
 mod models;
-mod python_api;
 #[cfg(test)]
 mod sample_call;
 mod schema;
@@ -23,8 +22,8 @@ mod setup;
 #[cfg(test)]
 mod test_helpers;
 use commands::{
-    chat, get_api_keys, get_preferences, get_system_info, greet, play_sound,
-    set_api_key, set_preferences,
+    chat, get_api_keys, get_preferences, get_system_info, play_sound, set_api_key,
+    set_preferences,
 };
 
 pub struct ZammDatabase(Mutex<Option<SqliteConnection>>);
@@ -34,7 +33,6 @@ fn main() {
     #[cfg(debug_assertions)]
     ts::export(
         collect_types![
-            greet,
             get_api_keys,
             set_api_key,
             play_sound,
@@ -54,7 +52,6 @@ fn main() {
         .manage(ZammDatabase(Mutex::new(possible_db)))
         .manage(ZammApiKeys(Mutex::new(api_keys)))
         .invoke_handler(tauri::generate_handler![
-            greet,
             get_api_keys,
             set_api_key,
             play_sound,

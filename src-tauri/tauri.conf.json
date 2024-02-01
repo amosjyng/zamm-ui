@@ -15,21 +15,13 @@
       "shell": {
         "all": false,
         "open": true,
-        "sidecar": true,
-        "scope": [
-          {
-            "name": "binaries/zamm-python",
-            "sidecar": true,
-            "args": true
-          }
-        ]
+        "sidecar": false
       }
     },
     "bundle": {
       "active": true,
       "targets": "all",
       "identifier": "dev.zamm",
-      "externalBin": ["binaries/zamm-python"],
       "appimage": {
         "bundleMediaFramework": false
       },
