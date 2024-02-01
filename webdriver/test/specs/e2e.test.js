@@ -38,13 +38,12 @@ describe("App", function () {
 
   it("should allow navigation to the settings page", async function () {
     this.retries(2);
-    const customMaxMismatch = getEnvMismatchTolerance() ?? 1.0;
     await findAndClick('a[title="Settings"]');
     await findAndClick('a[title="Dashboard"]');
     await findAndClick('a[title="Settings"]');
     await browser.pause(2500); // for page to finish rendering
     expect(
       await browser.checkFullPageScreen("settings-screen", {}),
-    ).toBeLessThanOrEqual(customMaxMismatch);
+    ).toBeLessThanOrEqual(maxMismatch);
   });
 });
