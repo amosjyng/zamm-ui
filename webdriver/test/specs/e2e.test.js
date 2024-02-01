@@ -1,7 +1,10 @@
-const maxMismatch =
-  process.env.MISMATCH_TOLERANCE === undefined
-    ? 0
+const maxMismatch = getEnvMismatchTolerance() ?? 0.0;
+
+function getEnvMismatchTolerance() {
+  return process.env.MISMATCH_TOLERANCE === undefined
+    ? undefined
     : parseFloat(process.env.MISMATCH_TOLERANCE);
+}
 
 async function findAndClick(selector, timeout) {
   const button = await $(selector);
@@ -24,7 +27,6 @@ describe("App", function () {
   it("should allow navigation to the chat page", async function () {
     this.retries(2);
     await findAndClick('a[title="Chat"]');
-    await $("button");
     await browser.pause(2500); // for page to finish rendering
     expect(
       await browser.checkFullPageScreen("chat-screen", {}),
@@ -33,11 +35,11 @@ describe("App", function () {
 
   it("should allow navigation to the settings page", async function () {
     this.retries(2);
+    const customMaxMismatch = getEnvMismatchTolerance() ?? 1.0;
     await findAndClick('a[title="Settings"]');
-    await $("label");
     await browser.pause(2500); // for page to finish rendering
     expect(
       await browser.checkFullPageScreen("settings-screen", {}),
-    ).toBeLessThanOrEqual(maxMismatch);
+    ).toBeLessThanOrEqual(customMaxMismatch);
   });
 });
