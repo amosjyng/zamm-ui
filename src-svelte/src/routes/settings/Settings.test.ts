@@ -67,13 +67,13 @@ describe("Switch", () => {
     playback.addCalls(setSoundOffCall);
     await act(() => userEvent.click(soundSwitch));
     expect(get(soundOn)).toBe(false);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
     expect(playback.unmatchedCalls.length).toBe(0);
 
     playback.addCalls(setSoundOnCall, playSwitchSoundCall);
     await act(() => userEvent.click(soundSwitch));
     expect(get(soundOn)).toBe(true);
-    expect(tauriInvokeMock).toBeCalledTimes(3);
+    expect(tauriInvokeMock).toHaveReturnedTimes(3);
     expect(playback.unmatchedCalls.length).toBe(0);
   });
 
@@ -89,7 +89,7 @@ describe("Switch", () => {
     const user = userEvent.setup();
     await user.keyboard("[ArrowLeft]");
     expect(get(volume)).toBe(0.8);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
     expect(playback.unmatchedCalls.length).toBe(0);
   });
 });

@@ -2,9 +2,9 @@
 
 import json
 
-from zamm.api.greet import greet_method
+from zamm.api import ApiMethod, greet_method
 
-METHODS = {
+METHODS: dict[str, ApiMethod] = {
     "greet": greet_method,
 }
 

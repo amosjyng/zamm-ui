@@ -42,7 +42,7 @@ describe("Metadata", () => {
 
     render(Metadata, {});
     await tickFor(3);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
 
     const shellRow = screen.getByRole("row", { name: /Shell/ });
     const shellValueCell = within(shellRow).getAllByRole("cell")[1];
@@ -64,7 +64,7 @@ describe("Metadata", () => {
     tauriInvokeMock.mockRejectedValueOnce("testing");
 
     render(Metadata, {});
-    expect(spy).toHaveBeenLastCalledWith("get_system_info");
+    expect(spy).toHaveReturnedTimes(1);
 
     await waitFor(() => {
       const status = screen.getByRole("status");

@@ -81,7 +81,8 @@
     flex: 1;
     border-radius: var(--corner-roundness);
     transition-property: background-color, box-shadow;
-    transition: var(--standard-duration) ease-in;
+    transition-duration: var(--standard-duration);
+    transition-timing-function: ease-in;
   }
 
   .api-key.active {

@@ -1,4 +1,5 @@
-use std::fmt;
+use crate::setup::api_keys::Service;
+use std::{fmt, sync::PoisonError};
 
 #[derive(Debug)]
 pub struct SidecarResponseError {
@@ -90,6 +91,12 @@ pub enum Error {
     SidecarCommandErr { line: String },
     #[error("Unexpected sidecar command event")]
     SidecarUnexpectedCommandEvent,
+    #[error("Unexpected JSON: {reason}")]
+    UnexpectedOpenAiResponse { reason: String },
+    #[error("Missing API key for {service}")]
+    MissingApiKey { service: Service },
+    #[error("Lock poisoned")]
+    Poison {},
     #[error(transparent)]
     Serde {
         #[from]
@@ -106,6 +113,16 @@ pub enum Error {
         source: diesel::result::Error,
     },
     #[error(transparent)]
+    Reqwest {
+        #[from]
+        source: reqwest::Error,
+    },
+    #[error(transparent)]
+    OpenAI {
+        #[from]
+        source: async_openai::error::OpenAIError,
+    },
+    #[error(transparent)]
     Tauri {
         #[from]
         source: tauri::Error,
@@ -120,6 +137,12 @@ pub enum Error {
         #[from]
         source: anyhow::Error,
     },
+}
+
+impl<T> From<PoisonError<T>> for Error {
+    fn from(_: PoisonError<T>) -> Self {
+        Self::Poison {}
+    }
 }
 
 impl From<rodio::StreamError> for Error {

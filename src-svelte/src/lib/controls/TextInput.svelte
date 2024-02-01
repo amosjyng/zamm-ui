@@ -18,20 +18,11 @@
   input[type="text"] {
     min-width: 1rem;
     width: 100%;
-    border: none;
     border-bottom: 1px solid var(--color-border);
     background-color: var(--color-background);
     font-family: var(--font-mono);
     font-weight: bold;
     font-size: 1rem;
-  }
-
-  input[type="text"]:focus {
-    outline: none;
-  }
-
-  input[type="text"]::placeholder {
-    font-style: italic;
   }
 
   input[type="text"] + .focus-border {

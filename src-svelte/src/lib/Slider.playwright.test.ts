@@ -12,7 +12,7 @@ import { ensureStorybookRunning, killStorybook } from "$lib/test-helpers";
 
 const DEBUG_LOGGING = false;
 
-describe("Switch drag test", () => {
+describe("Slider drag test", () => {
   let storybookProcess: ChildProcess | undefined;
   let page: Page;
   let frame: Frame;

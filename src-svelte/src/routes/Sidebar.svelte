@@ -3,7 +3,7 @@
   import SidebarUi from "./SidebarUI.svelte";
 
   let currentRoute: string;
-  $: currentRoute = $page.url?.pathname || "/";
+  $: currentRoute = $page?.url?.pathname || "/";
 </script>
 
 <SidebarUi {currentRoute} />

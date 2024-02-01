@@ -11,10 +11,10 @@ mod tests {
     use crate::ZammApiKeys;
     use get::tests::check_get_api_keys_sample;
     use set::tests::{check_set_api_key_sample, setup_zamm_db};
-    use std::sync::Mutex;
+    use tokio::sync::Mutex;
 
-    #[test]
-    fn test_get_after_set() {
+    #[tokio::test]
+    async fn test_get_after_set() {
         let api_keys = ZammApiKeys(Mutex::new(ApiKeys::default()));
 
         check_set_api_key_sample(
@@ -22,11 +22,13 @@ mod tests {
             "api/sample-calls/set_api_key-existing-no-newline.yaml",
             &api_keys,
             "api_keys_integration_tests",
-        );
+        )
+        .await;
 
         check_get_api_keys_sample(
             "./api/sample-calls/get_api_keys-openai.yaml",
             &api_keys,
-        );
+        )
+        .await;
     }
 }

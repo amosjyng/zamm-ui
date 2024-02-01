@@ -242,6 +242,7 @@
 
 <script lang="ts">
   import getComponentId from "./label-id";
+  import RoundDef from "./RoundDef.svelte";
   import { cubicInOut, cubicOut, linear } from "svelte/easing";
   import { animationSpeed, animationsOn } from "./preferences";
   import { fade, type TransitionConfig } from "svelte/transition";
@@ -252,6 +253,7 @@
   export let childNumber = 0;
   export let preDelay = $firstAppLoad ? 0 : 100;
   export let maxWidth: string | undefined = undefined;
+  export let fullHeight = false;
   let maxWidthStyle = maxWidth === undefined ? "" : `max-width: ${maxWidth};`;
   const infoboxId = getComponentId("infobox");
   let titleElement: HTMLElement | undefined;
@@ -358,13 +360,13 @@
   }
 
   class RevealContent extends SubAnimation<void> {
-    constructor(anim: { node: Element; timing: TransitionTimingFraction }) {
+    constructor(anim: { node: HTMLElement; timing: TransitionTimingFraction }) {
       const easingFunction = linear;
       super({
         timing: anim.timing,
         tick: (tLocalFraction: number) => {
           const opacity = easingFunction(tLocalFraction);
-          anim.node.setAttribute("style", `opacity: ${opacity};`);
+          anim.node.style.opacity = opacity;
 
           if (tLocalFraction === 0) {
             anim.node.classList.add("wait-for-infobox");
@@ -429,13 +431,14 @@
       // whole parent at once to avoid the text appearing before anything else -- e.g.
       // if there's something like "some text in <em>some tag</em>", the "some text in"
       // will appear immediately while "some tag" takes a moment to fade in
-      if (
+      const isAtomicNode =
         currentNode.children.length === 0 ||
-        currentNode.children.length === currentNode.childNodes.length
-      ) {
+        currentNode.children.length === currentNode.childNodes.length ||
+        currentNode.classList.contains("atomic-reveal");
+      if (isAtomicNode) {
         return [
           new RevealContent({
-            node: currentNode,
+            node: currentNode as HTMLElement,
             timing: getChildKickoffFraction(currentNode, root),
           }),
         ];
@@ -491,30 +494,12 @@
 
 <section
   class="container"
+  class:full-height={fullHeight}
   aria-labelledby={infoboxId}
   style={maxWidthStyle}
   in:fade|global={overallFadeInArgs}
 >
-  <svg
-    style="visibility: hidden; position: absolute;"
-    width="0"
-    height="0"
-    xmlns="http://www.w3.org/2000/svg"
-    version="1.1"
-  >
-    <defs>
-      <filter id="round">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
-        <feColorMatrix
-          in="blur"
-          mode="matrix"
-          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
-          result="goo"
-        />
-        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-      </filter>
-    </defs>
-  </svg>
+  <RoundDef />
 
   <div class="border-container">
     <div class="border-box" in:revealOutline|global={timing.borderBox}></div>
@@ -541,15 +526,27 @@
     padding: 0;
   }
 
-  .border-container {
-    filter: drop-shadow(0px 1px 4px rgba(26, 58, 58, 0.4));
+  .container.full-height,
+  .container.full-height .border-container,
+  .container.full-height .info-box {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .container.full-height .info-box {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container.full-height .info-content {
+    flex: 1;
   }
 
   .border-box {
     width: 100%;
     height: 100%;
     position: absolute;
-    filter: url(#round);
+    filter: url(#round) drop-shadow(0px 1px 4px rgba(26, 58, 58, 0.4));
     z-index: 1;
   }
 
@@ -581,16 +578,13 @@
   }
 
   .info-box h2 {
+    --cursor-opacity: 0;
+    margin: -0.25rem 0 0.5rem var(--cut);
     text-align: left;
   }
 
   .info-box :global(p:last-child) {
     margin-bottom: 0;
-  }
-
-  .info-box h2 {
-    --cursor-opacity: 0;
-    margin: -0.25rem 0 0.5rem var(--cut);
   }
 
   .info-box h2::after {

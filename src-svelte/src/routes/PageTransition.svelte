@@ -103,6 +103,7 @@
 <style>
   .transition-container {
     position: absolute;
+    height: 100%;
     width: 100%;
     box-sizing: border-box;
     padding: 1rem;

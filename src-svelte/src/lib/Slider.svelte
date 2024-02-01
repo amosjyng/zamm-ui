@@ -22,9 +22,9 @@
   export let value: number = min;
   export let onUpdate: (newValue: number) => void = () => undefined;
   const range = max - min;
-  let track: HTMLDivElement;
-  let toggleBound: HTMLDivElement;
-  let toggleLabel: HTMLDivElement;
+  let track: HTMLDivElement | null;
+  let toggleBound: HTMLDivElement | null;
+  let toggleLabel: HTMLDivElement | null;
   let leeway = 0;
   let left = 0;
   let transition = transitionAnimation;
@@ -34,7 +34,12 @@
 
   let toggleDragOptions: DragOptions = {
     axis: "x",
-    bounds: () => toggleBound,
+    bounds: () => {
+      if (!toggleBound) {
+        throw new Error("Toggle bound not mounted");
+      }
+      return toggleBound;
+    },
     inverseScale: 1,
     // need to set this for neodrag to know that this is a controlled drag
     position: { x: 0, y: 0 },
@@ -87,6 +92,10 @@
   }
 
   function calculatePosition(value: number) {
+    if (!track || !toggleLabel) {
+      return toggleDragOptions;
+    }
+
     leeway = track.clientWidth - toggleLabel.clientWidth;
     const x = leeway * toPercentage(value);
     return {
@@ -104,6 +113,11 @@
 
   function onClick(e: MouseEvent) {
     if (dragging) {
+      return;
+    }
+
+    if (!track || !toggleLabel) {
+      console.warn("Click event fired on non-existing track or toggle");
       return;
     }
 
@@ -127,7 +141,13 @@
 
   onMount(() => {
     toggleDragOptions = calculatePosition(value);
-    new ResizeObserver(handleResize).observe(track);
+
+    if (track) {
+      let observer = new ResizeObserver(handleResize);
+      observer.observe(track);
+
+      return () => observer.disconnect();
+    }
   });
 
   $: left = toggleDragOptions.position?.x ?? 0;
@@ -138,7 +158,7 @@
     <div class="label" id={sliderId}>{label}</div>
   {/if}
   <div
-    class="slider"
+    class="slider atomic-reveal"
     role="slider"
     tabindex="0"
     aria-valuemin={min}

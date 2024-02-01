@@ -12,7 +12,7 @@ use tauri_specta::ts;
 
 use std::env;
 
-use std::sync::Mutex;
+use tokio::sync::Mutex;
 mod commands;
 mod models;
 mod python_api;
@@ -23,8 +23,8 @@ mod setup;
 #[cfg(test)]
 mod test_helpers;
 use commands::{
-    get_api_keys, get_preferences, get_system_info, greet, play_sound, set_api_key,
-    set_preferences,
+    chat, get_api_keys, get_preferences, get_system_info, greet, play_sound,
+    set_api_key, set_preferences,
 };
 
 pub struct ZammDatabase(Mutex<Option<SqliteConnection>>);
@@ -40,7 +40,8 @@ fn main() {
             play_sound,
             get_preferences,
             set_preferences,
-            get_system_info
+            get_system_info,
+            chat
         ],
         "../src-svelte/src/lib/bindings.ts",
     )
@@ -59,7 +60,8 @@ fn main() {
             play_sound,
             get_preferences,
             set_preferences,
-            get_system_info
+            get_system_info,
+            chat
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -41,7 +41,7 @@ describe("AppLayout", () => {
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(soundOn)).toBe(true);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
   test("will set sound if sound preference overridden", async () => {
@@ -55,7 +55,7 @@ describe("AppLayout", () => {
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(soundOn)).toBe(false);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
   test("will set volume if volume preference overridden", async () => {
@@ -69,7 +69,7 @@ describe("AppLayout", () => {
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(volume)).toBe(0.8);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
   test("will set animation if animation preference overridden", async () => {
@@ -83,7 +83,7 @@ describe("AppLayout", () => {
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(animationsOn)).toBe(false);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
   test("will set animation speed if speed preference overridden", async () => {
@@ -97,6 +97,6 @@ describe("AppLayout", () => {
     render(AppLayout, { currentRoute: "/" });
     await tickFor(3);
     expect(get(animationSpeed)).toBe(0.9);
-    expect(tauriInvokeMock).toBeCalledTimes(1);
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 });

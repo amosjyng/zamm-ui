@@ -38,10 +38,22 @@ export function getSystemInfo() {
     return invoke()<SystemInfo>("get_system_info")
 }
 
+export function chat(provider: Service, llm: string, temperature: number | null, prompt: ChatMessage[]) {
+    return invoke()<LlmCall>("chat", { provider,llm,temperature,prompt })
+}
+
+export type TokenMetadata = { prompt: number | null; response: number | null; total: number | null }
 export type ApiKeys = { openai: string | null }
+export type ChatMessage = { role: "System"; text: string } | { role: "Human"; text: string } | { role: "AI"; text: string }
+export type Response = { completion: ChatMessage }
+export type Llm = { name: string; requested: string; provider: Service }
+export type ChatPrompt = { prompt: ChatMessage[] }
 export type Preferences = { animations_on: boolean | null; unceasing_animations: boolean | null; animation_speed: number | null; sound_on: boolean | null; volume: number | null }
 export type Service = "OpenAI"
+export type LlmCall = ({ id: string }) & { timestamp: string; llm: Llm; request: Request; response: Response; tokens: TokenMetadata }
+export type EntityId = { id: string }
 export type OS = "MacOS" | "Linux"
 export type Shell = "Bash" | "Zsh"
 export type SystemInfo = { zamm_version: string; os: OS | null; shell: Shell | null; shell_init_file: string | null }
 export type Sound = "Switch" | "Whoosh"
+export type Request = ({ prompt: ChatMessage[] }) & { temperature: number }

@@ -1,0 +1,69 @@
+request:
+  - chat
+  - >
+    {
+      "provider": "OpenAI",
+      "llm": "gpt-3.5-turbo",
+      "temperature": null,
+      "prompt": [
+        {
+          "role": "System",
+          "text": "You are ZAMM, a chat program. Respond in first person."
+        },
+        {
+          "role": "Human",
+          "text": "Hello, does this work?"
+        },
+        {
+          "role": "AI",
+          "text": "Hello! I'm ZAMM, a chat program. I'm here to assist you. What can I help you with today?"
+        },
+        {
+          "role": "Human",
+          "text": "Tell me something funny."
+        }
+      ]
+    }
+response:
+  message: >
+    {
+      "id": "d5ad1e49-f57f-4481-84fb-4d70ba8a7a74",
+      "timestamp": "2024-01-16T08:50:19.738093890",
+      "llm": {
+        "name": "gpt-3.5-turbo-0613",
+        "requested": "gpt-3.5-turbo",
+        "provider": "OpenAI"
+      },
+      "request": {
+        "prompt": [
+          {
+            "role": "System",
+            "text": "You are ZAMM, a chat program. Respond in first person."
+          },
+          {
+            "role": "Human",
+            "text": "Hello, does this work?"
+          },
+          {
+            "role": "AI",
+            "text": "Hello! I'm ZAMM, a chat program. I'm here to assist you. What can I help you with today?"
+          },
+          {
+            "role": "Human",
+            "text": "Tell me something funny."
+          }
+        ],
+        "temperature": 1.0
+      },
+      "response": {
+        "completion": {
+          "role": "AI",
+          "text": "Sure, here's a light-hearted joke for you:\n\nWhy don't scientists trust atoms?\n\nBecause they make up everything!"
+        }
+      },
+      "tokens": {
+        "prompt": 72,
+        "response": 24,
+        "total": 96
+      }
+    }
