@@ -1,4 +1,5 @@
 const maxMismatch = getEnvMismatchTolerance() ?? 0.0;
+const DEFAULT_TIMEOUT = 5_000;
 
 function getEnvMismatchTolerance() {
   return process.env.MISMATCH_TOLERANCE === undefined
@@ -9,7 +10,7 @@ function getEnvMismatchTolerance() {
 async function findAndClick(selector, timeout) {
   const button = await $(selector);
   await button.waitForClickable({
-    timeout,
+    timeout: timeout ?? DEFAULT_TIMEOUT,
   });
   await browser.execute("arguments[0].click();", button);
 }
@@ -27,6 +28,8 @@ describe("App", function () {
   it("should allow navigation to the chat page", async function () {
     this.retries(2);
     await findAndClick('a[title="Chat"]');
+    await findAndClick('a[title="Dashboard"]');
+    await findAndClick('a[title="Chat"]');
     await browser.pause(2500); // for page to finish rendering
     expect(
       await browser.checkFullPageScreen("chat-screen", {}),
@@ -36,6 +39,8 @@ describe("App", function () {
   it("should allow navigation to the settings page", async function () {
     this.retries(2);
     const customMaxMismatch = getEnvMismatchTolerance() ?? 1.0;
+    await findAndClick('a[title="Settings"]');
+    await findAndClick('a[title="Dashboard"]');
     await findAndClick('a[title="Settings"]');
     await browser.pause(2500); // for page to finish rendering
     expect(

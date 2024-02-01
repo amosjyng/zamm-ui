@@ -7,7 +7,7 @@
 
   const routes: App.Route[] = [
     {
-      name: "Home",
+      name: "Dashboard",
       path: "/",
       icon: IconDashboard,
     },
