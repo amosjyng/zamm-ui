@@ -6,6 +6,9 @@ CURRENT_DIR = $(shell pwd)
 build: svelte rust
 	cargo tauri build $(ARGS)
 
+mac: svelte rust
+	cargo tauri build --target universal-apple-darwin
+
 copy-docker-deps:
 	mv -n /tmp/forks/async-openai/* ./forks/async-openai/
 	mv -n /tmp/forks/rvcr/* ./forks/rvcr/
