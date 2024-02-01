@@ -33,7 +33,7 @@ describe("Sidebar", () => {
       currentRoute: "/",
       dummyLinks: true,
     });
-    homeLink = screen.getByTitle("Home");
+    homeLink = screen.getByTitle("Dashboard");
     settingsLink = screen.getByTitle("Settings");
     expect(homeLink).toHaveAttribute("aria-current", "page");
     expect(settingsLink).not.toHaveAttribute("aria-current", "page");
