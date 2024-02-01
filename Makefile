@@ -3,7 +3,7 @@
 BUILD_IMAGE = ghcr.io/amosjyng/zamm:v0.0.0-build
 CURRENT_DIR = $(shell pwd)
 
-build: python svelte rust
+build: svelte rust
 	cargo tauri build $(ARGS)
 
 copy-docker-deps:
@@ -24,24 +24,17 @@ docker:
 	docker build . -t $(BUILD_IMAGE)
 	docker push $(BUILD_IMAGE)
 
-e2e-test: python svelte rust
+e2e-test: svelte rust
 	yarn e2e-test
 
-test: python svelte rust
-	cd src-python && make test
+test: svelte rust
 	cd src-svelte && make test
 	cd src-tauri && make test
 	yarn e2e-test
 
 quicktype:
-	yarn quicktype src-python/api/schemas/*.json -s schema -o src-python/zamm/api/models.py
-	yarn quicktype src-python/api/schemas/*.json -s schema -o src-tauri/src/python_api.rs --visibility public --derive-debug --derive-clone --derive-partial-eq
-	yarn quicktype src-python/api/sample-calls/schema.json -s schema -o src-python/tests/api/sample_call.py
-	yarn quicktype src-python/api/sample-calls/schema.json -s schema -o src-tauri/src/sample_call.rs --visibility public --derive-debug
-	yarn quicktype src-python/api/sample-calls/schema.json -s schema -o src-svelte/src/lib/sample-call.ts
-
-python:
-	cd src-python && poetry run make
+	yarn quicktype src-tauri/api/sample-call-schema.json -s schema -o src-tauri/src/sample_call.rs --visibility public --derive-debug
+	yarn quicktype src-tauri/api/sample-call-schema.json -s schema -o src-svelte/src/lib/sample-call.ts
 
 rust-format:
 	cd src-tauri && make format
@@ -62,6 +55,5 @@ svelte:
 	cd src-svelte && make
 
 clean:
-	cd src-python && make clean
 	cd src-svelte && make clean
 	cd src-tauri && make clean

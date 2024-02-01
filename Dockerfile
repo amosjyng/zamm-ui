@@ -13,18 +13,6 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${RUST_VERS
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install tauri-cli
 
-ARG PYTHON_VERSION=3.11.4
-WORKDIR /tmp
-RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
-  tar -xvf Python-${PYTHON_VERSION}.tgz && \
-  cd Python-${PYTHON_VERSION} && \
-  ./configure --enable-shared && \
-  make -j && \
-  make install && \
-  ldconfig && \
-  pip3 install poetry && \
-  rm -rf /tmp/Python-${PYTHON_VERSION}*
-
 ARG NODEJS_VERSION=16.20.2
 WORKDIR /tmp
 RUN curl -SLO "https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-x64.tar.xz" && \
@@ -45,10 +33,6 @@ RUN git clone https://github.com/amosjyng/neodrag.git src-svelte/forks/neodrag &
   pnpm compile && \
   cd /tmp/dependencies && \
   yarn
-
-COPY src-python/poetry.lock poetry.lock
-COPY src-python/pyproject.toml pyproject.toml
-RUN poetry install
 
 RUN apt install -y libasound2-dev
 
