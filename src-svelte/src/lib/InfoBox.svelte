@@ -432,9 +432,10 @@
       // if there's something like "some text in <em>some tag</em>", the "some text in"
       // will appear immediately while "some tag" takes a moment to fade in
       const isAtomicNode =
-        currentNode.children.length === 0 ||
-        currentNode.children.length === currentNode.childNodes.length ||
-        currentNode.classList.contains("atomic-reveal");
+        currentNode.classList.contains("atomic-reveal") ||
+        (!currentNode.classList.contains("composite-reveal") &&
+          (currentNode.children.length === 0 ||
+            currentNode.children.length === currentNode.childNodes.length));
       if (isAtomicNode) {
         return [
           new RevealContent({
@@ -511,7 +512,10 @@
       >
         {title}
       </h2>
-      <div class="info-content" in:revealInfoBox|global={timing}>
+      <div
+        class="info-content composite-reveal"
+        in:revealInfoBox|global={timing}
+      >
         <slot />
       </div>
     </div>
