@@ -96,10 +96,17 @@
 </script>
 
 <InfoBox title="Chat" fullHeight>
-  <div class="chat-container">
-    <div class="conversation-container" bind:this={conversationContainer}>
+  <div class="chat-container composite-reveal">
+    <div
+      class="conversation-container composite-reveal"
+      bind:this={conversationContainer}
+    >
       <div class="shadow top" bind:this={topShadow}></div>
-      <div class="conversation" role="list" bind:this={conversationView}>
+      <div
+        class="conversation composite-reveal"
+        role="list"
+        bind:this={conversationView}
+      >
         <div class="indicator top" bind:this={topIndicator}></div>
         {#if conversation.length > 1}
           {#each conversation.slice(1) as message}
@@ -109,7 +116,7 @@
             <TypingIndicator />
           {/if}
         {:else}
-          <p class="empty-conversation">
+          <p class="empty-conversation atomic-reveal">
             This conversation is currently empty.<br />Get it started by typing
             a message below.
           </p>

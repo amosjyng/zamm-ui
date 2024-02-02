@@ -1,8 +1,10 @@
 <script lang="ts">
   export let role: "System" | "Human" | "AI";
+
+  const classList = `message atomic-reveal ${role.toLowerCase()}`;
 </script>
 
-<div class:message={true} class={role.toLowerCase()} role="listitem">
+<div class={classList} role="listitem">
   <div class="arrow"></div>
   <div class="text">
     <slot />

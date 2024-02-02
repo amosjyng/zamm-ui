@@ -167,9 +167,6 @@ TypingIndicatorStatic.parameters = {
 };
 
 export const FullPage: StoryObj = Template.bind({}) as any;
-FullPage.args = {
-  conversation,
-};
 FullPage.decorators = [
   (story: StoryFn) => {
     return {

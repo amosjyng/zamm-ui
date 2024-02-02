@@ -37,7 +37,7 @@
 </script>
 
 <form
-  class="cut-corners outer"
+  class="atomic-reveal cut-corners outer"
   autocomplete="off"
   on:submit|preventDefault={submitChat}
 >
