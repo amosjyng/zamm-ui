@@ -14,6 +14,29 @@ env:
   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
 jobs:
+  linux:
+    name: Create build for Linux
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/amosjyng/zamm:v0.0.0-build"
+      options: --user root
+    env:
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.FONTS_PAT }}
+          submodules: "recursive"
+      - name: Build frontend and backend
+        run: make copy-docker-deps svelte rust
+      - name: Build the app
+        uses: tauri-apps/tauri-action@v0
+        with:
+          tagName: v__VERSION__
+          releaseName: 'Version __VERSION__'
+          releaseDraft: true
+          prerelease: false
+          args: --target universal-apple-darwin
   mac:
     name: Create signed build for Mac OS
     runs-on: macos-latest
@@ -24,22 +47,6 @@ jobs:
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Set up Yarn cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            **/node_modules
-            **/.eslintcache
-
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Set up cargo cache
-        uses: Swatinem/rust-cache@v2
-        continue-on-error: false
-        with:
-          workspaces: "src-tauri -> target"
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -50,9 +57,16 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           override: true
           components: rustfmt, clippy
-      - name: Install Node dependencies
+      - name: Build frontend and backend
         run: |
-          yarn install --frozen-lockfile
-          cd src-svelte && yarn svelte-kit sync
+          npm install -g pnpm
+          rustup target add aarch64-apple-darwin
+          make svelte rust
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
+        with:
+          tagName: v__VERSION__
+          releaseName: 'Version __VERSION__'
+          releaseDraft: true
+          prerelease: false
+          args: --target universal-apple-darwin
