@@ -64,7 +64,7 @@
   }
 
   .message.human .arrow {
-    right: 0;
+    right: 1px;
     border-right: none;
     border-left-color: var(--message-color);
   }
@@ -78,7 +78,7 @@
   }
 
   .message.ai .arrow {
-    left: 0;
+    left: 1px;
     border-left: none;
     border-right-color: var(--message-color);
   }
