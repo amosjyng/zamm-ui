@@ -1,13 +1,26 @@
 <script lang="ts">
-  export let role: "System" | "Human" | "AI";
+  import { onMount } from "svelte";
 
+  export let role: "System" | "Human" | "AI";
   const classList = `message atomic-reveal ${role.toLowerCase()}`;
+  let textElement: HTMLDivElement;
+
+  onMount(() => {
+    setTimeout(() => {
+      const range = document.createRange();
+      range.selectNodeContents(textElement);
+      const textRect = range.getBoundingClientRect();
+      textElement.style.width = `${textRect.width}px`;
+    }, 10);
+  });
 </script>
 
 <div class={classList} role="listitem">
   <div class="arrow"></div>
-  <div class="text">
-    <slot />
+  <div class="text-container">
+    <div class="text" bind:this={textElement}>
+      <slot />
+    </div>
   </div>
 </div>
 
@@ -18,7 +31,7 @@
     position: relative;
   }
 
-  .message .text {
+  .message .text-container {
     margin: 0.5rem var(--arrow-size);
     border-radius: var(--corner-roundness);
     width: fit-content;
@@ -27,6 +40,11 @@
     box-sizing: border-box;
     background-color: var(--message-color);
     white-space: pre-line;
+    text-align: left;
+  }
+
+  .text-element {
+    box-sizing: content-box;
   }
 
   .message .arrow {
@@ -41,7 +59,7 @@
     --message-color: #e5ffe5;
   }
 
-  .message.human .text {
+  .message.human .text-container {
     margin-left: auto;
   }
 
@@ -55,7 +73,7 @@
     --message-color: #e5e5ff;
   }
 
-  .message.ai .text {
+  .message.ai .text-container {
     margin-right: auto;
   }
 
