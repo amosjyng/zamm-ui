@@ -16,19 +16,29 @@ env:
 jobs:
   linux:
     name: Create build for Linux
-    runs-on: ubuntu-latest
-    container:
-      image: "ghcr.io/amosjyng/zamm:v0.0.0-build"
-      options: --user root
-    env:
-      HOME: /root
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.FONTS_PAT }}
           submodules: "recursive"
-      - name: Build frontend and backend
-        run: make copy-docker-deps svelte rust
+      - name: Install system dependencies
+        run: |
+          sudo apt install -y --no-install-recommends build-essential libssl-dev zlib1g-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev libncurses-dev tk-dev libwebkit2gtk-4.0-dev curl wget file libgtk-3-dev librsvg2-dev ca-certificates software-properties-common patchelf libasound2-dev
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          override: true
+          components: rustfmt, clippy
+      - name: Build frontend
+        run: |
+          npm install -g pnpm
+          make svelte
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         with:
@@ -36,7 +46,6 @@ jobs:
           releaseName: 'Version __VERSION__'
           releaseDraft: true
           prerelease: false
-          args: --target universal-apple-darwin
   mac:
     name: Create signed build for Mac OS
     runs-on: macos-latest
