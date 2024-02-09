@@ -35,6 +35,21 @@ describe("Chat conversation", () => {
         disconnect: vi.fn(),
       };
     }) as unknown as typeof IntersectionObserver;
+    window.document.createRange = vi.fn(() => {
+      return {
+        selectNodeContents: vi.fn(),
+        getBoundingClientRect: vi.fn(() => {
+          return {
+            width: 10,
+            height: 10,
+            top: 0,
+            left: 0,
+            right: 10,
+            bottom: 10,
+          };
+        }),
+      };
+    }) as unknown as Mock<[], Range>;
   });
 
   afterEach(() => {
@@ -70,7 +85,11 @@ describe("Chat conversation", () => {
     const aiResponse = lastResult.response.completion.text;
     const lastSentence = aiResponse.split("\n").slice(-1)[0];
     await waitFor(() => {
-      expect(screen.getByText(new RegExp(lastSentence))).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          new RegExp(lastSentence.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+        ),
+      ).toBeInTheDocument();
     });
 
     tauriInvokeMock.mockClear();

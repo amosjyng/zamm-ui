@@ -3,14 +3,16 @@
 
   export let role: "System" | "Human" | "AI";
   const classList = `message atomic-reveal ${role.toLowerCase()}`;
-  let textElement: HTMLDivElement;
+  let textElement: HTMLDivElement | null;
 
   onMount(() => {
     setTimeout(() => {
-      const range = document.createRange();
-      range.selectNodeContents(textElement);
-      const textRect = range.getBoundingClientRect();
-      textElement.style.width = `${textRect.width}px`;
+      if (textElement) {
+        const range = document.createRange();
+        range.selectNodeContents(textElement);
+        const textRect = range.getBoundingClientRect();
+        textElement.style.width = `${textRect.width}px`;
+      }
     }, 10);
   });
 </script>
