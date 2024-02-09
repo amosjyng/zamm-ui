@@ -35,21 +35,19 @@ describe("Chat conversation", () => {
         disconnect: vi.fn(),
       };
     }) as unknown as typeof IntersectionObserver;
-    window.document.createRange = vi.fn(() => {
+    Range.prototype.getBoundingClientRect = vi.fn(() => {
       return {
-        selectNodeContents: vi.fn(),
-        getBoundingClientRect: vi.fn(() => {
-          return {
-            width: 10,
-            height: 10,
-            top: 0,
-            left: 0,
-            right: 10,
-            bottom: 10,
-          };
-        }),
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        top: 0,
+        left: 0,
+        right: 10,
+        bottom: 10,
+        toJSON: vi.fn(),
       };
-    }) as unknown as Mock<[], Range>;
+    });
   });
 
   afterEach(() => {
