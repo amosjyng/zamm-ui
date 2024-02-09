@@ -8,10 +8,14 @@
   onMount(() => {
     setTimeout(() => {
       if (textElement) {
-        const range = document.createRange();
-        range.selectNodeContents(textElement);
-        const textRect = range.getBoundingClientRect();
-        textElement.style.width = `${textRect.width}px`;
+        try {
+          const range = document.createRange();
+          range.selectNodeContents(textElement);
+          const textRect = range.getBoundingClientRect();
+          textElement.style.width = `${textRect.width}px`;
+        } catch (err) {
+          console.warn("Cannot resize chat message bubble: ", err);
+        }
       }
     }, 10);
   });
