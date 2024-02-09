@@ -3,7 +3,7 @@ request:
   - >
     {
       "provider": "OpenAI",
-      "llm": "gpt-3.5-turbo",
+      "llm": "gpt-4",
       "temperature": null,
       "prompt": [
         {
@@ -22,8 +22,8 @@ response:
       "id": "d5ad1e49-f57f-4481-84fb-4d70ba8a7a74",
       "timestamp": "2024-01-16T08:50:19.738093890",
       "llm": {
-        "name": "gpt-3.5-turbo-0613",
-        "requested": "gpt-3.5-turbo",
+        "name": "gpt-4-0613",
+        "requested": "gpt-4",
         "provider": "OpenAI"
       },
       "request": {
@@ -42,12 +42,12 @@ response:
       "response": {
         "completion": {
           "role": "AI",
-          "text": "Hello! I'm ZAMM, a chat program. I'm here to assist you. What can I help you with today?"
+          "text": "Yes, it works. How can I assist you today?"
         }
       },
       "tokens": {
         "prompt": 32,
-        "response": 27,
-        "total": 59
+        "response": 12,
+        "total": 44
       }
     }

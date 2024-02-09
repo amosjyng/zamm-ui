@@ -84,7 +84,7 @@
     setTimeout(showChatBottom, 50);
 
     try {
-      let llmCall = await chat("OpenAI", "gpt-3.5-turbo", null, conversation);
+      let llmCall = await chat("OpenAI", "gpt-4", null, conversation);
       conversation = [...conversation, llmCall.response.completion];
       setTimeout(showChatBottom, 50);
     } catch (err) {
