@@ -10,6 +10,7 @@ env:
   NODEJS_VERSION: "20.5.1"
   RUST_VERSION: "1.71.1"
   PRE_COMMIT_VERSION: "3.6.0"
+  TAURI_DRIVER_VERSION: "0.1.3"
 
 jobs:
   build:
@@ -245,7 +246,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: tauri-driver
+          args: tauri-driver@${{ env.TAURI_DRIVER_VERSION }}
       - name: Try creating directories
         run: |
           mkdir -p /home/runner/.local/share/zamm/
