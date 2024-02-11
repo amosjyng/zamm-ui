@@ -75,6 +75,10 @@
   }
 
   async function sendChatMessage(message: string) {
+    if (expectingResponse) {
+      return;
+    }
+
     const chatMessage: ChatMessage = {
       role: "Human",
       text: message,
