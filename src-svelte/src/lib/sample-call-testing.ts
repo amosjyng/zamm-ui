@@ -58,6 +58,7 @@ export function parseSampleCall(sampleFile: string): ParsedCall {
 
 export class TauriInvokePlayback {
   unmatchedCalls: ParsedCall[];
+  callPauseMs?: number;
 
   constructor() {
     this.unmatchedCalls = [];
@@ -87,11 +88,15 @@ export class TauriInvokePlayback {
     const matchingCall = this.unmatchedCalls[matchingCallIndex];
     this.unmatchedCalls.splice(matchingCallIndex, 1);
 
-    if (matchingCall.succeeded) {
-      return Promise.resolve(matchingCall.response);
-    } else {
-      return Promise.reject(matchingCall.response);
-    }
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (matchingCall.succeeded) {
+          resolve(matchingCall.response);
+        } else {
+          reject(matchingCall.response);
+        }
+      }, this.callPauseMs || 0);
+    });
   }
 
   addCalls(...calls: ParsedCall[]): void {

@@ -1,7 +1,7 @@
 import { expect, test, vi, type Mock } from "vitest";
 import { get } from "svelte/store";
 import "@testing-library/jest-dom";
-import { render } from "@testing-library/svelte";
+import { render, waitFor } from "@testing-library/svelte";
 import AppLayout from "./AppLayout.svelte";
 import {
   soundOn,
@@ -53,8 +53,9 @@ describe("AppLayout", () => {
     );
 
     render(AppLayout, { currentRoute: "/" });
-    await tickFor(3);
-    expect(get(soundOn)).toBe(false);
+    await waitFor(() => {
+      expect(get(soundOn)).toBe(false);
+    });
     expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
@@ -67,8 +68,9 @@ describe("AppLayout", () => {
     );
 
     render(AppLayout, { currentRoute: "/" });
-    await tickFor(3);
-    expect(get(volume)).toBe(0.8);
+    await waitFor(() => {
+      expect(get(volume)).toBe(0.8);
+    });
     expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
@@ -81,8 +83,9 @@ describe("AppLayout", () => {
     );
 
     render(AppLayout, { currentRoute: "/" });
-    await tickFor(3);
-    expect(get(animationsOn)).toBe(false);
+    await waitFor(() => {
+      expect(get(animationsOn)).toBe(false);
+    });
     expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 
@@ -95,8 +98,9 @@ describe("AppLayout", () => {
     );
 
     render(AppLayout, { currentRoute: "/" });
-    await tickFor(3);
-    expect(get(animationSpeed)).toBe(0.9);
+    await waitFor(() => {
+      expect(get(animationSpeed)).toBe(0.9);
+    });
     expect(tauriInvokeMock).toHaveReturnedTimes(1);
   });
 });
