@@ -104,4 +104,36 @@ describe("Chat conversation", () => {
       "../src-tauri/api/sample-calls/chat-continue-conversation.yaml",
     );
   });
+
+  test("won't send multiple messages at once", async () => {
+    render(Chat, {});
+    expect(tauriInvokeMock).not.toHaveBeenCalled();
+    playback.callPauseMs = 1_000; // this line differs from sendChatMessage
+    playback.addSamples(
+      "../src-tauri/api/sample-calls/chat-start-conversation.yaml",
+    );
+    const nextExpectedApiCall: ParsedCall =
+      playback.unmatchedCalls.slice(-1)[0];
+    const nextExpectedCallArgs = nextExpectedApiCall.request[1] as Record<
+      string,
+      any
+    >;
+    const nextExpectedMessage = nextExpectedCallArgs["prompt"].slice(
+      -1,
+    )[0] as ChatMessage;
+    const nextExpectedHumanPrompt = nextExpectedMessage.text;
+
+    const chatInput = screen.getByLabelText("Chat with the AI:");
+    expect(chatInput).toHaveValue("");
+    await userEvent.type(chatInput, "Hello, does this work?");
+    await userEvent.click(screen.getByRole("button", { name: "Send" }));
+    expect(tauriInvokeMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(nextExpectedHumanPrompt)).toBeInTheDocument();
+
+    // this part differs from sendChatMessage
+    await userEvent.type(chatInput, "Tell me something funny.");
+    await userEvent.click(screen.getByRole("button", { name: "Send" }));
+    expect(tauriInvokeMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(nextExpectedHumanPrompt)).toBeInTheDocument();
+  });
 });

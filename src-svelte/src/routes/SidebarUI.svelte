@@ -158,7 +158,7 @@
     border-bottom-left-radius: var(--corner-roundness);
     position: absolute;
     top: 0;
-    background-color: var(--color-foreground);
+    background-color: var(--color-offwhite);
     box-shadow: 0 var(--shadow-offset) var(--shadow-blur) 0 #ccc;
     z-index: 1;
     transform: translateY(var(--top));
@@ -177,12 +177,12 @@
   .indicator::before {
     bottom: var(--sidebar-icon-size);
     border-radius: 0 0 var(--corner-roundness) 0;
-    box-shadow: 0 var(--corner-roundness) 0 0 var(--color-foreground);
+    box-shadow: 0 var(--corner-roundness) 0 0 var(--color-offwhite);
   }
 
   .indicator::after {
     top: var(--sidebar-icon-size);
     border-radius: 0 var(--corner-roundness) 0 0;
-    box-shadow: 0 calc(-1 * var(--corner-roundness)) 0 0 var(--color-foreground);
+    box-shadow: 0 calc(-1 * var(--corner-roundness)) 0 0 var(--color-offwhite);
   }
 </style>

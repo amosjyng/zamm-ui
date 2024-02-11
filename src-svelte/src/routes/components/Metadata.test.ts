@@ -7,7 +7,6 @@ import { within, waitFor } from "@testing-library/dom";
 import { TauriInvokePlayback } from "$lib/sample-call-testing";
 import { systemInfo } from "$lib/system-info";
 import { get } from "svelte/store";
-import { tickFor } from "$lib/test-helpers";
 
 describe("Metadata", () => {
   let tauriInvokeMock: Mock;
@@ -41,13 +40,14 @@ describe("Metadata", () => {
     );
 
     render(Metadata, {});
-    await tickFor(3);
-    expect(tauriInvokeMock).toHaveReturnedTimes(1);
+    await waitFor(() => {
+      const shellRow = screen.getByRole("row", { name: /Shell/ });
+      const shellValueCell = within(shellRow).getAllByRole("cell")[1];
+      expect(shellValueCell).toHaveTextContent("Zsh");
+      expect(get(systemInfo)?.shell_init_file).toEqual("/root/.zshrc");
+    });
 
-    const shellRow = screen.getByRole("row", { name: /Shell/ });
-    const shellValueCell = within(shellRow).getAllByRole("cell")[1];
-    await waitFor(() => expect(shellValueCell).toHaveTextContent("Zsh"));
-    expect(get(systemInfo)?.shell_init_file).toEqual("/root/.zshrc");
+    expect(tauriInvokeMock).toHaveReturnedTimes(1);
 
     const versionRow = screen.getByRole("row", { name: /Version/ });
     const versionValueCell = within(versionRow).getAllByRole("cell")[1];

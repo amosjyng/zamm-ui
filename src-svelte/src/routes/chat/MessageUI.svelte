@@ -49,7 +49,7 @@
     text-align: left;
   }
 
-  .text-element {
+  .text {
     box-sizing: content-box;
   }
 

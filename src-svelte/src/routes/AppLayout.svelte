@@ -87,7 +87,7 @@
     overflow-x: hidden;
     overflow-y: scroll;
     border-radius: var(--main-corners);
-    background-color: var(--color-foreground);
+    background-color: var(--color-offwhite);
     box-shadow: calc(-1 * var(--shadow-offset)) 0 var(--shadow-blur) 0 #ccc;
     overflow-y: auto;
     overflow-x: hidden;
