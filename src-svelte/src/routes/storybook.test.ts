@@ -90,7 +90,7 @@ const components: ComponentTestConfig[] = [
   },
   {
     path: ["layout", "sidebar"],
-    variants: ["dashboard-selected", "settings-selected"],
+    variants: ["dashboard-selected", "settings-selected", "credits-selected"],
   },
   {
     path: ["layout", "snackbar"],
