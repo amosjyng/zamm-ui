@@ -1,8 +1,33 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
   import SubInfoBox from "$lib/SubInfoBox.svelte";
+  import { standardDuration } from "$lib/preferences";
+  import { onMount } from "svelte";
   import Creditor from "./Creditor.svelte";
   import Grid from "./Grid.svelte";
+
+  let userScrolled = false;
+
+  function pageScroll() {
+    if (userScrolled) {
+      return;
+    }
+    window.scrollBy(0, 1);
+    setTimeout(pageScroll, 10);
+  }
+
+  onMount(() => {
+    document.addEventListener(
+      "DOMMouseScroll",
+      () => {
+        userScrolled = true;
+      },
+      false,
+    );
+    setTimeout(() => {
+      pageScroll();
+    }, 4.4 * $standardDuration);
+  });
 </script>
 
 <InfoBox title="Credits">
