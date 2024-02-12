@@ -10,4 +10,8 @@ describe("URL formatter", () => {
   test("formats Github URLs correctly", () => {
     expect(formatUrl("https://github.com/amosjyng/")).toEqual("amosjyng");
   });
+
+  test("strips ending slash from URL", () => {
+    expect(formatUrl("https://tauri.app/")).toEqual("tauri.app");
+  });
 });

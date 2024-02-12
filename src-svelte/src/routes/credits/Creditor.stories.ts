@@ -17,3 +17,10 @@ GithubContributor.args = {
   name: "Amos Jun-yeung Ng",
   url: "https://github.com/amosjyng/",
 };
+
+export const DependencyWithIcon: StoryObj = Template.bind({}) as any;
+DependencyWithIcon.args = {
+  name: "Tauri",
+  logo: "tauri",
+  url: "https://tauri.app/",
+};

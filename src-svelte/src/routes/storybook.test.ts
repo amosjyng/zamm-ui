@@ -129,7 +129,7 @@ const components: ComponentTestConfig[] = [
   },
   {
     path: ["screens", "credits", "creditor"],
-    variants: ["github-contributor"],
+    variants: ["github-contributor", "dependency-with-icon"],
   },
 ];
 
