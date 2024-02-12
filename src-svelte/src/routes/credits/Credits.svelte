@@ -23,7 +23,7 @@
       setTimeout(() => {
         scrollInterval = setInterval(function () {
           if (scrollElement) {
-            scrollElement.scrollBy(0, 2);
+            scrollElement.scrollBy(0, 1);
           }
         }, 10);
       }, 4.4 * $standardDuration);
