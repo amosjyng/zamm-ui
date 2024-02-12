@@ -7,6 +7,7 @@
   import Grid from "./Grid.svelte";
 
   let scrollInterval: NodeJS.Timeout | undefined = undefined;
+  let scrollElement: HTMLDivElement | undefined = undefined;
 
   function stopScrolling() {
     if (scrollInterval) {
@@ -15,14 +16,23 @@
   }
 
   onMount(() => {
-    document.addEventListener("DOMMouseScroll", stopScrolling, false);
-    setTimeout(() => {
-      scrollInterval = setInterval(function () {
-        window.scrollBy(0, 1);
-      }, 10);
-    }, 4.4 * $standardDuration);
+    const mainContainer = document.getElementById("main-container");
+    if (mainContainer) {
+      scrollElement = mainContainer as HTMLDivElement;
+      document.addEventListener("DOMMouseScroll", stopScrolling, false);
+      setTimeout(() => {
+        scrollInterval = setInterval(function () {
+          if (scrollElement) {
+            scrollElement.scrollBy(0, 2);
+          }
+        }, 10);
+      }, 4.4 * $standardDuration);
+    }
 
-    return stopScrolling;
+    return function () {
+      stopScrolling();
+      document.removeEventListener("DOMMouseScroll", stopScrolling, false);
+    };
   });
 </script>
 

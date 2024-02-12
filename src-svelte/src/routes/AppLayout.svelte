@@ -50,7 +50,7 @@
   <AnimationControl>
     <Sidebar />
 
-    <div class="main-container">
+    <div id="main-container">
       <div class="background-layout">
         <Background />
       </div>
@@ -79,7 +79,7 @@
     --main-corners: var(--corner-roundness) 0 0 var(--corner-roundness);
   }
 
-  .main-container {
+  #main-container {
     --sidebar-space: calc(var(--sidebar-width) - 0.5px);
     height: 100vh;
     box-sizing: border-box;
