@@ -91,8 +91,22 @@
   </div>
 </InfoBox>
 
+<div class="dedication-container">
+  <InfoBox title="Dedication" childNumber={1}>
+    <p class="atomic-reveal">
+      This project is made with ❤️, and dedicated to <strong
+        >Eliza Lynn Kith</strong
+      >.
+    </p>
+  </InfoBox>
+</div>
+
 <style>
   .container {
     margin-top: 1rem;
+  }
+
+  .dedication-container {
+    margin: 2rem 0;
   }
 </style>
