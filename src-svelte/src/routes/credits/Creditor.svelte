@@ -26,7 +26,7 @@
   export let urlDisplay = formatUrl(url);
 
   const isGitHubLink = url.startsWith("https://github.com");
-  const logoLink = logo ? `/logos/${logo}.png` : undefined;
+  const logoLink = logo ? `/logos/${logo}` : undefined;
 </script>
 
 <div class="creditor atomic-reveal">

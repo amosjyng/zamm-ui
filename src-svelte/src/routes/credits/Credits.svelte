@@ -10,15 +10,14 @@
     <SubInfoBox
       subheading="Zen and the Automation of Metaprogramming for the Masses"
     >
-      <Grid>
-        <Creditor name="Amos Jun-yeung Ng" url="https://github.com/amosjyng/" />
-      </Grid>
+      <Creditor name="Amos Jun-yeung Ng" url="https://github.com/amosjyng/" />
     </SubInfoBox>
   </div>
   <div class="container">
     <SubInfoBox subheading="Frameworks">
       <Grid>
-        <Creditor name="Tauri" logo="tauri" url="https://tauri.app/" />
+        <Creditor name="Tauri" logo="tauri.png" url="https://tauri.app/" />
+        <Creditor name="Svelte" logo="svelte.svg" url="https://svelte.dev/" />
       </Grid>
     </SubInfoBox>
   </div>
