@@ -1,19 +1,36 @@
 <script lang="ts" context="module">
-  export function formatUrl(url: string) {
-    if (url.endsWith("/")) {
-      url = url.slice(0, -1);
+  const MAX_URL_LENGTH = 15;
+
+  function formatUrlHelper(urlString: string) {
+    const url = new URL(urlString);
+    if (url.hostname.endsWith("github.com")) {
+      if (url.pathname.endsWith("/")) {
+        return url.pathname.slice(1, -1);
+      }
+      return url.pathname.slice(1);
     }
 
-    if (url.startsWith("https://github.com/")) {
-      return url.slice(19);
+    const hostname = url.hostname.startsWith("www.")
+      ? url.hostname.slice(4)
+      : url.hostname;
+
+    let pathname: string;
+    if (url.pathname === "/") {
+      pathname = "";
+    } else if (url.pathname.endsWith("/")) {
+      pathname = url.pathname.slice(0, -1);
+    } else {
+      pathname = url.pathname;
     }
-    if (url.startsWith("https://")) {
-      return url.slice(8);
+    return hostname + pathname;
+  }
+
+  export function formatUrl(urlString: string) {
+    const formattedUrl = formatUrlHelper(urlString);
+    if (formattedUrl.length > MAX_URL_LENGTH) {
+      return formattedUrl.slice(0, MAX_URL_LENGTH - 3) + "...";
     }
-    if (url.startsWith("http://")) {
-      return url.slice(7);
-    }
-    return url;
+    return formattedUrl;
   }
 </script>
 
@@ -48,10 +65,16 @@
 
 <style>
   .creditor {
-    padding: 1rem;
+    padding: 0.5rem 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  @media (min-width: 52rem) {
+    .creditor {
+      padding: 1rem;
+    }
   }
 
   img {

@@ -4,9 +4,16 @@
 
 <style>
   .credits-grid {
-    display: flex;
-    flex-wrap: wrap;
-    margin: -0.5rem 0 0;
-    justify-content: space-around;
+    margin: -0.5rem auto 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  /* this takes sidebar width into account */
+  @media (min-width: 52rem) {
+    .credits-grid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>
