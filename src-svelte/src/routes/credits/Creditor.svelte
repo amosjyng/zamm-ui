@@ -29,7 +29,7 @@
   const logoLink = logo ? `/logos/${logo}.png` : undefined;
 </script>
 
-<div class="creditor">
+<div class="creditor atomic-reveal">
   {#if logo}
     <img src={logoLink} alt={name} />
   {/if}
