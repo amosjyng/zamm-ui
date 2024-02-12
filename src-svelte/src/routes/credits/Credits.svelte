@@ -1,6 +1,7 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
   import SubInfoBox from "$lib/SubInfoBox.svelte";
+  import Creditor from "./Creditor.svelte";
 </script>
 
 <InfoBox title="Credits">
@@ -8,7 +9,7 @@
     <SubInfoBox
       subheading="Zen and the Automation of Metaprogramming for the Masses"
     >
-      Hello
+      <Creditor name="Amos Jun-yeung Ng" url="https://github.com/amosjyng/" />
     </SubInfoBox>
   </div>
 </InfoBox>
@@ -23,7 +24,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.1rem;
-    margin: 0.5rem calc(-1 * var(--side-padding));
+    margin: 0;
   }
 
   /* this takes sidebar width into account */
