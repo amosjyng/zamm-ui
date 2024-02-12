@@ -11,7 +11,7 @@
   }
 
   /* this takes sidebar width into account */
-  @media (min-width: 52rem) {
+  @media (min-width: 40rem) {
     .credits-grid {
       grid-template-columns: 1fr 1fr;
     }

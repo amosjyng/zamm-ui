@@ -71,7 +71,7 @@
     gap: 0.5rem;
   }
 
-  @media (min-width: 52rem) {
+  @media (min-width: 40rem) {
     .creditor {
       padding: 1rem;
     }
