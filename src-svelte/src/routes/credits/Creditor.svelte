@@ -14,16 +14,25 @@
 </script>
 
 <script lang="ts">
+  import GitHubIcon from "./GitHubIcon.svelte";
+
   export let name: string;
   export let url: string;
   export let urlDisplay = formatUrl(url);
+
+  const isGitHubLink = url.startsWith("https://github.com");
 </script>
 
 <div class="creditor">
   <h4>{name}</h4>
-  <a href={url} target="_blank" rel="noopener noreferrer">
-    {urlDisplay}
-  </a>
+  <div class="external-link">
+    {#if isGitHubLink}
+      <GitHubIcon />
+    {/if}
+    <a href={url} target="_blank" rel="noopener noreferrer">
+      {urlDisplay}
+    </a>
+  </div>
 </div>
 
 <style>
@@ -34,5 +43,11 @@
   h4 {
     font-weight: normal;
     margin: 0;
+  }
+
+  .external-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 </style>

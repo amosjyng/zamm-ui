@@ -127,6 +127,10 @@ const components: ComponentTestConfig[] = [
     ],
     screenshotEntireBody: true,
   },
+  {
+    path: ["screens", "credits", "creditor"],
+    variants: ["github-contributor"],
+  },
 ];
 
 async function findVariantFiles(
