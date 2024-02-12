@@ -6,27 +6,23 @@
   import Creditor from "./Creditor.svelte";
   import Grid from "./Grid.svelte";
 
-  let userScrolled = false;
+  let scrollInterval: NodeJS.Timeout | undefined = undefined;
 
-  function pageScroll() {
-    if (userScrolled) {
-      return;
+  function stopScrolling() {
+    if (scrollInterval) {
+      clearInterval(scrollInterval);
     }
-    window.scrollBy(0, 1);
-    setTimeout(pageScroll, 10);
   }
 
   onMount(() => {
-    document.addEventListener(
-      "DOMMouseScroll",
-      () => {
-        userScrolled = true;
-      },
-      false,
-    );
+    document.addEventListener("DOMMouseScroll", stopScrolling, false);
     setTimeout(() => {
-      pageScroll();
+      scrollInterval = setInterval(function () {
+        window.scrollBy(0, 1);
+      }, 10);
     }, 4.4 * $standardDuration);
+
+    return stopScrolling;
   });
 </script>
 
