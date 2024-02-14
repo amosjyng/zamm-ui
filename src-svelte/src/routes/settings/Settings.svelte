@@ -6,7 +6,7 @@
   import {
     animationsOn,
     animationSpeed,
-    unceasingAnimations,
+    backgroundAnimation,
     soundOn,
     volume,
     NullPreferences,
@@ -20,10 +20,10 @@
     });
   };
 
-  const onUnceasingAnimationsToggle = (newValue: boolean) => {
+  const onbackgroundAnimationToggle = (newValue: boolean) => {
     setPreferences({
       ...NullPreferences,
-      unceasing_animations: newValue,
+      background_animation: newValue,
     });
   };
 
@@ -59,8 +59,8 @@
       />
       <SettingsSwitch
         label="Background"
-        bind:toggledOn={$unceasingAnimations}
-        onToggle={onUnceasingAnimationsToggle}
+        bind:toggledOn={$backgroundAnimation}
+        onToggle={onbackgroundAnimationToggle}
       />
       <SettingsSlider
         label="General speed"

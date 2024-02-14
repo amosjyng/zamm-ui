@@ -9,7 +9,7 @@
   import { getPreferences } from "$lib/bindings";
   import {
     soundOn,
-    unceasingAnimations,
+    backgroundAnimation,
     animationSpeed,
     volume,
     animationsOn,
@@ -32,10 +32,10 @@
       animationsOn.set(prefs.animations_on);
     }
 
-    if (prefs.unceasing_animations === null) {
-      unceasingAnimations.set(true);
+    if (prefs.background_animation === null) {
+      backgroundAnimation.set(true);
     } else {
-      unceasingAnimations.set(prefs.unceasing_animations);
+      backgroundAnimation.set(prefs.background_animation);
     }
 
     if (prefs.animation_speed !== null) {

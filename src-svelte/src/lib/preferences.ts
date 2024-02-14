@@ -2,7 +2,7 @@ import { writable, derived } from "svelte/store";
 import type { Preferences } from "./bindings";
 
 export const animationsOn = writable(true);
-export const unceasingAnimations = writable(false);
+export const backgroundAnimation = writable(false);
 export const animationSpeed = writable(1);
 export const soundOn = writable(true);
 export const volume = writable(1);
@@ -15,7 +15,7 @@ export const standardDuration = derived(
 
 export const NullPreferences: Preferences = {
   animations_on: null,
-  unceasing_animations: null,
+  background_animation: null,
   animation_speed: null,
   sound_on: null,
   volume: null,

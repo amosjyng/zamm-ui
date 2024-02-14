@@ -1,7 +1,7 @@
 import type { StoryFn, Decorator, StoryContext } from "@storybook/svelte";
 import {
   animationsOn,
-  unceasingAnimations,
+  backgroundAnimation,
   animationSpeed,
 } from "$lib/preferences";
 import { systemInfo } from "$lib/system-info";
@@ -10,7 +10,7 @@ import { firstAppLoad, firstPageLoad } from "$lib/firstPageLoad";
 
 interface Preferences {
   animationsOn?: boolean;
-  unceasingAnimations?: boolean;
+  backgroundAnimation?: boolean;
   animationSpeed?: number;
 }
 
@@ -41,8 +41,8 @@ const SvelteStoresDecorator: Decorator = (
     animationsOn.set(preferences.animationsOn);
   }
 
-  if (preferences?.unceasingAnimations !== undefined) {
-    unceasingAnimations.set(preferences.unceasingAnimations);
+  if (preferences?.backgroundAnimation !== undefined) {
+    backgroundAnimation.set(preferences.backgroundAnimation);
   }
 
   if (preferences?.animationSpeed === undefined) {

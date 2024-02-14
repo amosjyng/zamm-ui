@@ -252,7 +252,7 @@ jobs:
           mkdir -p /home/runner/.local/share/zamm/
           chmod -R 777 /home/runner/.local/share/zamm/
           mkdir -p /home/runner/.config/dev.zamm/
-          echo "unceasing_animations = false" > /home/runner/.config/dev.zamm/preferences.toml
+          echo "background_animation = false" > /home/runner/.config/dev.zamm/preferences.toml
           chmod +x src-tauri/target/release/zamm
       - name: Run headless WebdriverIO tests
         run: xvfb-run yarn e2e-test

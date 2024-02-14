@@ -3,7 +3,7 @@ response:
   message: >
     {
       "animations_on": null,
-      "unceasing_animations": null,
+      "background_animation": null,
       "animation_speed": 0.9,
       "sound_on": null,
       "volume": null
