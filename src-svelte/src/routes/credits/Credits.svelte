@@ -34,16 +34,21 @@
   });
 </script>
 
-<div on:mousedown={stopScrolling} on:wheel={stopScrolling} role="none">
+<div
+  class="container"
+  on:mousedown={stopScrolling}
+  on:wheel={stopScrolling}
+  role="none"
+>
   <InfoBox title="Credits">
-    <div class="container">
+    <div class="subinfo-container">
       <SubInfoBox
         subheading="Zen and the Automation of Metaprogramming for the Masses"
       >
         <Creditor name="Amos Jun-yeung Ng" url="https://github.com/amosjyng/" />
       </SubInfoBox>
     </div>
-    <div class="container">
+    <div class="subinfo-container">
       <SubInfoBox subheading="Frameworks">
         <Grid>
           <Creditor name="Tauri" logo="tauri.png" url="https://tauri.app/" />
@@ -137,10 +142,14 @@
 
 <style>
   .container {
+    padding-bottom: 1rem;
+  }
+
+  .subinfo-container {
     margin-top: 1rem;
   }
 
   .dedication-container {
-    margin: 2rem 0;
+    margin-top: 2rem;
   }
 </style>
