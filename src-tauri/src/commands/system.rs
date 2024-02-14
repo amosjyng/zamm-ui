@@ -6,7 +6,7 @@ use std::env;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Type)]
 pub enum OS {
-    MacOS,
+    Mac,
     Linux,
     Windows,
 }
@@ -33,7 +33,7 @@ fn get_os() -> Option<OS> {
     #[cfg(target_os = "linux")]
     return Some(OS::Linux);
     #[cfg(target_os = "macos")]
-    return Some(OS::MacOS);
+    return Some(OS::Mac);
     #[cfg(target_os = "windows")]
     return Some(OS::Windows);
     #[cfg(not(any(

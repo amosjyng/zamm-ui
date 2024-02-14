@@ -27,16 +27,19 @@ response:
         "provider": "OpenAI"
       },
       "request": {
-        "prompt": [
-          {
-            "role": "System",
-            "text": "You are ZAMM, a chat program. Respond in first person."
-          },
-          {
-            "role": "Human",
-            "text": "Hello, does this work?"
-          }
-        ],
+        "prompt": {
+          "type": "Chat",
+          "messages": [
+            {
+              "role": "System",
+              "text": "You are ZAMM, a chat program. Respond in first person."
+            },
+            {
+              "role": "Human",
+              "text": "Hello, does this work?"
+            }
+          ]
+        },
         "temperature": 1.0
       },
       "response": {
