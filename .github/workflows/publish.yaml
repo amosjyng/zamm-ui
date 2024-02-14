@@ -43,7 +43,7 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         with:
           tagName: v__VERSION__
-          releaseName: 'Version __VERSION__'
+          releaseName: "Version __VERSION__"
           releaseDraft: true
           prerelease: false
   mac:
@@ -75,7 +75,7 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         with:
           tagName: v__VERSION__
-          releaseName: 'Version __VERSION__'
+          releaseName: "Version __VERSION__"
           releaseDraft: true
           prerelease: false
           args: --target universal-apple-darwin

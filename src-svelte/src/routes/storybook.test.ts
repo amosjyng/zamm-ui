@@ -90,7 +90,7 @@ const components: ComponentTestConfig[] = [
   },
   {
     path: ["layout", "sidebar"],
-    variants: ["dashboard-selected", "settings-selected"],
+    variants: ["dashboard-selected", "settings-selected", "credits-selected"],
   },
   {
     path: ["layout", "snackbar"],
@@ -126,6 +126,10 @@ const components: ComponentTestConfig[] = [
       "typing-indicator-static",
     ],
     screenshotEntireBody: true,
+  },
+  {
+    path: ["screens", "credits", "creditor"],
+    variants: ["github-contributor", "dependency-with-icon"],
   },
 ];
 

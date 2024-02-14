@@ -7,7 +7,7 @@ build: svelte rust
 	cargo tauri build $(ARGS)
 
 mac: svelte rust
-	cargo tauri build --target universal-apple-darwin
+	cargo tauri build --target universal-apple-darwin --verbose
 
 copy-docker-deps:
 	mv -n /tmp/forks/async-openai/* ./forks/async-openai/

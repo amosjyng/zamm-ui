@@ -2,6 +2,7 @@
   import IconSettings from "~icons/ion/settings";
   import IconChat from "~icons/ph/chat-dots-fill";
   import IconDashboard from "~icons/material-symbols/monitor-heart";
+  import IconHeartFill from "~icons/ph/heart-fill";
   import { playSoundEffect } from "$lib/sound";
   import { animationSpeed } from "$lib/preferences";
 
@@ -20,6 +21,11 @@
       name: "Settings",
       path: "/settings",
       icon: IconSettings,
+    },
+    {
+      name: "Credits",
+      path: "/credits",
+      icon: IconHeartFill,
     },
   ];
 
@@ -93,7 +99,8 @@
     {#each routes as route}
       <a
         aria-current={route.path === currentRoute ? "page" : undefined}
-        class="icon"
+        class:icon={true}
+        class={route.name.toLowerCase()}
         id="nav-{route.name.toLowerCase()}"
         title={route.name}
         href={dummyLinks ? "#" : route.path}
@@ -151,6 +158,11 @@
   .icon[aria-current="page"] > :global(:only-child) {
     color: #1a75ff;
     filter: url(#inset-shadow-selected);
+  }
+
+  .icon[aria-current="page"].credits > :global(:only-child) {
+    color: #ff1a40;
+    filter: url(#inset-shadow);
   }
 
   .indicator {

@@ -41,6 +41,12 @@ SettingsSelected.args = {
   dummyLinks: true,
 };
 
+export const CreditsSelected: StoryObj = Template.bind({}) as any;
+CreditsSelected.args = {
+  currentRoute: "/credits",
+  dummyLinks: true,
+};
+
 export const SlowMotion: StoryObj = Template.bind({}) as any;
 SlowMotion.args = {
   currentRoute: "/",
