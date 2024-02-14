@@ -184,6 +184,11 @@ where
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, specta::Type)]
+pub struct ChatPrompt {
+    pub messages: Vec<ChatMessage>,
+}
+
 #[derive(
     Debug,
     Clone,
@@ -195,15 +200,16 @@ where
     specta::Type,
 )]
 #[diesel(sql_type = Text)]
-pub struct ChatPrompt {
-    pub prompt: Vec<ChatMessage>,
+#[serde(tag = "type")]
+pub enum Prompt {
+    Chat(ChatPrompt),
 }
 
 impl Deref for ChatPrompt {
     type Target = Vec<ChatMessage>;
 
     fn deref(&self) -> &Self::Target {
-        &self.prompt
+        &self.messages
     }
 }
 
@@ -217,20 +223,20 @@ impl TryFrom<Vec<ChatCompletionRequestMessage>> for ChatPrompt {
             .into_iter()
             .map(|message| message.try_into())
             .collect::<Result<Vec<ChatMessage>, Self::Error>>()?;
-        Ok(ChatPrompt { prompt: messages })
+        Ok(ChatPrompt { messages })
     }
 }
 
 impl From<ChatPrompt> for Vec<ChatCompletionRequestMessage> {
     fn from(val: ChatPrompt) -> Self {
-        val.prompt
+        val.messages
             .into_iter()
             .map(|message| message.into())
             .collect()
     }
 }
 
-impl ToSql<Text, Sqlite> for ChatPrompt
+impl ToSql<Text, Sqlite> for Prompt
 where
     String: ToSql<Text, Sqlite>,
 {
@@ -241,7 +247,7 @@ where
     }
 }
 
-impl<DB> FromSql<Text, DB> for ChatPrompt
+impl<DB> FromSql<Text, DB> for Prompt
 where
     DB: Backend,
     String: FromSql<Text, DB>,
@@ -262,8 +268,7 @@ pub struct Llm {
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct Request {
-    #[serde(flatten)]
-    pub prompt: ChatPrompt,
+    pub prompt: Prompt,
     pub temperature: f32,
 }
 
@@ -291,7 +296,7 @@ pub struct LlmCallRow {
     pub prompt_tokens: Option<i32>,
     pub response_tokens: Option<i32>,
     pub total_tokens: Option<i32>,
-    pub prompt: ChatPrompt,
+    pub prompt: Prompt,
     pub completion: ChatMessage,
 }
 
@@ -307,7 +312,7 @@ pub struct NewLlmCallRow<'a> {
     pub prompt_tokens: Option<&'a i32>,
     pub response_tokens: Option<&'a i32>,
     pub total_tokens: Option<&'a i32>,
-    pub prompt: &'a ChatPrompt,
+    pub prompt: &'a Prompt,
     pub completion: &'a ChatMessage,
 }
 

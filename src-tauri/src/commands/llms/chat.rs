@@ -1,7 +1,8 @@
 use crate::commands::errors::ZammResult;
 use crate::commands::Error;
 use crate::models::llm_calls::{
-    ChatMessage, ChatPrompt, EntityId, Llm, LlmCall, Request, Response, TokenMetadata,
+    ChatMessage, ChatPrompt, EntityId, Llm, LlmCall, Prompt, Request, Response,
+    TokenMetadata,
 };
 use crate::schema::llm_calls;
 use crate::setup::api_keys::Service;
@@ -91,7 +92,7 @@ async fn chat_helper(
         },
         request: Request {
             temperature: requested_temperature,
-            prompt: ChatPrompt { prompt },
+            prompt: Prompt::Chat(ChatPrompt { messages: prompt }),
         },
         response: Response {
             completion: sole_choice.try_into()?,
@@ -278,12 +279,6 @@ mod tests {
         let expected_json = sample.response.message.trim();
         assert_eq!(actual_json, expected_json);
 
-        assert!(ok_result.request.prompt.len() > 0);
-        match &ok_result.response.completion {
-            ChatMessage::AI { text } => assert!(!text.is_empty()),
-            _ => panic!("Unexpected response type"),
-        }
-
         // check that it made it into the database
         let stored_llm_call = get_llm_call(&db, &ok_result.id).await;
         assert_eq!(stored_llm_call.request.prompt, ok_result.request.prompt);
@@ -291,6 +286,16 @@ mod tests {
             stored_llm_call.response.completion,
             ok_result.response.completion
         );
+
+        // do a sanity check that everything is non-empty
+        let prompt = match ok_result.request.prompt {
+            Prompt::Chat(ChatPrompt { messages: prompt }) => prompt,
+        };
+        assert!(!prompt.is_empty());
+        match &ok_result.response.completion {
+            ChatMessage::AI { text } => assert!(!text.is_empty()),
+            _ => panic!("Unexpected response type"),
+        }
     }
 
     #[tokio::test]

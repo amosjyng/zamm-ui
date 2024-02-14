@@ -1,7 +1,7 @@
 <script lang="ts">
   import InfoBox from "$lib/InfoBox.svelte";
   import Loading from "$lib/Loading.svelte";
-  import { getSystemInfo } from "$lib/bindings";
+  import { getSystemInfo, type OS } from "$lib/bindings";
   import { systemInfo } from "$lib/system-info";
 
   let systemInfoCall = getSystemInfo();
@@ -12,6 +12,15 @@
     .catch((error) => {
       console.error(`Could not retrieve system info: ${error}`);
     });
+
+  function formatOsString(os: OS | null | undefined) {
+    if (os === "Mac") {
+      return "Mac OS";
+    }
+    return os ?? "Unknown";
+  }
+
+  $: os = formatOsString($systemInfo?.os);
 </script>
 
 <div class="container">
@@ -43,7 +52,7 @@
         </tr>
         <tr>
           <td>OS</td>
-          <td>{systemInfo.os ?? "Unknown"}</td>
+          <td>{os}</td>
         </tr>
         <tr>
           <td>Shell</td>
