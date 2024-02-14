@@ -20,7 +20,7 @@ Dynamic.args = {
 };
 Dynamic.parameters = {
   preferences: {
-    unceasingAnimations: true,
+    backgroundAnimation: true,
   },
 };
 
@@ -30,6 +30,6 @@ Static.args = {
 };
 Static.parameters = {
   preferences: {
-    unceasingAnimations: false,
+    backgroundAnimation: false,
   },
 };
